@@ -1,0 +1,97 @@
+<template>
+    <v-app-bar :elevation="4" scroll-behavior="hide">
+        <v-app-bar-title style="line-height: normal" class="text-h4">BangumiList</v-app-bar-title>
+
+        <!-- 自定义设置按钮 -->
+        <template v-slot:append>
+            <v-tooltip :text="$lang.text['settings']">
+                <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" icon="mdi-tune" @click.stop="openDrawer = !openDrawer"></v-btn>
+                </template>
+            </v-tooltip>
+        </template>
+    </v-app-bar>
+
+    <!-- 右侧抽屉 -->
+    <v-navigation-drawer location="right" temporary :width="300" v-model="openDrawer">
+        <!-- 深色模式 -->
+        <v-list-item>
+            <div class="d-flex justify-space-between align-center">
+                <label>{{ $lang.text.darkMode }}</label>
+                <v-switch :color="$primaryColor.value" v-model="darkModeSwitch" @update:model-value="toggleTheme"
+                    hide-details class="d-flex align-center mr-4" />
+            </div>
+        </v-list-item>
+
+        <!-- 主色调选择 -->
+        <v-list-item>
+            <div class="d-flex justify-space-between align-center">
+                <label>{{ $lang.text.primaryColor }}</label>
+                <v-select variant="solo-filled" density="comfortable" :items="colorList" v-model="$primaryColor.value" hide-details
+                    class="d-flex justify-end align-center">
+                    <!-- 自定义选择框 -->
+                    <template v-slot:selection="{ item }">
+                        <v-avatar :color="item.value" size="24" />
+                        <label class="ml-4">{{ item.title }}</label>
+                    </template>
+                    <!-- 自定义选项 -->
+                    <template v-slot:item="{ item, props }">
+                        <v-list-item v-bind="props" title="">
+                            <div class="d-flex justify-start align-center">
+                                <v-avatar :color="item.value" size="24" />
+                                <label class="ml-4">{{ item.title }}</label>
+                            </div>
+                        </v-list-item>
+                    </template>
+                </v-select>
+            </div>
+        </v-list-item>
+
+        <!-- 语言选择 -->
+        <v-list-item>
+            <div class="d-flex justify-space-between align-center">
+                <label>{{ $lang.text.language }}</label>
+                <v-select variant="solo-filled" density="comfortable" :items="languageList" v-model="$lang.currentLang"
+                    @update:model-value="$lang.changeLang" hide-details class="d-flex justify-end align-center" />
+            </div>
+        </v-list-item>
+
+        <!-- 脚注 -->
+        <v-footer class="d-flex justify-center align-end" app>
+            <label class="text-center mb-4">OathInMoonlight<br>MIT License</label>
+        </v-footer>
+    </v-navigation-drawer>
+</template>
+
+<style>
+.v-toolbar-title{
+    line-height: 2rem;
+}
+</style>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { useTheme } from 'vuetify'
+import { useLang } from '@/plugins/useGlobal.js'
+
+const lang = useLang()
+const openDrawer = ref(false)
+const colorList = computed(() => [
+    { title: lang.text.red, value: "red" },
+    { title: lang.text.yellow, value: "yellow" },
+    { title: lang.text.green, value: "green" },
+    { title: lang.text.blue, value: "blue" }
+])
+const languageList = [
+    { title: "中文", value: "zh" },
+    { title: "日本語", value: "ja" },
+    { title: "English", value: "en" }
+]
+
+//主题切换
+const theme = useTheme()
+const darkModeSwitch = ref(theme.global.current.value.dark)
+function toggleTheme() {
+    theme.global.name.value = darkModeSwitch.value ? 'dark' : 'light'
+}
+</script>
