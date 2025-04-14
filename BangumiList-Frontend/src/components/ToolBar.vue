@@ -2,37 +2,37 @@
     <v-toolbar density="comfortable">
         <div class="w-100 d-flex flex-row justify-space-between align-center">
             <div class="d-flex align-center ml-4">
-                <label v-if="!$isDatabase.value" class="text-h6">{{ $lang.text.databaseList }}</label>
-                <v-tooltip v-else :text="$lang.text.backToList">
+                <label v-if="!$isDatabase.value" class="text-h6">{{ $lang.text.databaseList[$lang.currentLang] }}</label>
+                <v-tooltip v-else :text="$lang.text.backToList[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" variant="outlined">{{ $isDatabase }}</v-btn>
                     </template>
                 </v-tooltip>
             </div>
             <div class="d-flex align-center mr-2">
-                <v-tooltip :text="$lang.text.plus">
+                <v-tooltip :text="$lang.text.plus[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-plus"/>
+                        <v-btn v-bind="props" icon="mdi-plus" />
                     </template>
                 </v-tooltip>
-                <v-tooltip :text="$lang.text.import">
+                <v-tooltip :text="$lang.text.import[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-import"/>
+                        <v-btn v-bind="props" icon="mdi-import" />
                     </template>
                 </v-tooltip>
-                <v-tooltip :text="$lang.text.export">
+                <v-tooltip :text="$lang.text.export[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-export"/>
+                        <v-btn v-bind="props" icon="mdi-export" />
                     </template>
                 </v-tooltip>
-                <v-tooltip :text="$lang.text.delete">
+                <v-tooltip :text="$lang.text.delete[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-delete"/>
+                        <v-btn v-bind="props" icon="mdi-delete" />
                     </template>
                 </v-tooltip>
-                <v-tooltip :text="$lang.text.edit">
+                <v-tooltip :text="$lang.text.edit[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-square-edit-outline"/>
+                        <v-btn v-bind="props" icon="mdi-square-edit-outline" />
                     </template>
                 </v-tooltip>
             </div>
@@ -41,5 +41,4 @@
 </template>
 
 <script setup>
-
 </script>
