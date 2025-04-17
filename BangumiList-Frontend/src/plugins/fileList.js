@@ -27,5 +27,6 @@ export default {
             return currentLang === "en" ? this.Text[key][currentLang].length * 8 + 50 : this.Text[key][currentLang].length * 16 + 50
         }
     },
-    data : []
+    loading: false,
+    data: []
 }
