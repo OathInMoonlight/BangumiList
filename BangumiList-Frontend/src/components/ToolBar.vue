@@ -4,7 +4,7 @@
             <!-- 左侧标题 -->
             <div class="d-flex align-center ml-4">
                 <label v-if="!$isDatabase.value" class="text-h6">{{ $lang.text.databaseList[$lang.currentLang]
-                }}</label>
+                    }}</label>
                 <v-tooltip v-else :text="$lang.text.backToList[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" variant="outlined">{{ $isDatabase }}</v-btn>
@@ -15,7 +15,7 @@
             <div class="d-flex align-center mr-2">
                 <v-tooltip :text="$lang.text.plus[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-plus" @click="addItem" />
+                        <v-btn v-bind="props" icon="mdi-plus" @click="addItemDialog = true" />
                     </template>
                 </v-tooltip>
                 <v-tooltip :text="$lang.text.import[$lang.currentLang]">
@@ -42,25 +42,56 @@
         </div>
     </v-toolbar>
 
-    <!-- 表单 -->
-    <v-dialog persistent v-model="addItemDialog">
+    <!-- 添加表单 -->
+    <v-dialog persistent max-width="512" v-model="addItemDialog">
         <v-card>
-            <label>adding item</label>
-            <v-btn @click="addItemDialog = false">Close</v-btn>
+            <div class="ma-4">
+                <v-text-field variant="outlined" :label="$tableData.text.databaseName[$lang.currentLang]"
+                    v-model="addDatabaseForm.databaseName" hide-details />
+                <v-checkbox :color="$primaryColor.value" :label="$tableData.text.enableGrid[$lang.currentLang]"
+                    v-model="addDatabaseForm.enableGrid" hide-details />
+                <v-checkbox :color="$primaryColor.value" :label="$tableData.text.enableDoubleTable[$lang.currentLang]"
+                    v-model="addDatabaseForm.enableDoubleTable" hide-details />
+                <v-checkbox :color="$primaryColor.value" :label="$tableData.text.enableTimeStamp[$lang.currentLang]"
+                    v-model="addDatabaseForm.enableTimeStamp" hide-details />
+            </div>
+            <div class="d-flex flex-row-reverse ma-4">
+                <v-btn size="large" @click="addItemSubmit" :color="$primaryColor.value">{{
+                    $lang.text.submit[$lang.currentLang]
+                }}</v-btn>
+                <v-btn size="large" @click="addItemDialog = false" class="mr-4">{{ $lang.text.cancel[$lang.currentLang]
+                    }}</v-btn>
+            </div>
         </v-card>
     </v-dialog>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, reactive } from "vue"
 import { useHttp, useTableData } from "@/plugins/useGlobal.js"
 
 const http = useHttp()
 const tableData = useTableData()
+
 const addItemDialog = ref(false)
-function addItem() {
-    addItemDialog.value = true
+const initAddDatabaseForm = {
+    databaseName: "",
+    databasePath: "",
+    enableGrid: false,
+    enableDoubleTable: false,
+    enableTimeStamp: false
+}
+var addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
+function addItemSubmit() {
+    addItemDialog.value = false
     tableData.loading = true
-    tableData.loading = false
+    http.postData("addDatabase", addDatabaseForm, rdata => {
+        console.log(rdata)
+        addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
+        http.getData("update", rdata => {
+            tableData.data = rdata
+        })
+        tableData.loading = false
+    })
 }
 </script>

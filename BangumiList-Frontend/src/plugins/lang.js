@@ -25,6 +25,9 @@ export default {
         gridSmall: {"zh": "网格:小", "ja": "グリッド:小", "en": "Grid:Small"},
         sortBy: {"zh": "排序方式", "ja": "ソート順", "en": "Sort By"},
         groupSortBy: {"zh": "分组依据", "ja": "グループ分け", "en": "Group Sort By"},
-        noData: {"zh": "无数据", "ja": "データなし", "en": "No Data"}
+        noData: {"zh": "无数据", "ja": "データなし", "en": "No Data"},
+        loading: {"zh": "加载中", "ja": "読み込み中", "en": "Loading"},
+        submit: {"zh": "提交", "ja": "送信", "en": "Submit"},
+        cancel: {"zh": "取消", "ja": "キャンセル", "en": "Cancel"}
     }
 }

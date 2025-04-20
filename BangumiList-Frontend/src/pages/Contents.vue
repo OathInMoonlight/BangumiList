@@ -1,7 +1,7 @@
 <template>
-    <FileTable />
+    <DatabaseTable />
 </template>
 
 <script setup lang="ts">
-import FileTable from '@/components/FileTable.vue';
+import DatabaseTable from '@/components/DatabaseTable.vue';
 </script>
