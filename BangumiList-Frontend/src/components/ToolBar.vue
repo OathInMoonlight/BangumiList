@@ -75,8 +75,8 @@ const tableData = useTableData()
 
 const addItemDialog = ref(false)
 const initAddDatabaseForm = {
-    databaseName: "",
-    databasePath: "",
+    databaseName: null,
+    databasePath: null,
     enableGrid: false,
     enableDoubleTable: false,
     enableTimeStamp: false
