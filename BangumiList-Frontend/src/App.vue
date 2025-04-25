@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main class="pb-0">
       <index/>
     </v-main>
   </v-app>

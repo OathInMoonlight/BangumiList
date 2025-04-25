@@ -1,10 +1,9 @@
 <template>
-    <v-data-table items-per-page="-1" hide-default-footer fixed-header :loading="$tableData.loading"
-        :loading-text="$lang.text.loading[$lang.currentLang]" :no-data-text="$lang.text.noData[$lang.currentLang]"
-        :headers="databaseTableHeaders" :items="$tableData.data" />
+    <TableComponent :loading="$tableData.loading" :table-headers="databaseTableHeaders" :tableData="$tableData.data" />
 </template>
 
 <script setup>
+import TableComponent from "@/components/TableComponent.vue"
 import { ref, computed } from "vue"
 import { useLang, useTableData, useHttp } from "@/plugins/useGlobal.js"
 

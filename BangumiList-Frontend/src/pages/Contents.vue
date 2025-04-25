@@ -1,6 +1,5 @@
 <template>
-    <!-- <DatabaseTable /> -->
-    <TableComponent />
+    <DatabaseTable />
 </template>
 
 <script setup lang="ts">
