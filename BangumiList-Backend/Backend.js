@@ -26,7 +26,7 @@ function initializeDatabase() {
     db.close()
 }
 
-app.get("/update", (req, res) => {
+app.get("/updateDatabase", (req, res) => {
     const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
         if (err) {
             console.error(err.message)
@@ -56,6 +56,25 @@ app.post("/addDatabase", (req, res) => {
     db.run("INSERT INTO DATABASELIST VALUES (?,?,?,?,?,?)", [null, req.body.databaseName,
         req.body.enableGrid, req.body.enableDoubleTable, req.body.enableTimeStamp,
         req.body.databasePath], function (err) {
+        if (err) {
+            console.error(err.message)
+            res.status(500).send(err.message)
+        }
+        else {
+            res.status(200).json({ status: "success" })
+        }
+    })
+    db.close()
+})
+app.post("/deleteDatabase", (req, res)=>{
+    const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
+        if (err) {
+            console.error(err.message)
+            res.status(500).send(err.message)
+        }
+        console.log("Connected to the database.")
+    })
+    db.run("DELETE FROM DATABASELIST WHERE ID = ?", [req.body.id], function (err) {
         if (err) {
             console.error(err.message)
             res.status(500).send(err.message)

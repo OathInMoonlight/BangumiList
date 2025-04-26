@@ -30,7 +30,7 @@
                 </v-tooltip>
                 <v-tooltip :text="$lang.text.delete[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-delete" />
+                        <v-btn v-bind="props" icon="mdi-delete" @click="deleteItemDialog = true"/>
                     </template>
                 </v-tooltip>
                 <v-tooltip :text="$lang.text.edit[$lang.currentLang]">
@@ -64,13 +64,28 @@
             </div>
         </v-card>
     </v-dialog>
+    <!-- 删除表单 -->
+    <v-dialog persistent max-width="512" v-model="deleteItemDialog">
+        <v-card>
+            <div class="ma-4">
+                <label>{{ $lang.text.deleteConfirm1[$lang.currentLang] }}{{ $lang.text.deleteConfirm2[$lang.currentLang] }}</label>
+            </div>
+            <div class="d-flex flex-row-reverse ma-4">
+                <v-btn size="large" @click="deleteItemSubmit" :color="$primaryColor.value">{{
+                    $lang.text.confirm[$lang.currentLang]
+                }}</v-btn>
+                <v-btn size="large" @click="deleteItemDialog = false" class="mr-4">{{ $lang.text.cancel[$lang.currentLang]
+                    }}</v-btn>
+            </div>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
 import { ref, reactive } from "vue"
-import { useHttp, useTableData } from "@/plugins/useGlobal.js"
+import { useComu, useTableData } from "@/plugins/useGlobal.js"
 
-const http = useHttp()
+const comu = useComu()
 const tableData = useTableData()
 
 const addItemDialog = ref(false)
@@ -85,13 +100,13 @@ var addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
 function addItemSubmit() {
     addItemDialog.value = false
     tableData.loading = true
-    http.postData("addDatabase", addDatabaseForm, rdata => {
+    comu.postData("addDatabase", addDatabaseForm, rdata => {
         console.log(rdata)
         addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
-        http.getData("update", rdata => {
-            tableData.data = rdata
-        })
+        tableData.updateReq()
         tableData.loading = false
     })
 }
+
+const deleteItemDialog = ref(false)
 </script>

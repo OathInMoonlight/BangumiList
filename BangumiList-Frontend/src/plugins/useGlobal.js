@@ -4,7 +4,7 @@ export function useLang() {
   return getCurrentInstance().appContext.config.globalProperties.$lang
 }
 
-export function useHttp() {
+export function useComu() {
   return getCurrentInstance().appContext.config.globalProperties.$communicationTool
 }
 

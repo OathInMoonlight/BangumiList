@@ -28,6 +28,9 @@ export default {
         noData: {"zh": "无数据", "ja": "データなし", "en": "No Data"},
         loading: {"zh": "加载中", "ja": "読み込み中", "en": "Loading"},
         submit: {"zh": "提交", "ja": "送信", "en": "Submit"},
-        cancel: {"zh": "取消", "ja": "キャンセル", "en": "Cancel"}
+        cancel: {"zh": "取消", "ja": "キャンセル", "en": "Cancel"},
+        deleteConfirm1: {"zh": "确认要删除", "ja": "", "en": "Are you sure to delete"},
+        deleteConfirm2: {"zh": "吗？", "ja": "を削除しますか？", "en": "?"},
+        confirm: {"zh": "确认", "ja": "確認", "en": "Confirm"}
     }
 }
