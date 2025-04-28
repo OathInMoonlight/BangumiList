@@ -1,5 +1,5 @@
 <template>
-    <TableComponent :loading="$tableData.loading" :table-headers="databaseTableHeaders" :tableData="$tableData.data" />
+    <TableComponent :loading="$tableData.loading" :tableHeaders="databaseTableHeaders" :tableData="$tableData.data" @selectRow="selectRow"/>
 </template>
 
 <script setup>
@@ -20,4 +20,10 @@ const databaseTableHeaders = computed(() => {
     return headers
 })
 tableData.updateReq()
+
+var selectedRow = null
+function selectRow(id) {
+    selectedRow = id
+    console.log("Selected row ID:", id)
+}
 </script>
