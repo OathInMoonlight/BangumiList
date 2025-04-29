@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex justify-space-between align-center ma-2">
+    <v-card rounded="0" class="d-flex justify-space-between align-center pa-2">
         <!-- 搜索框 -->
         <v-responsive max-width="344">
             <v-text-field variant="solo-filled" density="compact" :label="$lang.text.search[$lang.currentLang]"
@@ -77,7 +77,7 @@
                     :no-data-text="$lang.text.noData[$lang.currentLang]" width="192" hide-details />
             </div>
         </div>
-    </div>
+    </v-card>
 </template>
 
 <script setup>

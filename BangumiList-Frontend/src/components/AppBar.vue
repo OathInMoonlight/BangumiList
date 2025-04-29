@@ -57,8 +57,18 @@
         </v-list-item>
 
         <!-- 脚注 -->
-        <v-footer class="d-flex justify-center align-end" app>
-            <label class="text-center mb-4">OathInMoonlight<br>MIT License</label>
+        <v-footer class="d-flex flex-column justify-center align-center" app>
+            <label class="text-center mb-2">OathInMoonlight</label>
+            <div class="d-flex flex-row mb-2">
+                <v-icon icon="mdi-github" size="small" />
+                <pre> </pre>
+                <a href="https://github.com/OathInMoonlight/BangumiList" class="text-decoration-none">View On Github</a>
+            </div>
+            <div class="d-flex flex-row mb-4">
+                <v-icon icon="mdi-scale-balance" size="small" />
+                <pre> </pre>
+                <a href="https://github.com/OathInMoonlight/BangumiList?tab=MIT-1-ov-file" class="text-decoration-none">MIT License</a>
+            </div>
         </v-footer>
     </v-navigation-drawer>
 </template>

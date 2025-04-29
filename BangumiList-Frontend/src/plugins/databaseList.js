@@ -10,6 +10,14 @@ export default {
         timeStamp: "ENABLETIMESTAMP",
         databasePath: "DATABASEPATH"
     },
+    sortMap: {
+        id: "id",
+        databaseName: "databaseName",
+        gridView: "gridView",
+        doubleTable: "doubleTable",
+        timeStamp: "timeStamp",
+        databasePath: "databasePath"
+    },
     text: {
         id: { "zh": "序号", "ja": "番号", "en": "ID" },
         databaseName: { "zh": "数据库名", "ja": "データベース名", "en": "Database Name" },
@@ -37,11 +45,12 @@ export default {
             return -1
         }
         else {
-            return currentLang === "en" ? this.text[key][currentLang].length * 8 + 50 : this.text[key][currentLang].length * 16 + 50
+            return currentLang === "en" ? this.text[key][currentLang].length * 8 + 30 : this.text[key][currentLang].length * 16 + 30
         }
     },
     loading: false,
     data: [],
+    selectedRow: null,
 
     updateReq() {
         this.loading = true
