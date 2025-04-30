@@ -15,10 +15,10 @@
                                 <v-btn v-bind="props" block variant="text" rounded="0" size="x-large"
                                     @click="clickHeader(header.key)" class="pl-2 pr-2">
                                     <label class="text-body-2">{{ header.text }}</label>
-                                    <v-icon v-if="isHovering && (hoverOnHeaders[header.key] == 'true')"
+                                    <v-icon v-if="isHovering && (sortOfHeaders[header.key] == 'true')"
                                         icon="mdi-menu-swap" size="small" class="position-absolute right-0" />
-                                    <v-icon v-if="hoverOnHeaders[header.key] != 'true'"
-                                        :icon="(hoverOnHeaders[header.key] == 'up') ? 'mdi-menu-up' : 'mdi-menu-down'"
+                                    <v-icon v-if="sortOfHeaders[header.key] != 'true'"
+                                        :icon="(sortOfHeaders[header.key] == 'up') ? 'mdi-menu-up' : 'mdi-menu-down'"
                                         size="small" class="position-absolute right-0" />
                                 </v-btn>
                             </template>
@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="row in tableData.data" @click="selectRow(row[tableHeaders[0].value])">
+                <tr v-for="row in filteredData" @click="selectRow(row[tableHeaders[0].value])">
                     <td v-for="header in tableHeaders" class="border-e pa-0">
                         <v-card rounded="0" elevation="0" :color="rowColor[row[tableHeaders[0].value]]"
                             :class="'d-flex justify-' + header.align + ' align-center fill-height'">
@@ -67,49 +67,73 @@ const tableHeaders = computed(() => {
     return headers
 })
 
-var hoverOnHeaders = reactive({})
+var sortOfHeaders = reactive({})
 tableData.keys.forEach(hkey => {
-    hoverOnHeaders[hkey] = "true"
+    sortOfHeaders[hkey] = "true"
 })
 function clickHeader(hkey) {
-    for (var key in hoverOnHeaders) {
+    for (var key in sortOfHeaders) {
         if (key != hkey) {
-            hoverOnHeaders[key] = "true"
+            sortOfHeaders[key] = "true"
         }
     }
-    if (hoverOnHeaders[hkey] == "true") {
-        hoverOnHeaders[hkey] = "up"
-        tableData.data.sort((a, b) => {
-            let sortValue = tableData.values[tableData.sortMap[hkey]]
-            if (a[sortValue] > b[sortValue]) return 1
-            if (a[sortValue] < b[sortValue]) return -1
-            return 0
-        })
+    if (sortOfHeaders[hkey] == "true") {
+        sortOfHeaders[hkey] = "up"
     }
-    else if (hoverOnHeaders[hkey] == "up") {
-        hoverOnHeaders[hkey] = "down"
-        tableData.data.sort((a, b) => {
-            let sortValue = tableData.values[tableData.sortMap[hkey]]
-            if (a[sortValue] < b[sortValue]) return 1
-            if (a[sortValue] > b[sortValue]) return -1
-            return 0
-        })
+    else if (sortOfHeaders[hkey] == "up") {
+        sortOfHeaders[hkey] = "down"
     }
     else {
-        hoverOnHeaders[hkey] = "true"
-        tableData.data.sort((a, b) => {
-            let sortValue = tableHeaders.value[0].value
-            if (a[sortValue] > b[sortValue]) return 1
-            if (a[sortValue] < b[sortValue]) return -1
-            return 0
-        })
+        sortOfHeaders[hkey] = "true"
     }
 }
 
-var rowColor = reactive({})
-tableData.data.forEach(row => {
-    rowColor[row[tableHeaders[0].value]] = "transparent"
+const filteredData = computed(() => {
+    var tmpData = []
+    if (tableData.filterText == null || tableData.filterText == "") {
+        tmpData = tableData.data
+    }
+    else {
+        for (var id in tableData.data) {
+            var ifContain = false
+            for (var key in tableData.data[id]) {
+                if (tableData.data[id][key].toString().toLowerCase().includes(tableData.filterText.toLowerCase())) {
+                    ifContain = true
+                    break
+                }
+            }
+            if (ifContain) {
+                tmpData.push(tableData.data[id])
+            }
+        }
+    }
+    console.log(tmpData)
+    for (var id in sortOfHeaders) {
+        if (sortOfHeaders[id] == "true") {
+            break
+        }
+        else if (sortOfHeaders[id] == "up") {
+            tmpData.sort((a, b) => {
+                let sortValue = tableData.values[tableData.sortMap[sortOfHeaders[id]]]
+                if (a[sortValue] > b[sortValue]) return 1
+                if (a[sortValue] < b[sortValue]) return -1
+                return 0
+            })
+        }
+        else {
+            tmpData.sort((a, b) => {
+                let sortValue = tableData.values[tableData.sortMap[sortOfHeaders[id]]]
+                if (a[sortValue] < b[sortValue]) return 1
+                if (a[sortValue] > b[sortValue]) return -1
+                return 0
+            })
+        }
+    }
+    console.log(tmpData)
+    return tmpData
 })
+
+var rowColor = reactive({})
 function selectRow(id) {
     if (tableData.selectedRow != null) {
         rowColor[tableData.selectedRow] = "transparent"

@@ -3,7 +3,7 @@
         <!-- 搜索框 -->
         <v-responsive max-width="344">
             <v-text-field variant="solo-filled" density="compact" :label="$lang.text.search[$lang.currentLang]"
-                clearable single-line hide-details>
+                clearable single-line hide-details v-model="$tableData.filterText">
                 <template v-slot:prepend-inner>
                     <v-icon icon="mdi-magnify" size="24" />
                 </template>

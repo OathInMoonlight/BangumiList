@@ -51,6 +51,7 @@ export default {
     loading: false,
     data: [],
     selectedRow: null,
+    filterText: null,
 
     updateReq() {
         this.loading = true
