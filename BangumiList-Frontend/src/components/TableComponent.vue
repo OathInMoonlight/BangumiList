@@ -1,24 +1,30 @@
 <template>
+    <!-- 加载动画 -->
     <div v-if="tableData.loading">
         <v-skeleton-loader type="table-thead" />
         <v-skeleton-loader type="table-tbody" />
     </div>
+    <!-- 表 -->
     <div id="fillHeightDiv" v-if="!tableData.loading">
         <v-table fixed-header hover class="fill-height">
+            <!-- 表头 -->
             <thead>
+                <!-- 无数据显示 -->
                 <label v-if="tableHeaders.length == 0" class="d-flex justify-center align-center ma-8">{{
                     $lang.text.noData[$lang.currentLang] }}</label>
                 <tr>
                     <th v-for="header in tableHeaders" :width="header.width" class="border-e pa-0 fill-height">
+                        <!-- 鼠标焦点 -->
                         <v-hover>
                             <template v-slot:default="{ isHovering, props }">
+                                <!-- 按钮单击排序 -->
                                 <v-btn v-bind="props" block variant="text" rounded="0" size="x-large"
                                     @click="clickHeader(header.key)" class="pl-2 pr-2">
                                     <label class="text-body-2">{{ header.text }}</label>
-                                    <v-icon v-if="isHovering && (sortOfHeaders[header.key] == 'true')"
+                                    <v-icon v-if="isHovering && (sortOfHeaders[header.key] == 'none')"
                                         icon="mdi-menu-swap" size="small" class="position-absolute right-0" />
-                                    <v-icon v-if="sortOfHeaders[header.key] != 'true'"
-                                        :icon="(sortOfHeaders[header.key] == 'up') ? 'mdi-menu-up' : 'mdi-menu-down'"
+                                    <v-icon v-if="sortOfHeaders[header.key] != 'none'"
+                                        :icon="(sortOfHeaders[header.key] == 'asc') ? 'mdi-menu-up' : 'mdi-menu-down'"
                                         size="small" class="position-absolute right-0" />
                                 </v-btn>
                             </template>
@@ -26,9 +32,12 @@
                     </th>
                 </tr>
             </thead>
+            <!-- 表体 -->
             <tbody>
+                <!-- 行单击选择 -->
                 <tr v-for="row in filteredData" @click="selectRow(row[tableHeaders[0].value])">
                     <td v-for="header in tableHeaders" class="border-e pa-0">
+                        <!-- 被选中颜色控制 -->
                         <v-card rounded="0" elevation="0" :color="rowColor[row[tableHeaders[0].value]]"
                             :class="'d-flex justify-' + header.align + ' align-center fill-height'">
                             <label id="tableItemText">{{ row[header.value] }}</label>
@@ -42,21 +51,21 @@
 
 <style>
 #fillHeightDiv {
-    height: calc(100vh - 176px);
+    height: calc(100vh - 176px); /* 使页面铺满 */
 }
 
 #tableItemText {
-    word-break: break-word;
+    word-break: break-word; /* 使长文本换行 */
 }
 </style>
 
 <script setup>
-import { reactive, computed } from "vue"
+import { ref, reactive, computed, watch } from "vue"
 import { useLang, useTableData } from "@/plugins/useGlobal.js"
 
 const lang = useLang()
 const tableData = useTableData()
-const tableHeaders = computed(() => {
+const tableHeaders = computed(() => { // 计算表头
     var headers = []
     tableData.keys.forEach(hkey => {
         headers.push({
@@ -67,80 +76,109 @@ const tableHeaders = computed(() => {
     return headers
 })
 
-var sortOfHeaders = reactive({})
-tableData.keys.forEach(hkey => {
-    sortOfHeaders[hkey] = "true"
+// 获取数据
+tableData.updateReq() // 发送请求获取数据
+var filteredData = ref(tableData.data) 
+watch(() => tableData.data, (newData) => { // 监听数据变化
+    filteredData = ref(newData)
+    filterData(tableData.filterText)
+    sortData()
 })
-function clickHeader(hkey) {
-    for (var key in sortOfHeaders) {
-        if (key != hkey) {
-            sortOfHeaders[key] = "true"
-        }
-    }
-    if (sortOfHeaders[hkey] == "true") {
-        sortOfHeaders[hkey] = "up"
-    }
-    else if (sortOfHeaders[hkey] == "up") {
-        sortOfHeaders[hkey] = "down"
-    }
-    else {
-        sortOfHeaders[hkey] = "true"
-    }
-}
 
-const filteredData = computed(() => {
-    var tmpData = []
-    if (tableData.filterText == null || tableData.filterText == "") {
-        tmpData = tableData.data
+// 过滤文本
+watch(() => tableData.filterText, (newfilterText) => { // 监听过滤文本变化
+    filterData(newfilterText)
+})
+function filterData(filterText) {
+    if (filterText == null || filterText == "") {
+        filteredData.value = tableData.data
     }
     else {
+        const newFilteredData = []
+        const lowFilterText = tableData.filterText.toLowerCase() // 转换为小写
         for (var id in tableData.data) {
             var ifContain = false
-            for (var key in tableData.data[id]) {
-                if (tableData.data[id][key].toString().toLowerCase().includes(tableData.filterText.toLowerCase())) {
+            for (var key in tableData.data[id]) { // 遍历每一单元格数据
+                if (tableData.data[id][key].toString().toLowerCase().includes(lowFilterText)) {
                     ifContain = true
                     break
                 }
             }
-            if (ifContain) {
-                tmpData.push(tableData.data[id])
+            if (ifContain) { // 如果包含过滤文本
+                newFilteredData.push(tableData.data[id])
             }
         }
+        filteredData.value = newFilteredData
     }
-    console.log(tmpData)
-    for (var id in sortOfHeaders) {
-        if (sortOfHeaders[id] == "true") {
-            break
+    sortData()
+}
+
+// 排序
+var sortOfHeaders = reactive({})
+tableData.keys.forEach(hkey => {
+    sortOfHeaders[hkey] = "none"
+})
+function clickHeader(hkey) {
+    for (var key in sortOfHeaders) { // 遍历每一表头，除了当前表头外，其他表头都设置为none
+        if (key != hkey) {
+            sortOfHeaders[key] = "none"
         }
-        else if (sortOfHeaders[id] == "up") {
-            tmpData.sort((a, b) => {
-                let sortValue = tableData.values[tableData.sortMap[sortOfHeaders[id]]]
+    }
+    if (sortOfHeaders[hkey] == "none") {
+        sortOfHeaders[hkey] = "asc"
+    }
+    else if (sortOfHeaders[hkey] == "asc") {
+        sortOfHeaders[hkey] = "desc"
+    }
+    else {
+        sortOfHeaders[hkey] = "none"
+    }
+    sortData()
+}
+function sortData() {
+    var allNone = true
+    for (var key in sortOfHeaders) { // 遍历每一表头
+        if (sortOfHeaders[key] == "none") {
+            continue
+        }
+        else if (sortOfHeaders[key] == "asc") {
+            filteredData.value.sort((a, b) => { // 升序排序
+                let sortValue = tableData.values[tableData.sortMap[key]] // 转换为大写值
                 if (a[sortValue] > b[sortValue]) return 1
                 if (a[sortValue] < b[sortValue]) return -1
                 return 0
             })
+            allNone = false
+            break
         }
         else {
-            tmpData.sort((a, b) => {
-                let sortValue = tableData.values[tableData.sortMap[sortOfHeaders[id]]]
+            filteredData.value.sort((a, b) => {
+                let sortValue = tableData.values[tableData.sortMap[key]]
                 if (a[sortValue] < b[sortValue]) return 1
                 if (a[sortValue] > b[sortValue]) return -1
                 return 0
             })
+            allNone = false
+            break
         }
     }
-    console.log(tmpData)
-    return tmpData
-})
-
-var rowColor = reactive({})
-function selectRow(id) {
-    if (tableData.selectedRow != null) {
-        rowColor[tableData.selectedRow] = "transparent"
+    if (allNone) { // 如果所有表头都是none，则默认按第一个表头排序
+        filteredData.value.sort((a, b) => {
+            let sortValue = tableData.values[tableData.sortMap[tableHeaders.value[0].key]]
+            if (a[sortValue] > b[sortValue]) return 1
+            if (a[sortValue] < b[sortValue]) return -1
+            return 0
+        })
     }
-    tableData.selectedRow = id
-    rowColor[id] = "#9E9E9E20"
 }
 
-tableData.updateReq()
+// 选中行
+var rowColor = reactive({})
+function selectRow(id) {
+    if (tableData.selectedRow != null) { // 如果有选中行，则取消选中
+        rowColor[tableData.selectedRow] = "transparent"
+    }
+    tableData.selectedRow = id // 设置选中行
+    rowColor[id] = "#9E9E9E20"
+}
 </script>

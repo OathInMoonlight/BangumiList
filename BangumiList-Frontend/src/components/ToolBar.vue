@@ -30,7 +30,7 @@
                 </v-tooltip>
                 <v-tooltip :text="$lang.text.delete[$lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-delete" @click="deleteItemDialog = true"/>
+                        <v-btn v-bind="props" icon="mdi-delete" @click="deleteItemButton" />
                     </template>
                 </v-tooltip>
                 <v-tooltip :text="$lang.text.edit[$lang.currentLang]">
@@ -65,17 +65,23 @@
         </v-card>
     </v-dialog>
     <!-- 删除表单 -->
+    <v-dialog max-width="512" v-model="deleteItemAlert">
+        <v-alert :title="$lang.text.error[$lang.currentLang]" :text="$lang.text.deleteErrorText[$lang.currentLang]"
+            type="warning" />
+    </v-dialog>
     <v-dialog persistent max-width="512" v-model="deleteItemDialog">
         <v-card>
             <div class="ma-4">
-                <label>{{ $lang.text.deleteConfirm1[$lang.currentLang] }}{{ $lang.text.deleteConfirm2[$lang.currentLang] }}</label>
+                <label>{{ $lang.text.deleteConfirm1[$lang.currentLang] }} "{{ deleteRowName }}" {{
+                    $lang.text.deleteConfirm2[$lang.currentLang] }}</label>
             </div>
             <div class="d-flex flex-row-reverse ma-4">
                 <v-btn size="large" @click="deleteItemSubmit" :color="$primaryColor.value">{{
                     $lang.text.confirm[$lang.currentLang]
                 }}</v-btn>
-                <v-btn size="large" @click="deleteItemDialog = false" class="mr-4">{{ $lang.text.cancel[$lang.currentLang]
-                    }}</v-btn>
+                <v-btn size="large" @click="deleteItemDialog = false" class="mr-4">{{
+                    $lang.text.cancel[$lang.currentLang]
+                }}</v-btn>
             </div>
         </v-card>
     </v-dialog>
@@ -88,6 +94,7 @@ import { useComu, useTableData } from "@/plugins/useGlobal.js"
 const comu = useComu()
 const tableData = useTableData()
 
+// 添加数据库对话框
 const addItemDialog = ref(false)
 const initAddDatabaseForm = {
     databaseName: null,
@@ -98,8 +105,8 @@ const initAddDatabaseForm = {
 }
 var addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
 function addItemSubmit() {
-    addItemDialog.value = false
     tableData.loading = true
+    addItemDialog.value = false
     comu.postData("addDatabase", addDatabaseForm, rdata => {
         console.log(rdata)
         addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
@@ -108,5 +115,31 @@ function addItemSubmit() {
     })
 }
 
+// 删除数据库对话框
+const deleteItemAlert = ref(false)
 const deleteItemDialog = ref(false)
+const deleteRowName = ref(null)
+function deleteItemButton() {
+    if (tableData.selectedRow == null) {
+        deleteItemAlert.value = true
+    }
+    else {
+        tableData.data.forEach(row => {
+            if (row[tableData.values[tableData.keys[0]]] == tableData.selectedRow) {
+                deleteRowName.value = row[tableData.values[tableData.keys[1]]]
+                return
+            }
+        })
+        deleteItemDialog.value = true
+    }
+}
+function deleteItemSubmit() {
+    tableData.loading = true
+    deleteItemDialog.value = false
+    comu.postData("deleteDatabase", { id: tableData.selectedRow }, rdata => {
+        console.log(rdata)
+        tableData.updateReq()
+        tableData.loading = false
+    })
+}
 </script>
