@@ -1,17 +1,17 @@
 <template>
     <!-- 加载动画 -->
-    <div v-if="tableData.loading">
+    <div v-if="global.tableData.loading">
         <v-skeleton-loader type="table-thead" />
         <v-skeleton-loader type="table-tbody" />
     </div>
     <!-- 表 -->
-    <div id="fillHeightDiv" v-if="!tableData.loading">
+    <div id="fillHeightDiv" v-if="!global.tableData.loading">
         <v-table fixed-header hover class="fill-height">
             <!-- 表头 -->
             <thead>
                 <!-- 无数据显示 -->
                 <label v-if="tableHeaders.length == 0" class="d-flex justify-center align-center ma-8">{{
-                    $lang.text.noData[$lang.currentLang] }}</label>
+                    global.lang.text.noData[global.lang.currentLang] }}</label>
                 <tr>
                     <th v-for="header in tableHeaders" :width="header.width" class="border-e pa-0 fill-height">
                         <!-- 鼠标焦点 -->
@@ -61,51 +61,49 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from "vue"
-import { useLang, useTableData } from "@/plugins/useGlobal.js"
+import global from "@/plugins/global.js"
 
-const lang = useLang()
-const tableData = useTableData()
 const tableHeaders = computed(() => { // 计算表头
     var headers = []
-    tableData.keys.forEach(hkey => {
+    global.tableData.keys.forEach(hkey => {
         headers.push({
-            key: hkey, value: tableData.values[hkey], text: tableData.text[hkey][lang.currentLang],
-            align: tableData.align[hkey], width: tableData.computeWidth(hkey, lang.currentLang)
+            key: hkey, value: global.tableData.values[hkey], text: global.tableData.text[hkey][global.lang.currentLang],
+            align: global.tableData.align[hkey], width: global.tableData.computeWidth(hkey, global.lang.currentLang)
         })
     })
     return headers
 })
 
 // 获取数据
-tableData.updateReq() // 发送请求获取数据
-var filteredData = ref(tableData.data) 
-watch(() => tableData.data, (newData) => { // 监听数据变化
+global.tableData.updateReq() // 发送请求获取数据
+var filteredData = ref(global.tableData.data) 
+watch(() => global.tableData.data, (newData) => { // 监听数据变化
     filteredData = ref(newData)
-    filterData(tableData.filterText)
+    filterData(global.tableData.filterText)
     sortData()
 })
 
 // 过滤文本
-watch(() => tableData.filterText, (newfilterText) => { // 监听过滤文本变化
+watch(() => global.tableData.filterText, (newfilterText) => { // 监听过滤文本变化
     filterData(newfilterText)
 })
 function filterData(filterText) {
     if (filterText == null || filterText == "") {
-        filteredData.value = tableData.data
+        filteredData.value = global.tableData.data
     }
     else {
         const newFilteredData = []
-        const lowFilterText = tableData.filterText.toLowerCase() // 转换为小写
-        for (var id in tableData.data) {
+        const lowFilterText = global.tableData.filterText.toLowerCase() // 转换为小写
+        for (var id in global.tableData.data) {
             var ifContain = false
-            for (var key in tableData.data[id]) { // 遍历每一单元格数据
-                if (tableData.data[id][key].toString().toLowerCase().includes(lowFilterText)) {
+            for (var key in global.tableData.data[id]) { // 遍历每一单元格数据
+                if (global.tableData.data[id][key].toString().toLowerCase().includes(lowFilterText)) {
                     ifContain = true
                     break
                 }
             }
             if (ifContain) { // 如果包含过滤文本
-                newFilteredData.push(tableData.data[id])
+                newFilteredData.push(global.tableData.data[id])
             }
         }
         filteredData.value = newFilteredData
@@ -115,7 +113,7 @@ function filterData(filterText) {
 
 // 排序
 var sortOfHeaders = reactive({})
-tableData.keys.forEach(hkey => {
+global.tableData.keys.forEach(hkey => {
     sortOfHeaders[hkey] = "none"
 })
 function clickHeader(hkey) {
@@ -143,7 +141,7 @@ function sortData() {
         }
         else if (sortOfHeaders[key] == "asc") {
             filteredData.value.sort((a, b) => { // 升序排序
-                let sortValue = tableData.values[tableData.sortMap[key]] // 转换为大写值
+                let sortValue = global.tableData.values[global.tableData.sortMap[key]] // 转换为大写值
                 if (a[sortValue] > b[sortValue]) return 1
                 if (a[sortValue] < b[sortValue]) return -1
                 return 0
@@ -153,7 +151,7 @@ function sortData() {
         }
         else {
             filteredData.value.sort((a, b) => {
-                let sortValue = tableData.values[tableData.sortMap[key]]
+                let sortValue = global.tableData.values[global.tableData.sortMap[key]]
                 if (a[sortValue] < b[sortValue]) return 1
                 if (a[sortValue] > b[sortValue]) return -1
                 return 0
@@ -164,7 +162,7 @@ function sortData() {
     }
     if (allNone) { // 如果所有表头都是none，则默认按第一个表头排序
         filteredData.value.sort((a, b) => {
-            let sortValue = tableData.values[tableData.sortMap[tableHeaders.value[0].key]]
+            let sortValue = global.tableData.values[global.tableData.sortMap[tableHeaders.value[0].key]]
             if (a[sortValue] > b[sortValue]) return 1
             if (a[sortValue] < b[sortValue]) return -1
             return 0
@@ -175,10 +173,10 @@ function sortData() {
 // 选中行
 var rowColor = reactive({})
 function selectRow(id) {
-    if (tableData.selectedRow != null) { // 如果有选中行，则取消选中
-        rowColor[tableData.selectedRow] = "transparent"
+    if (global.tableData.selectedRow != null) { // 如果有选中行，则取消选中
+        rowColor[global.tableData.selectedRow] = "transparent"
     }
-    tableData.selectedRow = id // 设置选中行
+    global.tableData.selectedRow = id // 设置选中行
     rowColor[id] = "#9E9E9E20"
 }
 </script>

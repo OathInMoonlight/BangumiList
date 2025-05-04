@@ -4,7 +4,7 @@
 
         <!-- 自定义设置按钮 -->
         <template v-slot:append>
-            <v-tooltip :text="$lang.text.settings[$lang.currentLang]">
+            <v-tooltip :text="global.lang.text.settings[global.lang.currentLang]">
                 <template v-slot:activator="{ props }">
                     <v-btn v-bind="props" icon="mdi-tune" @click.stop="openDrawer = !openDrawer"></v-btn>
                 </template>
@@ -17,8 +17,8 @@
         <!-- 深色模式 -->
         <v-list-item>
             <div class="d-flex justify-space-between align-center">
-                <label>{{ $lang.text.darkMode[$lang.currentLang] }}</label>
-                <v-switch :color="$primaryColor.value" v-model="darkModeSwitch" @update:model-value="toggleTheme"
+                <label>{{ global.lang.text.darkMode[global.lang.currentLang] }}</label>
+                <v-switch :color="global.primaryColor.value" v-model="darkModeSwitch" @update:model-value="toggleTheme"
                     hide-details class="d-flex align-center mr-4" />
             </div>
         </v-list-item>
@@ -26,8 +26,8 @@
         <!-- 主色调选择 -->
         <v-list-item>
             <div class="d-flex justify-space-between align-center">
-                <label>{{ $lang.text.primaryColor[$lang.currentLang] }}</label>
-                <v-select variant="solo-filled" density="comfortable" :items="colorList" v-model="$primaryColor.value"
+                <label>{{ global.lang.text.primaryColor[global.lang.currentLang] }}</label>
+                <v-select variant="solo-filled" density="comfortable" :items="colorList" v-model="global.primaryColor.value"
                     hide-details class="d-flex justify-end align-center">
                     <!-- 自定义选择框 -->
                     <template v-slot:selection="{ item }">
@@ -50,8 +50,8 @@
         <!-- 语言选择 -->
         <v-list-item>
             <div class="d-flex justify-space-between align-center">
-                <label>{{ $lang.text.language[$lang.currentLang] }}</label>
-                <v-select variant="solo-filled" density="comfortable" :items="languageList" v-model="$lang.currentLang"
+                <label>{{ global.lang.text.language[global.lang.currentLang] }}</label>
+                <v-select variant="solo-filled" density="comfortable" :items="languageList" v-model="global.lang.currentLang"
                     hide-details class="d-flex justify-end align-center" />
             </div>
         </v-list-item>
@@ -76,15 +76,14 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useTheme } from 'vuetify'
-import { useLang } from '@/plugins/useGlobal.js'
+import global from '@/plugins/global.js'
 
-const lang = useLang()
 const openDrawer = ref(false)
 const colorList = computed(() => [
-    { title: lang.text.red[lang.currentLang], value: "red" },
-    { title: lang.text.yellow[lang.currentLang], value: "yellow" },
-    { title: lang.text.green[lang.currentLang], value: "green" },
-    { title: lang.text.blue[lang.currentLang], value: "blue" }
+    { title: global.lang.text.red[global.lang.currentLang], value: "red" },
+    { title: global.lang.text.yellow[global.lang.currentLang], value: "yellow" },
+    { title: global.lang.text.green[global.lang.currentLang], value: "green" },
+    { title: global.lang.text.blue[global.lang.currentLang], value: "blue" }
 ])
 const languageList = [
     { title: "中文", value: "zh" },

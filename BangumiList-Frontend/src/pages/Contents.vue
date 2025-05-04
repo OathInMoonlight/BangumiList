@@ -1,7 +1,7 @@
 <template>
-    <TableComponent />
+    <TableComp />
 </template>
 
 <script setup lang="ts">
-import TableComponent from '@/components/TableComponent.vue';
+import TableComp from '@/components/TableComp.vue';
 </script>

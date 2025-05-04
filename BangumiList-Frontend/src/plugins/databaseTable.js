@@ -1,4 +1,4 @@
-import { useComu } from "@/plugins/useGlobal.js"
+import global from "@/plugins/global.js"
 
 export default {
     keys: ["id", "databaseName", "gridView", "doubleTable", "timeStamp", "databasePath"],
@@ -55,7 +55,7 @@ export default {
 
     updateReq() {
         this.loading = true
-        useComu().getData("updateDatabase", rdata => {
+        global.comTool.getData("updateDatabase", rdata => {
             if (rdata.length > 0) {
                 this.data = rdata
             }
