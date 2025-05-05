@@ -51,11 +51,13 @@
 
 <style>
 #fillHeightDiv {
-    height: calc(100vh - 176px); /* 使页面铺满 */
+    height: calc(100vh - 176px);
+    /* 使页面铺满 */
 }
 
 #tableItemText {
-    word-break: break-word; /* 使长文本换行 */
+    word-break: break-word;
+    /* 使长文本换行 */
 }
 </style>
 
@@ -66,26 +68,34 @@ import global from "@/plugins/global.js"
 const tableHeaders = computed(() => { // 计算表头
     var headers = []
     global.tableData.keys.forEach(hkey => {
-        headers.push({
-            key: hkey, value: global.tableData.values[hkey], text: global.tableData.text[hkey][global.lang.currentLang],
-            align: global.tableData.align[hkey], width: global.tableData.computeWidth(hkey, global.lang.currentLang)
-        })
+        if (global.tableData.shownColumns[hkey] == true) { // 如果该列为显示列
+            headers.push({
+                key: hkey, value: global.tableData.values[hkey], text: global.tableData.text[hkey][global.lang.currentLang],
+                align: global.tableData.align[hkey], width: global.tableData.computeWidth(hkey, global.lang.currentLang)
+            })
+        }
     })
     return headers
 })
 
 // 获取数据
 global.tableData.updateReq() // 发送请求获取数据
-var filteredData = ref(global.tableData.data) 
+var filteredData = ref(global.tableData.data)
 watch(() => global.tableData.data, (newData) => { // 监听数据变化
-    filteredData = ref(newData)
+    filteredData.value = newData
     filterData(global.tableData.filterText)
     sortData()
-})
+}, { immediate: true }) // 立即执行一次
 
 // 过滤文本
+var timer = null
 watch(() => global.tableData.filterText, (newfilterText) => { // 监听过滤文本变化
-    filterData(newfilterText)
+    if (timer != null) {
+        clearTimeout(timer) // 清除定时器
+    }
+    timer = setTimeout(() => { // 防抖措施：避免频繁触发
+        filterData(newfilterText)
+    }, 500)
 })
 function filterData(filterText) {
     if (filterText == null || filterText == "") {
@@ -97,6 +107,9 @@ function filterData(filterText) {
         for (var id in global.tableData.data) {
             var ifContain = false
             for (var key in global.tableData.data[id]) { // 遍历每一单元格数据
+                if (global.tableData.data[id][key] == null) {
+                    continue // 如果单元格数据为空，则跳过
+                }
                 if (global.tableData.data[id][key].toString().toLowerCase().includes(lowFilterText)) {
                     ifContain = true
                     break

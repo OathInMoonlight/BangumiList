@@ -48,7 +48,16 @@ export default {
             return currentLang === "en" ? this.text[key][currentLang].length * 8 + 30 : this.text[key][currentLang].length * 16 + 30
         }
     },
+
     loading: false,
+    shownColumns: {
+        id: true,
+        databaseName: true,
+        gridView: true,
+        doubleTable: true,
+        timeStamp: true,
+        databasePath: true
+    },
     data: [],
     selectedRow: null,
     filterText: null,
