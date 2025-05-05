@@ -13,7 +13,7 @@
 
         <div class="d-flex flex-row-reverse justify-space-between align-center">
             <!-- 视图切换 -->
-            <v-btn-toggle v-if="global.isDatabase == true" density="compact" :color="global.primaryColor.value"
+            <v-btn-toggle v-if="global.tableData.gridView == true" density="compact" :color="global.primaryColor.value"
                 mandatory v-model="global.viewOpt.viewType" class="ml-2">
                 <v-tooltip :text="global.lang.text.gridView[global.lang.currentLang]">
                     <template v-slot:activator="{ props }">

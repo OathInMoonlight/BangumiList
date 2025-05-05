@@ -1,6 +1,10 @@
 import global from "@/plugins/global.js"
 
 export default {
+    gridView: false,
+    doubleTable: false,
+    timeStamp: false,
+    
     keys: ["id", "databaseName", "gridView", "doubleTable", "timeStamp", "databasePath"],
     values: {
         id: "ID",
@@ -47,6 +51,14 @@ export default {
         else {
             return currentLang === "en" ? this.text[key][currentLang].length * 8 + 30 : this.text[key][currentLang].length * 16 + 30
         }
+    },
+    dataDisplay:{
+        id: "text",
+        databaseName: "text",
+        gridView: "icon",
+        doubleTable: "icon",
+        timeStamp: "icon",
+        databasePath: "text"
     },
 
     loading: false,

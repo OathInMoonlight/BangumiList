@@ -40,7 +40,17 @@
                         <!-- 被选中颜色控制 -->
                         <v-card rounded="0" elevation="0" :color="rowColor[row[tableHeaders[0].value]]"
                             :class="'d-flex justify-' + header.align + ' align-center fill-height'">
-                            <label id="tableItemText">{{ row[header.value] }}</label>
+                            <label v-if="global.tableData.dataDisplay[header.key] == 'text'" id="tableItemText">
+                                {{ row[header.value] }}
+                            </label>
+                            <v-icon v-else-if="global.tableData.dataDisplay[header.key] == 'icon'"
+                                :icon="row[header.value] == 1 ? 'mdi-check-circle' : (row[header.value] == 0 ? 'mdi-close-circle' : null)"
+                                :color="row[header.value] == 1 ? 'light-green' : (row[header.value] == 0 ? 'deep-orange' : null)" />
+                            <v-chip v-else
+                                :prepend-icon="row[header.value] == 1 ? 'mdi-check' : (row[header.value] == 0 ? 'mdi-close' : null)"
+                                :color="row[header.value] == 1 ? 'light-green' : (row[header.value] == 0 ? 'deep-orange' : null)">
+                                {{ row[header.value] }}
+                            </v-chip>
                         </v-card>
                     </td>
                 </tr>

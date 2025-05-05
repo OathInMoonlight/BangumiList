@@ -134,6 +134,7 @@ function deleteItemSubmit() {
     global.tableData.loading = true
     deleteItemDialog.value = false
     global.comTool.postData("deleteDatabase", { id: global.tableData.selectedRow }, rdata => {
+        global.tableData.selectedRow = null
         console.log(rdata)
         global.tableData.updateReq()
         global.tableData.loading = false
