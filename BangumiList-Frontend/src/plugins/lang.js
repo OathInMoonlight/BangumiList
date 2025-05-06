@@ -37,5 +37,20 @@ export default {
         deleteConfirm1: {"zh": "确认要删除", "ja": "", "en": "Are you sure to delete"},
         deleteConfirm2: {"zh": "吗？", "ja": "を削除しますか？", "en": "?"},
         confirm: {"zh": "确认", "ja": "確認", "en": "Confirm"}
+    },
+    detectLanguage(text) {
+        const kanaRegex = /[\u3040-\u309F\u30A0-\u30FF\uFF66-\uFF9F]/ // 平假名 + 片假名 + 半角片假名
+        const hanziRegex = /[\u4E00-\u9FFF\u3400-\u4DBF]/ // 中日韩统一表意文字 + 扩展A
+        const visibleAsciiRegex = /^[\x20-\x7E]+$/ // 只包含可见 ASCII 字符
+    
+        if (kanaRegex.test(text)) {
+            return 'ja'
+        } else if (hanziRegex.test(text)) {
+            return 'zh'
+        } else if (visibleAsciiRegex.test(text)) {
+            return 'en'
+        } else {
+            return 'unknown'
+        }
     }
 }

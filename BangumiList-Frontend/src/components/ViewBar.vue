@@ -35,7 +35,7 @@
             <v-select v-if="(global.viewOpt.viewType === 'list')" variant="solo-filled" density="compact" width="192"
                 :placeholder="global.lang.text.listShowItems[global.lang.currentLang]"
                 :no-data-text="global.lang.text.noData[global.lang.currentLang]" hide-details multiple
-                :items="tableHeaderList" v-model="global.viewOpt.listShowItems">
+                :items="tableHeaderList" v-model="global.viewOpt.listShowItems" class="ml-2">
                 <template v-slot:selection="{ index }">
                     <label v-if="index < 1">{{ global.lang.text.listShowItems[global.lang.currentLang] }}</label>
                 </template>
@@ -73,12 +73,11 @@
                 <v-select variant="solo-filled" :label="global.lang.text.sortBy[global.lang.currentLang]"
                     density="compact" width="192" :no-data-text="global.lang.text.noData[global.lang.currentLang]"
                     hide-details class="ml-2" />
-
-                <!-- 分组 -->
-                <v-select variant="solo-filled" :label="global.lang.text.groupSortBy[global.lang.currentLang]"
-                    density="compact" :no-data-text="global.lang.text.noData[global.lang.currentLang]" width="192"
-                    hide-details />
             </div>
+            <!-- 分组 -->
+            <v-select variant="solo-filled" :label="global.lang.text.groupSortBy[global.lang.currentLang]"
+                density="compact" :no-data-text="global.lang.text.noData[global.lang.currentLang]" width="192"
+                hide-details />
         </div>
     </v-card>
 </template>
@@ -91,7 +90,7 @@ import { computed, watch } from 'vue';
 const tableHeaderList = computed(() => {
     const headerList = []
     global.tableData.keys.forEach(key => {
-        headerList.push({title:global.tableData.text[key][global.lang.currentLang], value:key})
+        headerList.push({ title: global.tableData.text[key][global.lang.currentLang], value: key })
     })
     return headerList
 })
@@ -103,7 +102,7 @@ for (var key in global.tableData.shownColumns) {
 }
 // 监听显示列变化
 watch(() => global.viewOpt.listShowItems, (newListShowItems) => {
-    for(var key in global.tableData.shownColumns){
+    for (var key in global.tableData.shownColumns) {
         global.tableData.shownColumns[key] = false
     }
     newListShowItems.forEach((item) => {
