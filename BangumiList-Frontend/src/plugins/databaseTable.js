@@ -4,7 +4,7 @@ export default {
     gridView: false,
     doubleTable: false,
     timeStamp: false,
-    
+
     keys: ["id", "databaseName", "gridView", "doubleTable", "timeStamp", "databasePath"],
     values: {
         id: "ID",
@@ -52,13 +52,21 @@ export default {
             return currentLang === "en" ? this.text[key][currentLang].length * 8 + 30 : this.text[key][currentLang].length * 16 + 30
         }
     },
-    dataDisplay:{
+    dataDisplay: {
         id: "text",
         databaseName: "text",
         gridView: "icon",
         doubleTable: "icon",
         timeStamp: "icon",
         databasePath: "text"
+    },
+    group: {
+        id: "none",
+        databaseName: "alphabet",
+        gridView: "classification",
+        doubleTable: "classification",
+        timeStamp: "classification",
+        databasePath: "none"
     },
 
     loading: false,

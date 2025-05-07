@@ -193,6 +193,11 @@ function sortData() {
     }
 }
 
+// 分组
+function groupData(key){
+    
+}
+
 // 选中行
 var rowColor = reactive({})
 function selectRow(id) {
