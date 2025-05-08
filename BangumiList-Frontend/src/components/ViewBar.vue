@@ -77,7 +77,20 @@
             <!-- 分组 -->
             <v-select variant="solo-filled" :label="global.lang.text.groupSortBy[global.lang.currentLang]"
                 density="compact" :no-data-text="global.lang.text.noData[global.lang.currentLang]" width="192"
-                hide-details />
+                hide-details :items="groupList" v-model="global.viewOpt.groupSortBy">
+                <template v-slot:selection="{ item }">
+                    <v-icon v-if="item.value.includes('asc')" icon="mdi-arrow-up" size="small" />
+                    <v-icon v-else-if="item.value.includes('desc')" icon="mdi-arrow-down" size="small" />
+                    <label class="text-no-wrap">{{ item.title }}</label>
+                </template>
+                <template v-slot:item="{ item, props }">
+                    <v-list-item v-bind="props" title="">
+                        <v-icon v-if="item.value.includes('asc')" icon="mdi-arrow-up" size="small" />
+                        <v-icon v-else-if="item.value.includes('desc')" icon="mdi-arrow-down" size="small" />
+                        <label class="text-no-wrap">{{ item.title }}</label>
+                    </v-list-item>
+                </template>
+            </v-select>
         </div>
     </v-card>
 </template>
@@ -85,28 +98,40 @@
 <script setup>
 import global from '@/plugins/global'
 import { computed, watch } from 'vue';
+import { GoToSymbol } from 'vuetify/lib/composables/goto.mjs';
 
-// 获取所有列
-const tableHeaderList = computed(() => {
+// 显示列
+const tableHeaderList = computed(() => { // 获取所有列
     const headerList = []
     global.tableData.keys.forEach(key => {
         headerList.push({ title: global.tableData.text[key][global.lang.currentLang], value: key })
     })
     return headerList
 })
-// 默认所有列显示
-for (var key in global.tableData.shownColumns) {
+for (var key in global.tableData.shownColumns) { // 默认所有列显示
     if (global.tableData.shownColumns[key] == true) {
         global.viewOpt.listShowItems.push(key)
     }
 }
-// 监听显示列变化
-watch(() => global.viewOpt.listShowItems, (newListShowItems) => {
+watch(() => global.viewOpt.listShowItems, (newListShowItems) => { // 监听显示列变化
     for (var key in global.tableData.shownColumns) {
         global.tableData.shownColumns[key] = false
     }
     newListShowItems.forEach((item) => {
         global.tableData.shownColumns[item] = true
     })
+})
+
+// 分组
+const groupList = computed(() => {
+    const groupList = []
+    groupList.push({ title: global.lang.text.noGroup[global.lang.currentLang], value: "none" })
+    for (var key in global.tableData.group) {
+        if (global.tableData.group[key] != "none") {
+            groupList.push({ title: global.tableData.text[key][global.lang.currentLang], value: key + "-asc" })
+            groupList.push({ title: global.tableData.text[key][global.lang.currentLang], value: key + "-desc" })
+        }
+    }
+    return groupList
 })
 </script>

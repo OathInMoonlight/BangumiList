@@ -27,6 +27,7 @@ export default {
         gridSmall: {"zh": "网格:小", "ja": "グリッド:小", "en": "Grid:Small"},
         sortBy: {"zh": "排序方式", "ja": "ソート順", "en": "Sort By"},
         groupSortBy: {"zh": "分组依据", "ja": "グループ分け", "en": "Group Sort By"},
+        noGroup: {"zh": "不分组", "ja": "グループなし", "en": "No Group"},
 
         noData: {"zh": "无数据", "ja": "データなし", "en": "No Data"},
         loading: {"zh": "加载中", "ja": "読み込み中", "en": "Loading"},

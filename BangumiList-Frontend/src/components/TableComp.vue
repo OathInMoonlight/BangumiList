@@ -15,7 +15,7 @@
                 <tr>
                     <th v-for="header in tableHeaders" :width="header.width" class="border-e pa-0 fill-height">
                         <!-- 鼠标焦点 -->
-                        <v-hover>
+                        <v-hover v-if="header.key != 'group'">
                             <template v-slot:default="{ isHovering, props }">
                                 <!-- 按钮单击排序 -->
                                 <v-btn v-bind="props" block variant="text" rounded="0" size="x-large"
@@ -35,10 +35,13 @@
             <!-- 表体 -->
             <tbody>
                 <!-- 行单击选择 -->
-                <tr v-for="row in filteredData" @click="selectRow(row[tableHeaders[0].value])">
-                    <td v-for="header in tableHeaders" class="border-e pa-0">
+                <tr v-for="row in groupedData"
+                    @click="selectRow(row[global.tableData.values[global.tableData.keys[0]]])">
+                    <td v-for="header in tableHeaders" :rowspan="global.viewOpt.groupSortBy == 'none'?1:row['GROUPSPAN']" class="border-e pa-0">
+                        <label v-if="header.key == 'group'" class="d-flex justify-center text-center">{{ row["GROUP"] }}</label>
                         <!-- 被选中颜色控制 -->
-                        <v-card rounded="0" elevation="0" :color="rowColor[row[tableHeaders[0].value]]"
+                        <v-card v-if="header.key != 'group'" rounded="0" elevation="0"
+                            :color="rowColor[row[global.tableData.values[global.tableData.keys[0]]]]"
                             :class="'d-flex justify-' + header.align + ' align-center fill-height'">
                             <label v-if="global.tableData.dataDisplay[header.key] == 'text'" id="tableItemText">
                                 {{ row[header.value] }}
@@ -74,9 +77,14 @@
 <script setup>
 import { ref, reactive, computed, watch } from "vue"
 import global from "@/plugins/global.js"
+import langTool from "@/plugins/langTool.js"
+import { el } from "vuetify/locale"
 
 const tableHeaders = computed(() => { // 计算表头
     var headers = []
+    if (global.viewOpt.groupSortBy != "none") {
+        headers.push({ key: "group", value: "GROUP", text: "", align: "center", width: 38 })
+    }
     global.tableData.keys.forEach(hkey => {
         if (global.tableData.shownColumns[hkey] == true) { // 如果该列为显示列
             headers.push({
@@ -95,6 +103,7 @@ watch(() => global.tableData.data, (newData) => { // 监听数据变化
     filteredData.value = newData
     filterData(global.tableData.filterText)
     sortData()
+    // groupData()
 }, { immediate: true }) // 立即执行一次
 
 // 过滤文本
@@ -105,6 +114,8 @@ watch(() => global.tableData.filterText, (newfilterText) => { // 监听过滤文
     }
     timer = setTimeout(() => { // 防抖措施：避免频繁触发
         filterData(newfilterText)
+        sortData()
+        groupData()
     }, 500)
 })
 function filterData(filterText) {
@@ -131,7 +142,6 @@ function filterData(filterText) {
         }
         filteredData.value = newFilteredData
     }
-    sortData()
 }
 
 // 排序
@@ -155,6 +165,7 @@ function clickHeader(hkey) {
         sortOfHeaders[hkey] = "none"
     }
     sortData()
+    groupData()
 }
 function sortData() {
     var allNone = true
@@ -185,7 +196,7 @@ function sortData() {
     }
     if (allNone) { // 如果所有表头都是none，则默认按第一个表头排序
         filteredData.value.sort((a, b) => {
-            let sortValue = global.tableData.values[global.tableData.sortMap[tableHeaders.value[0].key]]
+            let sortValue = global.tableData.values[global.tableData.sortMap[global.tableData.keys[0]]]
             if (a[sortValue] > b[sortValue]) return 1
             if (a[sortValue] < b[sortValue]) return -1
             return 0
@@ -194,8 +205,49 @@ function sortData() {
 }
 
 // 分组
-function groupData(key){
-    
+const groupedData = ref([])
+watch(() => global.viewOpt.groupSortBy, (newGroupSortBy) => {
+    groupData()
+})
+function groupData() {
+    if (global.viewOpt.groupSortBy == "none") {
+        groupedData.value = filteredData.value
+    }
+    else {
+        groupedData.value = []
+        const key = global.viewOpt.groupSortBy.split('-')[0]
+        if (global.tableData.group[key] == "alphabet") {
+            const alphabet = "abcdefghijklmnopqrstuvwxyz"
+            const alphabetCount = {}
+            for (var i of alphabet) {
+                alphabetCount[i] = []
+            }
+            var getFirstLetter = null
+            if (global.tableData.sortMap[key] == key) {
+                getFirstLetter = (row) => {
+                    return langTool.getFirstLetter(row[global.tableData.values[key]])
+                }
+            }
+            else {
+                getFirstLetter = (row) => {
+                    return row[global.tableData.values[global.tableData.sortMap[key]]][0]
+                }
+            }
+            for (var index in filteredData.value) {
+                let firstLetter = getFirstLetter(filteredData.value[index]).toLowerCase()
+                alphabetCount[firstLetter].push(index)
+                filteredData.value[index].GROUP = firstLetter
+            }
+            for (var i of alphabet) {
+                if (alphabetCount[i].length > 0) {
+                    filteredData.value[alphabetCount[i][0]].GROUPSPAN = alphabetCount[i].length
+                    for (var index of alphabetCount[i]) {
+                        groupedData.value.push(filteredData.value[index])
+                    }
+                }
+            }
+        }
+    }
 }
 
 // 选中行

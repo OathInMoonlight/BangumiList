@@ -1,4 +1,19 @@
 export default {
+    getFirstLetter(text){
+        const lang = this.detectLanguage(text)
+        if(lang == "zh"){
+            return this.getPinyinInitial(text)
+        }
+        else if(lang == "ja"){
+            return this.getKanaInitial(text)
+        }
+        else if(lang == "en"){
+            return this.getEngInitial(text)
+        }
+        else{
+            return "#"
+        }
+    },
     detectLanguage(text) {
         const kanaRegex = /[\u3040-\u309F\u30A0-\u30FF\uFF66-\uFF9F]/ // 平假名 + 片假名 + 半角片假名
         const hanziRegex = /[\u4E00-\u9FFF\u3400-\u4DBF]/ // 中日韩统一表意文字 + 扩展A

@@ -3,5 +3,5 @@ export default {
     listShowItems: [],
     gridSize: "default",
     sortBy: null,
-    groupSortBy: null
+    groupSortBy: "none"
 }
