@@ -141,19 +141,19 @@ function filterData(filterText) {
     else {
         const newFilteredData = []
         const lowFilterText = global.tableData.filterText.toLowerCase() // 转换为小写
-        for (var id in global.tableData.data) {
+        for (var row of global.tableData.data) {
             var ifContain = false
-            for (var key in global.tableData.data[id]) { // 遍历每一单元格数据
-                if (global.tableData.data[id][key] == null) {
+            for (var key in row) { // 遍历每一单元格数据
+                if (row[key] == null) {
                     continue // 如果单元格数据为空，则跳过
                 }
-                if (global.tableData.data[id][key].toString().toLowerCase().includes(lowFilterText)) {
+                if (row[key].toString().toLowerCase().includes(lowFilterText)) {
                     ifContain = true
                     break
                 }
             }
             if (ifContain) { // 如果包含过滤文本
-                newFilteredData.push(global.tableData.data[id])
+                newFilteredData.push(row)
             }
         }
         filteredData.value = newFilteredData
