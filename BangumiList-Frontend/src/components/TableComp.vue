@@ -13,9 +13,11 @@
                 <label v-if="tableHeaders.length == 0" class="d-flex justify-center align-center ma-8">{{
                     global.lang.text.noData[global.lang.currentLang] }}</label>
                 <tr>
+                    <!-- 分组列 -->
+                    <th v-if="global.viewOpt.groupSortBy != 'none'" width=38 class="border-e pa-0 fill-height" />
                     <th v-for="header in tableHeaders" :width="header.width" class="border-e pa-0 fill-height">
                         <!-- 鼠标焦点 -->
-                        <v-hover v-if="header.key != 'group'">
+                        <v-hover>
                             <template v-slot:default="{ isHovering, props }">
                                 <!-- 按钮单击排序 -->
                                 <v-btn v-bind="props" block variant="text" rounded="0" size="x-large"
@@ -37,10 +39,26 @@
                 <!-- 行单击选择 -->
                 <tr v-for="row in groupedData"
                     @click="selectRow(row[global.tableData.values[global.tableData.keys[0]]])">
-                    <td v-for="header in tableHeaders" :rowspan="global.viewOpt.groupSortBy == 'none'?1:row['GROUPSPAN']" class="border-e pa-0">
-                        <label v-if="header.key == 'group'" class="d-flex justify-center text-center">{{ row["GROUP"] }}</label>
+                    <!-- 分组列 -->
+                    <td v-if="global.viewOpt.groupSortBy != 'none' && row.GROUPSPAN != null"
+                        :rowspan="global.viewOpt.groupSortBy == 'none' ? null : row['GROUPSPAN']" class="border-e pa-0">
+                        <div class="d-flex justify-center">
+                            <label v-if="global.tableData.dataDisplay[groupKey] == 'text'"
+                                class="d-flex justify-center text-center">{{
+                                    row["GROUP"] }}</label>
+                            <v-icon v-else-if="global.tableData.dataDisplay[groupKey] == 'icon'"
+                                :icon="row[global.tableData.values[groupKey]] == 1 ? 'mdi-check-circle' : (row[global.tableData.values[groupKey]] == 0 ? 'mdi-close-circle' : null)"
+                                :color="row[global.tableData.values[groupKey]] == 1 ? 'light-green' : (row[global.tableData.values[groupKey]] == 0 ? 'deep-orange' : null)" />
+                            <v-chip v-else
+                                :prepend-icon="row[global.tableData.values[groupKey]] == 1 ? 'mdi-check' : (row[global.tableData.values[groupKey]] == 0 ? 'mdi-close' : null)"
+                                :color="row[global.tableData.values[groupKey]] == 1 ? 'light-green' : (row[global.tableData.values[groupKey]] == 0 ? 'deep-orange' : null)">
+                                {{ row[global.tableData.values[groupKey]] }}
+                            </v-chip>
+                        </div>
+                    </td>
+                    <td v-for="header in tableHeaders" class="border-e pa-0">
                         <!-- 被选中颜色控制 -->
-                        <v-card v-if="header.key != 'group'" rounded="0" elevation="0"
+                        <v-card rounded="0" elevation="0"
                             :color="rowColor[row[global.tableData.values[global.tableData.keys[0]]]]"
                             :class="'d-flex justify-' + header.align + ' align-center fill-height'">
                             <label v-if="global.tableData.dataDisplay[header.key] == 'text'" id="tableItemText">
@@ -78,13 +96,9 @@
 import { ref, reactive, computed, watch } from "vue"
 import global from "@/plugins/global.js"
 import langTool from "@/plugins/langTool.js"
-import { el } from "vuetify/locale"
 
 const tableHeaders = computed(() => { // 计算表头
     var headers = []
-    if (global.viewOpt.groupSortBy != "none") {
-        headers.push({ key: "group", value: "GROUP", text: "", align: "center", width: 38 })
-    }
     global.tableData.keys.forEach(hkey => {
         if (global.tableData.shownColumns[hkey] == true) { // 如果该列为显示列
             headers.push({
@@ -98,12 +112,14 @@ const tableHeaders = computed(() => { // 计算表头
 
 // 获取数据
 global.tableData.updateReq() // 发送请求获取数据
-var filteredData = ref(global.tableData.data)
+const filteredData = ref(global.tableData.data)
+var groupKey = null
+const groupedData = ref([])
 watch(() => global.tableData.data, (newData) => { // 监听数据变化
     filteredData.value = newData
     filterData(global.tableData.filterText)
     sortData()
-    // groupData()
+    groupData()
 }, { immediate: true }) // 立即执行一次
 
 // 过滤文本
@@ -205,43 +221,73 @@ function sortData() {
 }
 
 // 分组
-const groupedData = ref([])
-watch(() => global.viewOpt.groupSortBy, (newGroupSortBy) => {
+watch(() => global.viewOpt.groupSortBy, (newGroupSortBy) => { // 监听分组排序变化
     groupData()
 })
 function groupData() {
-    if (global.viewOpt.groupSortBy == "none") {
+    if (global.viewOpt.groupSortBy == "none") { // 如果不分组，则直接返回
         groupedData.value = filteredData.value
     }
     else {
         groupedData.value = []
-        const key = global.viewOpt.groupSortBy.split('-')[0]
-        if (global.tableData.group[key] == "alphabet") {
-            const alphabet = "abcdefghijklmnopqrstuvwxyz"
+        groupKey = ref(global.viewOpt.groupSortBy.split('-')[0]) // 获取分组的key
+        if (global.tableData.group[groupKey.value] == "alphabet") { // 如果分组为字母，则按字母分组
+            var alphabet = "abcdefghijklmnopqrstuvwxyz"
             const alphabetCount = {}
-            for (var i of alphabet) {
+            for (var i of alphabet) { // 初始化字母分组
                 alphabetCount[i] = []
             }
-            var getFirstLetter = null
-            if (global.tableData.sortMap[key] == key) {
+            var getFirstLetter = null // 获取首字母的函数
+            if (global.tableData.sortMap[groupKey.value] == groupKey.value) { // 如果分组的key和排序的key相同，则自动计算首字母
                 getFirstLetter = (row) => {
-                    return langTool.getFirstLetter(row[global.tableData.values[key]])
+                    return langTool.getFirstLetter(row[global.tableData.values[groupKey.value]])
                 }
             }
             else {
-                getFirstLetter = (row) => {
-                    return row[global.tableData.values[global.tableData.sortMap[key]]][0]
+                getFirstLetter = (row) => { // 如果分组的key和排序的key不同，则使用排序的key计算首字母
+                    return row[global.tableData.values[global.tableData.sortMap[groupKey.value]]][0]
                 }
             }
-            for (var index in filteredData.value) {
-                let firstLetter = getFirstLetter(filteredData.value[index]).toLowerCase()
-                alphabetCount[firstLetter].push(index)
-                filteredData.value[index].GROUP = firstLetter
+            for (var index in filteredData.value) { // 遍历每一行数据
+                let firstLetter = getFirstLetter(filteredData.value[index]).toLowerCase() // 获取首字母
+                alphabetCount[firstLetter].push(index) // 将首字母对应的行索引加入到字母分组中
+                filteredData.value[index].GROUP = firstLetter.toUpperCase()
+                filteredData.value[index].GROUPSPAN = null
             }
-            for (var i of alphabet) {
-                if (alphabetCount[i].length > 0) {
-                    filteredData.value[alphabetCount[i][0]].GROUPSPAN = alphabetCount[i].length
+            if (global.viewOpt.groupSortBy.includes("desc")) { // 如果分组为降序，则反转字母顺序
+                alphabet = alphabet.split("").reverse()
+            }
+            for (var i of alphabet) { // 遍历字母
+                if (alphabetCount[i].length > 0) { // 如果字母分组不为空，则将字母分组加入到分组数据中
+                    filteredData.value[alphabetCount[i][0]].GROUPSPAN = alphabetCount[i].length // 设置分组的行数
                     for (var index of alphabetCount[i]) {
+                        groupedData.value.push(filteredData.value[index])
+                    }
+                }
+            }
+        }
+        else {
+            const dataClassification = {}
+            for (var index in filteredData.value) {
+                let classificationValue = filteredData.value[index][global.tableData.values[groupKey.value]]
+                if (classificationValue == null) { // 如果分组值为空，则跳过
+                    continue
+                }
+                if (dataClassification[classificationValue] == null) { // 如果分组不存在，则初始化分组
+                    dataClassification[classificationValue] = []
+                }
+                dataClassification[classificationValue].push(index) // 将分组的行索引加入到分组中
+                filteredData.value[index].GROUP = classificationValue
+                filteredData.value[index].GROUPSPAN = null
+            }
+            var valueList = Object.keys(dataClassification) // 获取分组的值列表
+            if (global.viewOpt.groupSortBy.includes("desc")) { // 如果分组为降序，则反转分组顺序
+                valueList = valueList.reverse()
+            }
+            for (var i of valueList) { // 遍历分组的值
+                if (dataClassification[i].length > 0) { // 如果分组不为空，则将分组加入到分组数据中
+                    filteredData.value[dataClassification[i][0]].GROUPSPAN = dataClassification[i].length // 设置分组的行数
+                    for (var index of dataClassification[i]) {
                         groupedData.value.push(filteredData.value[index])
                     }
                 }
