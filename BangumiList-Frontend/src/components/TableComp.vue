@@ -132,7 +132,7 @@ watch(() => global.tableData.filterText, (newfilterText) => { // 监听过滤文
         filterData(newfilterText)
         sortData()
         groupData()
-    }, 500)
+    }, 100)
 })
 function filterData(filterText) {
     if (filterText == null || filterText == "") {
@@ -183,6 +183,31 @@ function clickHeader(hkey) {
     sortData()
     groupData()
 }
+function sortFunc(a, b, is_asc, key) {
+    const sortValue = global.tableData.values[global.tableData.sortMap[key]] // 转换为大写值
+    const aValue = a[sortValue]
+    const bValue = b[sortValue]
+    const langOfA = langTool.detectLanguage(aValue)
+    var collator = null
+    if (key == global.tableData.sortMap[key] && langOfA == langTool.detectLanguage(bValue)) {
+        if (langOfA == "zh") {
+            collator = Intl.Collator("zh-u-co-pinyin")
+        }
+        else if (langOfA == "ja") {
+            collator = Intl.Collator("ja")
+        }
+    }
+    if (collator == null) {
+        if (aValue > bValue) return is_asc ? 1 : -1
+        else if (aValue < bValue) return is_asc ? -1 : 1
+        else return 0
+    }
+    else {
+        if (collator.compare(aValue, bValue) > 0) return is_asc ? 1 : -1
+        else if (collator.compare(aValue, bValue) < 0) return is_asc ? -1 : 1
+        else return 0
+    }
+}
 function sortData() {
     var allNone = true
     for (var key in sortOfHeaders) { // 遍历每一表头
@@ -190,33 +215,18 @@ function sortData() {
             continue
         }
         else if (sortOfHeaders[key] == "asc") {
-            filteredData.value.sort((a, b) => { // 升序排序
-                let sortValue = global.tableData.values[global.tableData.sortMap[key]] // 转换为大写值
-                if (a[sortValue] > b[sortValue]) return 1
-                if (a[sortValue] < b[sortValue]) return -1
-                return 0
-            })
+            filteredData.value.sort((a, b) => sortFunc(a, b, true, key))
             allNone = false
             break
         }
         else {
-            filteredData.value.sort((a, b) => {
-                let sortValue = global.tableData.values[global.tableData.sortMap[key]]
-                if (a[sortValue] < b[sortValue]) return 1
-                if (a[sortValue] > b[sortValue]) return -1
-                return 0
-            })
+            filteredData.value.sort((a, b) => sortFunc(a, b, false, key))
             allNone = false
             break
         }
     }
     if (allNone) { // 如果所有表头都是none，则默认按第一个表头排序
-        filteredData.value.sort((a, b) => {
-            let sortValue = global.tableData.values[global.tableData.sortMap[global.tableData.keys[0]]]
-            if (a[sortValue] > b[sortValue]) return 1
-            if (a[sortValue] < b[sortValue]) return -1
-            return 0
-        })
+        filteredData.value.sort((a, b) => sortFunc(a, b, true, global.tableData.keys[0]))
     }
 }
 
