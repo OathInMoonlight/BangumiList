@@ -6,8 +6,8 @@ const fs = require("fs")
 const app = express()
 const port = 3001
 
-app.use(cors())
-app.use(express.json())
+app.use(cors()) // Enable CORS for all routes
+app.use(express.json()) // Parse JSON request body
 
 const dbPath = "BangumiList.db"
 if (!fs.existsSync(dbPath)) {
