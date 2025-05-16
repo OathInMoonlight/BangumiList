@@ -3,11 +3,14 @@
         <div class="w-100 d-flex flex-row justify-space-between align-center">
             <!-- 左侧标题 -->
             <div class="d-flex align-center ml-4">
-                <label v-if="!global.isDatabase.value" class="text-h6">{{ global.lang.text.databaseList[global.lang.currentLang]
-                    }}</label>
+                <label v-if="!global.isDatabase.value" class="text-h6">{{
+                    global.lang.text.databaseList[global.lang.currentLang]
+                }}</label>
                 <v-tooltip v-else :text="global.lang.text.backToList[global.lang.currentLang]">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" variant="outlined">{{ global.isDatabase }}</v-btn>
+                        <v-btn v-bind="props" variant="outlined">
+                            {{ global.isDatabase }}
+                        </v-btn>
                     </template>
                 </v-tooltip>
             </div>
@@ -43,45 +46,46 @@
     </v-toolbar>
 
     <!-- 添加表单 -->
-    <v-dialog persistent max-width="512" v-model="addItemDialog">
+    <v-dialog v-model="addItemDialog" persistent max-width="512">
         <v-card>
             <div class="ma-4">
-                <v-text-field variant="outlined" :label="global.tableData.text.databaseName[global.lang.currentLang]"
-                    v-model="addDatabaseForm.databaseName" hide-details />
-                <v-checkbox :color="global.primaryColor.value" :label="global.tableData.text.enableGrid[global.lang.currentLang]"
-                    v-model="addDatabaseForm.enableGrid" hide-details />
-                <v-checkbox :color="global.primaryColor.value" :label="global.tableData.text.enableDoubleTable[global.lang.currentLang]"
-                    v-model="addDatabaseForm.enableDoubleTable" hide-details />
-                <v-checkbox :color="global.primaryColor.value" :label="global.tableData.text.enableTimeStamp[global.lang.currentLang]"
-                    v-model="addDatabaseForm.enableTimeStamp" hide-details />
+                <v-text-field v-model="addDatabaseForm.databaseName" variant="outlined"
+                              :label="global.tableData.text.databaseName[global.lang.currentLang]" hide-details />
+                <v-checkbox v-model="addDatabaseForm.enableGrid" :color="global.primaryColor.value"
+                            :label="global.tableData.text.enableGrid[global.lang.currentLang]" hide-details />
+                <v-checkbox v-model="addDatabaseForm.enableDoubleTable" :color="global.primaryColor.value"
+                            :label="global.tableData.text.enableDoubleTable[global.lang.currentLang]" hide-details />
+                <v-checkbox v-model="addDatabaseForm.enableTimeStamp" :color="global.primaryColor.value"
+                            :label="global.tableData.text.enableTimeStamp[global.lang.currentLang]" hide-details />
             </div>
             <div class="d-flex flex-row-reverse ma-4">
-                <v-btn size="large" @click="addItemSubmit" :color="global.primaryColor.value">{{
-                    global.lang.text.submit[global.lang.currentLang]
-                }}</v-btn>
-                <v-btn size="large" @click="addItemDialog = false" class="mr-4">{{ global.lang.text.cancel[global.lang.currentLang]
-                    }}</v-btn>
+                <v-btn size="large" :color="global.primaryColor.value" @click="addItemSubmit">
+                    {{ global.lang.text.submit[global.lang.currentLang] }}
+                </v-btn>
+                <v-btn size="large" class="mr-4" @click="addItemDialog = false">
+                    {{ global.lang.text.cancel[global.lang.currentLang] }}
+                </v-btn>
             </div>
         </v-card>
     </v-dialog>
     <!-- 删除表单 -->
-    <v-dialog max-width="512" v-model="deleteItemAlert">
-        <v-alert :title="global.lang.text.error[global.lang.currentLang]" :text="global.lang.text.deleteErrorText[global.lang.currentLang]"
-            type="warning" />
+    <v-dialog v-model="deleteItemAlert" max-width="512">
+        <v-alert :title="global.lang.text.error[global.lang.currentLang]"
+                 :text="global.lang.text.deleteErrorText[global.lang.currentLang]" type="warning" />
     </v-dialog>
-    <v-dialog persistent max-width="512" v-model="deleteItemDialog">
+    <v-dialog v-model="deleteItemDialog" persistent max-width="512">
         <v-card>
             <div class="ma-4">
                 <label>{{ global.lang.text.deleteConfirm1[global.lang.currentLang] }} "{{ deleteRowName }}" {{
                     global.lang.text.deleteConfirm2[global.lang.currentLang] }}</label>
             </div>
             <div class="d-flex flex-row-reverse ma-4">
-                <v-btn size="large" @click="deleteItemSubmit" :color="global.primaryColor.value">{{
-                    global.lang.text.confirm[global.lang.currentLang]
-                }}</v-btn>
-                <v-btn size="large" @click="deleteItemDialog = false" class="mr-4">{{
-                    global.lang.text.cancel[global.lang.currentLang]
-                }}</v-btn>
+                <v-btn size="large" :color="global.primaryColor.value" @click="deleteItemSubmit">
+                    {{ global.lang.text.confirm[global.lang.currentLang] }}
+                </v-btn>
+                <v-btn size="large" class="mr-4" @click="deleteItemDialog = false">
+                    {{ global.lang.text.cancel[global.lang.currentLang] }}
+                </v-btn>
             </div>
         </v-card>
     </v-dialog>

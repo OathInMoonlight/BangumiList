@@ -20,20 +20,20 @@ export default {
         const visibleAsciiRegex = /^[\x20-\x7E]+$/ // 只包含可见 ASCII 字符
 
         if (kanaRegex.test(text)) {
-            return 'ja'
+            return "ja"
         } else if (hanziRegex.test(text)) {
-            return 'zh'
+            return "zh"
         } else if (visibleAsciiRegex.test(text)) {
-            return 'en'
+            return "en"
         } else {
-            return 'unknown'
+            return "unknown"
         }
     },
     getPinyinInitial(text) {
-        const alphabet = "abcdefghjklmnopqrstwxyz".split('')
-        const initialHanzi = "驁簿錯鵽樲鰒餜靃攟鬠纙鞪黁漚曝裠鶸蜶籜鶩鑂韻糳".split('')
+        const alphabet = "abcdefghjklmnopqrstwxyz".split("")
+        const initialHanzi = "驁簿錯鵽樲鰒餜靃攟鬠纙鞪黁漚曝裠鶸蜶籜鶩鑂韻糳".split("")
         const initialInText = text[0]
-        const collator = new Intl.Collator('zh')
+        const collator = new Intl.Collator("zh")
 
         for (let i = 0; i < initialHanzi.length; i++) {
             if (collator.compare(initialInText, initialHanzi[i]) <= 0) {
@@ -115,7 +115,7 @@ export default {
             "っ": " ", "ッ": " ", "ｯ": " ",
             "ー": " ", "〜": " "
         }
-        const initialInText = text[0]
+        let initialInText = text[0]
         if(kana[initialInText] == " ") {
             initialInText = text[1]
         }

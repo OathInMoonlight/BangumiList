@@ -1,13 +1,13 @@
 <template>
   <v-app>
     <v-main class="pb-0">
-      <index/>
+      <index />
     </v-main>
   </v-app>
 </template>
 
 <script setup>
-import index from '@/pages/index.vue';
+import index from "@/pages/index.vue"
 </script>
 
 <style>
