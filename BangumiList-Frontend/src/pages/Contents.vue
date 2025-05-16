@@ -1,5 +1,5 @@
 <template>
-  <TableComp />
+    <TableComp />
 </template>
 
 <script setup lang="ts">

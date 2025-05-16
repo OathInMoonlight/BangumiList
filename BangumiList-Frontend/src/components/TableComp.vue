@@ -114,6 +114,7 @@ const tableHeaders = computed(() => { // 计算表头
 // 获取数据
 global.tableData.updateReq() // 发送请求获取数据
 const filteredData = ref(global.tableData.data)
+let sortOfHeaders = reactive({})
 let groupKey = null
 const groupedData = ref([])
 watch(() => global.tableData.data, (newData) => { // 监听数据变化
@@ -162,7 +163,6 @@ function filterData(filterText) {
 }
 
 // 排序
-let sortOfHeaders = reactive({})
 global.tableData.keys.forEach(hkey => {
     sortOfHeaders[hkey] = "none"
 })
