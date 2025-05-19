@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const sqlite3 = require("sqlite3").verbose()
-const fs = require("fs")
+const database = require("./Database.js")
 
 const app = express()
 const port = 3001
@@ -9,81 +8,40 @@ const port = 3001
 app.use(cors()) // Enable CORS for all routes
 app.use(express.json()) // Parse JSON request body
 
-const dbPath = "BangumiList.db"
-if (!fs.existsSync(dbPath)) {
-    initializeDatabase()
+db = new database()
+try {
+    console.log(db.initMainDB().message)
 }
-function initializeDatabase() {
-    const db = new sqlite3.Database(dbPath, (err) => {
-        if (err) {
-            console.error(err.message)
-        }
-        console.log("Created new database.")
-    })
-    db.run("CREATE TABLE IF NOT EXISTS DATABASELIST (\
-        ID INTEGER PRIMARY KEY AUTOINCREMENT, DATABASENAME TEXT NOT NULL, ENABLEGRID INTEGER,\
-        ENABLEDOUBLETABLE INTEGER, ENABLETIMESTAMP INTEGER, DATABASEPATH TEXT)")
-    db.close()
+catch (err) {
+    console.error(err.message)
 }
 
-app.get("/updateDatabase", (req, res) => {
-    const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
-        if (err) {
-            console.error(err.message)
-            res.status(500).send(err.message)
-        }
-        console.log("Connected to the database.")
-    })
-    db.all("SELECT * FROM DATABASELIST", [], (err, rows) => {
-        if (err) {
-            console.error(err.message)
-            res.status(500).send(err.message)
-        }
-        else {
-            res.status(200).json(rows)
-        }
-    })
-    db.close()
+app.get("/main/get", (req, res) => {
+    try{
+        res.status(200).json(db.getMainDB())
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500).send(err.message)
+    }
 })
-app.post("/addDatabase", (req, res) => {
-    const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
-        if (err) {
-            console.error(err.message)
-            res.status(500).send(err.message)
-        }
-        console.log("Connected to the database.")
-    })
-    db.run("INSERT INTO DATABASELIST VALUES (?,?,?,?,?,?)", [null, req.body.databaseName,
-        req.body.enableGrid, req.body.enableDoubleTable, req.body.enableTimeStamp,
-        req.body.databasePath], function (err) {
-        if (err) {
-            console.error(err.message)
-            res.status(500).send(err.message)
-        }
-        else {
-            res.status(200).json({ status: "success" })
-        }
-    })
-    db.close()
+app.post("/main/insert", (req, res) => {
+    try {
+        res.status(200).json(db.insertMainDB(req.body))
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500).send(err.message)
+    }
 })
-app.post("/deleteDatabase", (req, res)=>{
-    const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
-        if (err) {
-            console.error(err.message)
-            res.status(500).send(err.message)
-        }
-        console.log("Connected to the database.")
-    })
-    db.run("DELETE FROM DATABASELIST WHERE ID = ?", [req.body.id], function (err) {
-        if (err) {
-            console.error(err.message)
-            res.status(500).send(err.message)
-        }
-        else {
-            res.status(200).json({ status: "success" })
-        }
-    })
-    db.close()
+app.post("/main/delete", (req, res) => {
+    try {
+        res.status(200).json(db.deleteMainDB(req.body.id))
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500).send(err.message)
+    }
 })
 
 app.listen(port, () => {

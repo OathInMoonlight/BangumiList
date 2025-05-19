@@ -112,7 +112,7 @@ const tableHeaders = computed(() => { // 计算表头
 })
 
 // 获取数据
-global.tableData.updateReq() // 发送请求获取数据
+global.tableData.getReq() // 发送请求获取数据
 const filteredData = ref(global.tableData.data)
 let sortOfHeaders = reactive({})
 let groupKey = null

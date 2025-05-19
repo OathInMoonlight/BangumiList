@@ -51,12 +51,12 @@
             <div class="ma-4">
                 <v-text-field v-model="addDatabaseForm.databaseName" variant="outlined"
                               :label="global.tableData.text.databaseName[global.lang.currentLang]" hide-details />
-                <v-checkbox v-model="addDatabaseForm.enableGrid" :color="global.primaryColor.value"
-                            :label="global.tableData.text.enableGrid[global.lang.currentLang]" hide-details />
-                <v-checkbox v-model="addDatabaseForm.enableDoubleTable" :color="global.primaryColor.value"
-                            :label="global.tableData.text.enableDoubleTable[global.lang.currentLang]" hide-details />
-                <v-checkbox v-model="addDatabaseForm.enableTimeStamp" :color="global.primaryColor.value"
-                            :label="global.tableData.text.enableTimeStamp[global.lang.currentLang]" hide-details />
+                <v-checkbox v-model="addDatabaseForm.gridView" :color="global.primaryColor.value"
+                            :label="global.tableData.text.gridView[global.lang.currentLang]" hide-details />
+                <v-checkbox v-model="addDatabaseForm.doubleTable" :color="global.primaryColor.value"
+                            :label="global.tableData.text.doubleTable[global.lang.currentLang]" hide-details />
+                <v-checkbox v-model="addDatabaseForm.timeStamp" :color="global.primaryColor.value"
+                            :label="global.tableData.text.timeStamp[global.lang.currentLang]" hide-details />
             </div>
             <div class="d-flex flex-row-reverse ma-4">
                 <v-btn size="large" :color="global.primaryColor.value" @click="addItemSubmit">
@@ -100,18 +100,18 @@ const addItemDialog = ref(false)
 const initAddDatabaseForm = {
     databaseName: null,
     databasePath: null,
-    enableGrid: false,
-    enableDoubleTable: false,
-    enableTimeStamp: false
+    gridView: false,
+    doubleTable: false,
+    timeStamp: false
 }
 var addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
 function addItemSubmit() {
     global.tableData.loading = true
     addItemDialog.value = false
-    global.comTool.postData("addDatabase", addDatabaseForm, rdata => {
-        console.log(rdata)
+    global.comTool.postData("main/insert", Object.fromEntries(Object.entries(addDatabaseForm).map(([key, value]) => [global.tableData.values[key], value])), res => {
+        console.log(res.message)
         addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
-        global.tableData.updateReq()
+        global.tableData.getReq()
         global.tableData.loading = false
     })
 }
@@ -137,10 +137,10 @@ function deleteItemButton() {
 function deleteItemSubmit() {
     global.tableData.loading = true
     deleteItemDialog.value = false
-    global.comTool.postData("deleteDatabase", { id: global.tableData.selectedRow }, rdata => {
+    global.comTool.postData("main/delete", { id: global.tableData.selectedRow }, res => {
         global.tableData.selectedRow = null
-        console.log(rdata)
-        global.tableData.updateReq()
+        console.log(res.message)
+        global.tableData.getReq()
         global.tableData.loading = false
     })
 }
