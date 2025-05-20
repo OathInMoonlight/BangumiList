@@ -15,13 +15,14 @@
                 <tr>
                     <!-- 分组列 -->
                     <th v-if="global.viewOpt.groupSortBy != 'none'" width="38" class="border-e pa-0 fill-height" />
-                    <th v-for="header in tableHeaders" :key="header.key" :width="header.width" class="border-e pa-0 fill-height">
+                    <th v-for="header in tableHeaders" :key="header.key" :width="header.width"
+                        class="border-e pa-0 fill-height">
                         <!-- 鼠标焦点 -->
                         <v-hover>
                             <template v-slot:default="{ isHovering, props }">
                                 <!-- 按钮单击排序 -->
-                                <v-btn v-bind="props" block variant="text" rounded="0" size="x-large"
-                                       class="pl-2 pr-2" @click="clickHeader(header.key)">
+                                <v-btn v-bind="props" block variant="text" rounded="0" size="x-large" class="pl-2 pr-2"
+                                       @click="clickHeader(header.key)">
                                     <label class="text-body-2">{{ header.text }}</label>
                                     <v-icon v-if="isHovering && (sortOfHeaders[header.key] == 'none')"
                                             icon="mdi-menu-swap" size="small" class="position-absolute right-0" />
@@ -37,8 +38,7 @@
             <!-- 表体 -->
             <tbody>
                 <!-- 行单击选择 -->
-                <tr v-for="row in groupedData"
-                    :key="row[global.tableData.values[global.tableData.keys[0]]]"
+                <tr v-for="row in groupedData" :key="row[global.tableData.values[global.tableData.keys[0]]]"
                     @click="selectRow(row[global.tableData.values[global.tableData.keys[0]]])">
                     <!-- 分组列 -->
                     <td v-if="global.viewOpt.groupSortBy != 'none' && row.GROUPSPAN != null"
@@ -100,14 +100,14 @@ import langTool from "@/plugins/langTool.js"
 
 const tableHeaders = computed(() => { // 计算表头
     let headers = []
-    global.tableData.keys.forEach(hkey => {
+    for (let hkey of global.tableData.keys) {
         if (global.tableData.shownColumns[hkey] == true) { // 如果该列为显示列
             headers.push({
                 key: hkey, value: global.tableData.values[hkey], text: global.tableData.text[hkey][global.lang.currentLang],
                 align: global.tableData.align[hkey], width: global.tableData.computeWidth(hkey, global.lang.currentLang)
             })
         }
-    })
+    }
     return headers
 })
 
@@ -163,9 +163,9 @@ function filterData(filterText) {
 }
 
 // 排序
-global.tableData.keys.forEach(hkey => {
+for (let hkey of global.tableData.keys) { // 初始化排序状态
     sortOfHeaders[hkey] = "none"
-})
+}
 function clickHeader(hkey) {
     for (let key in sortOfHeaders) { // 遍历每一表头，除了当前表头外，其他表头都设置为none
         if (key != hkey) {

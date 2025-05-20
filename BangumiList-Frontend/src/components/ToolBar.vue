@@ -104,15 +104,12 @@ const initAddDatabaseForm = {
     doubleTable: false,
     timeStamp: false
 }
-var addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
+let addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
 function addItemSubmit() {
-    global.tableData.loading = true
     addItemDialog.value = false
-    global.comTool.postData("main/insert", Object.fromEntries(Object.entries(addDatabaseForm).map(([key, value]) => [global.tableData.values[key], value])), res => {
-        console.log(res.message)
+    global.comTool.postData("main/insert", Object.fromEntries(Object.entries(addDatabaseForm).map(([key, value]) => [global.tableData.values[key], value])), () => {
         addDatabaseForm = reactive(JSON.parse(JSON.stringify(initAddDatabaseForm)))
         global.tableData.getReq()
-        global.tableData.loading = false
     })
 }
 
@@ -125,23 +122,20 @@ function deleteItemButton() {
         deleteItemAlert.value = true
     }
     else {
-        global.tableData.data.forEach(row => {
+        for (let row of global.tableData.data) {
             if (row[global.tableData.values[global.tableData.keys[0]]] == global.tableData.selectedRow) {
                 deleteRowName.value = row[global.tableData.values[global.tableData.keys[1]]]
                 return
             }
-        })
+        }
         deleteItemDialog.value = true
     }
 }
 function deleteItemSubmit() {
-    global.tableData.loading = true
     deleteItemDialog.value = false
-    global.comTool.postData("main/delete", { id: global.tableData.selectedRow }, res => {
+    global.comTool.postData("main/delete", { id: global.tableData.selectedRow }, () => {
         global.tableData.selectedRow = null
-        console.log(res.message)
         global.tableData.getReq()
-        global.tableData.loading = false
     })
 }
 </script>

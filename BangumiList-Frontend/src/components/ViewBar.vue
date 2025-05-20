@@ -2,9 +2,8 @@
     <v-card rounded="0" class="d-flex justify-space-between align-center pa-2">
         <!-- 搜索框 -->
         <v-responsive max-width="344">
-            <v-text-field v-model="global.tableData.filterText" variant="solo-filled"
-                          density="compact" :label="global.lang.text.search[global.lang.currentLang]"
-                          clearable single-line hide-details>
+            <v-text-field v-model="global.tableData.filterText" variant="solo-filled" density="compact"
+                          :label="global.lang.text.search[global.lang.currentLang]" clearable single-line hide-details>
                 <template v-slot:prepend-inner>
                     <v-icon icon="mdi-magnify" size="24" />
                 </template>
@@ -13,8 +12,8 @@
 
         <div class="d-flex flex-row-reverse justify-space-between align-center">
             <!-- 视图切换 -->
-            <v-btn-toggle v-if="global.tableData.gridView == true" v-model="global.viewOpt.viewType"
-                          density="compact" :color="global.primaryColor.value" mandatory class="ml-2">
+            <v-btn-toggle v-if="global.tableData.gridView == true" v-model="global.viewOpt.viewType" density="compact"
+                          :color="global.primaryColor.value" mandatory class="ml-2">
                 <v-tooltip :text="global.lang.text.gridView[global.lang.currentLang]">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" value="grid" size="36">
@@ -35,8 +34,8 @@
             <v-select v-if="(global.viewOpt.viewType === 'list')" v-model="global.viewOpt.listShowItems"
                       variant="solo-filled" density="compact" width="192"
                       :placeholder="global.lang.text.listShowItems[global.lang.currentLang]"
-                      :no-data-text="global.lang.text.noData[global.lang.currentLang]"
-                      hide-details multiple :items="tableHeaderList" class="ml-2">
+                      :no-data-text="global.lang.text.noData[global.lang.currentLang]" hide-details multiple
+                      :items="tableHeaderList" class="ml-2">
                 <template v-slot:selection="{ index }">
                     <label v-if="index < 1">{{ global.lang.text.listShowItems[global.lang.currentLang] }}</label>
                 </template>
@@ -78,8 +77,8 @@
             <!-- 分组 -->
             <v-select v-model="global.viewOpt.groupSortBy" variant="solo-filled"
                       :label="global.lang.text.groupSortBy[global.lang.currentLang]" density="compact"
-                      :no-data-text="global.lang.text.noData[global.lang.currentLang]"
-                      width="192" hide-details :items="groupList">
+                      :no-data-text="global.lang.text.noData[global.lang.currentLang]" width="192" hide-details
+                      :items="groupList">
                 <template v-slot:selection="{ item }">
                     <v-icon v-if="item.value.includes('asc')" icon="mdi-arrow-up" size="small" />
                     <v-icon v-else-if="item.value.includes('desc')" icon="mdi-arrow-down" size="small" />
@@ -104,30 +103,30 @@ import { computed, watch } from "vue"
 // 显示列
 const tableHeaderList = computed(() => { // 获取所有列
     const headerList = []
-    global.tableData.keys.forEach(key => {
+    for (let key of global.tableData.keys) {
         headerList.push({ title: global.tableData.text[key][global.lang.currentLang], value: key })
-    })
+    }
     return headerList
 })
-for (var key in global.tableData.shownColumns) { // 默认所有列显示
+for (let key in global.tableData.shownColumns) { // 默认所有列显示
     if (global.tableData.shownColumns[key] == true) {
         global.viewOpt.listShowItems.push(key)
     }
 }
 watch(() => global.viewOpt.listShowItems, (newListShowItems) => { // 监听显示列变化
-    for (var key in global.tableData.shownColumns) {
+    for (let key in global.tableData.shownColumns) {
         global.tableData.shownColumns[key] = false
     }
-    newListShowItems.forEach((item) => {
+    for (let item of newListShowItems) {
         global.tableData.shownColumns[item] = true
-    })
+    }
 })
 
 // 分组
 const groupList = computed(() => {
     const groupList = []
     groupList.push({ title: global.lang.text.noGroup[global.lang.currentLang], value: "none" })
-    for (var key in global.tableData.group) {
+    for (let key in global.tableData.group) {
         if (global.tableData.group[key] != "none") {
             groupList.push({ title: global.tableData.text[key][global.lang.currentLang], value: key + "-asc" })
             groupList.push({ title: global.tableData.text[key][global.lang.currentLang], value: key + "-desc" })

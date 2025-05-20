@@ -82,8 +82,8 @@ export default {
     getReq() {
         this.loading = true
         global.comTool.getData("main/get", res => {
-            if (res.data.length > 0) {
-                this.data = res.data
+            if (res.length > 0) {
+                this.data = res
             }
             this.loading = false
         })
