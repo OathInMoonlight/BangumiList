@@ -16,6 +16,15 @@ catch (err) {
     console.error(err.message)
 }
 
+app.get("/main/info/get", (req, res) => {
+    try {
+        res.status(200).json(db.getMainDBInfo())
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500).send(err.message)
+    }
+})
 app.get("/main/get", (req, res) => {
     try{
         res.status(200).json(db.getMainDB())

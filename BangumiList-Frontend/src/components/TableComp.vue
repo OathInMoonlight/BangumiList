@@ -104,7 +104,7 @@ const tableHeaders = computed(() => { // 计算表头
         if (global.tableData.shownColumns[hkey] == true) { // 如果该列为显示列
             headers.push({
                 key: hkey, value: global.tableData.values[hkey], text: global.tableData.text[hkey][global.lang.currentLang],
-                align: global.tableData.align[hkey], width: global.tableData.computeWidth(hkey, global.lang.currentLang)
+                align: global.tableData.align[hkey], width: global.tableData.width[hkey]
             })
         }
     }
@@ -112,6 +112,7 @@ const tableHeaders = computed(() => { // 计算表头
 })
 
 // 获取数据
+global.tableData.getInfoReq() // 发送请求获取数据
 global.tableData.getReq() // 发送请求获取数据
 const filteredData = ref(global.tableData.data)
 let sortOfHeaders = reactive({})

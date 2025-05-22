@@ -38,17 +38,7 @@ export default {
         timeStamp: "center",
         databasePath: "start"
     },
-    computeWidth(key, currentLang) {
-        if (key === this.keys[1]) {
-            return 256
-        }
-        else if (key === this.keys[5]) {
-            return -1
-        }
-        else {
-            return currentLang === "en" ? this.text[key][currentLang].length * 8 + 30 : this.text[key][currentLang].length * 16 + 30
-        }
-    },
+    width: {},
     dataDisplay: {
         id: "text",
         databaseName: "text",
@@ -79,6 +69,27 @@ export default {
     selectedRow: null,
     filterText: null,
 
+    getInfoReq() {
+        global.isTableReady = false
+        global.comTool.getData("main/info/get", res => {
+            console.log(res)
+            for (let row of res) {
+                const key = row["KEYS"]
+                this.keys.push(key)
+                this.values[key] = key.toUpperCase()
+                this.sortMap[key] = row["SORTMAP"]
+                this.text[key] = JSON.parse(row["TEXT"])
+                this.align[key] = row["ALIGN"]
+                this.width[key] = row["WIDTH"] == "tight" ?
+                    (global.lang.currentLang === "en" ? this.text[key][global.lang.currentLang].length * 8 + 30 : this.text[key][global.lang.currentLang].length * 16 + 30)
+                    : (row["WIDTH"] == "fixed" ? 256 : -1)
+                this.dataDisplay[key] = row["DATADISPLAY"]
+                this.group[key] = row["GROUP"]
+                this.shownColumns[key] = row["SHOWNCOLUMNS"] == 1 ? true : false
+            }
+            global.isTableReady = true
+        })
+    },
     getReq() {
         this.loading = true
         global.comTool.getData("main/get", res => {

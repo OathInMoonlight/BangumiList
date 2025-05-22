@@ -1,13 +1,17 @@
 const fs = require("fs")
 const path = require("path")
 const sqlite = require("better-sqlite3")
+const tableInfo = require("./tableInfo.js")
 
 class Database {
     constructor(dbPath) {
         this.dbPath = path.join(__dirname, dbPath)
         this.db = null
-        this.table1Name = null
-        this.table2Name = null
+
+        this.infoTable1Name = "INFOTABLE1"
+        this.infoTable2Name = "INFOTABLE2"
+        this.table1Name = "FIRSTTABLE"
+        this.table2Name = "SECONDTABLE"
         this.table1Columns = []
         this.table2Columns = []
     }
@@ -19,7 +23,7 @@ class Database {
             throw { status: "Error", message: "Database \${this.dbPath} already exists." }
         }
         try {
-            this.db = new sqlite(this.dbPath)
+            this.db = new sqlite(this.dbPath) // 创建新数据库
             return { status: "Success", message: "Database " + this.dbPath + " has been created." }
         }
         catch (err) {
@@ -31,12 +35,10 @@ class Database {
             throw { status: "Error", message: "Database " + this.dbPath + " does not exist." }
         }
         try {
-            this.db = new sqlite(this.dbPath, { fileMustExist: true })
-            this.table1Name = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all()[0].name
-            this.table1Columns = this.db.prepare("PRAGMA table_info(" + this.table1Name + ")").all().map(column => column.name)
+            this.db = new sqlite(this.dbPath, { fileMustExist: true }) // 打开数据库
+            this.table1Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable1Name).all() // 获取表1的列名
             if (has_inner) {
-                this.table2Name = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all()[1].name
-                this.table2Columns = this.db.prepare("PRAGMA table_info(" + this.table2Name + ")").all().map(column => column.name)
+                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable2Name).all() // 获取表2的列名
             }
             return { status: "Success", message: "Database " + this.dbPath + " has been opened." }
         }
@@ -44,24 +46,66 @@ class Database {
             throw { status: "Error", message: "Error opening database " + this.dbPath + "\n" + err }
         }
     }
-    createTable(tableName, columns, is_inner = false) {
+    createTable(tableInfo, is_inner = false) {
         try {
-            columns.unshift(["ID", "INTEGER", "PRIMARY KEY", "AUTOINCREMENT"])
+            // 储存表的元数据
+            const infoTableColumns = Object.keys(tableInfo).map(key => { // 计算元数据的列名
+                if (key == "keys") {
+                    return "[" + key.toUpperCase() + "] TEXT PRIMARY KEY"
+                }
+                else if (key == "shownColumns") {
+                    return "[" + key.toUpperCase() + "] BOOLEAN NOT NULL"
+                }
+                else {
+                    return "[" + key.toUpperCase() + "] TEXT NOT NULL"
+                }
+            }).join(", ")
+            const infoTableName = is_inner ? this.infoTable2Name : this.infoTable1Name
+            this.db.prepare("CREATE TABLE IF NOT EXISTS " + infoTableName + " (" + infoTableColumns + ")").run() // 创建元数据表
+            const placeholders = Object.keys(tableInfo).map(() => "?").join(", ")
+            const insertInfoTransact = this.db.prepare("INSERT INTO " + infoTableName + " VALUES (" + placeholders + ")")
+            for (let key of tableInfo.keys) { // 将各列的元数据插入元数据表
+                const row = []
+                for (let value of Object.values(tableInfo)) {
+                    if (Array.isArray(value)) {
+                        row.push(key)
+                    }
+                    else if (typeof value[key] == "object") {
+                        row.push(JSON.stringify(value[key]))
+                    }
+                    else if (typeof value[key] == "boolean") {
+                        row.push(value[key] ? 1 : 0)
+                    }
+                    else{
+                        row.push(value[key])
+                    }
+                }
+                insertInfoTransact.run(row)
+            }
+
+            // 创建数据表
+            const columns = []
+            for (let key of tableInfo.keys) { // 计算数据表的列名
+                if (key == "id") {
+                    columns.push("ID INTEGER PRIMARY KEY AUTOINCREMENT")
+                }
+                else {
+                    columns.push("[" + key.toUpperCase() + "] " + tableInfo.dataType[key] + " NOT NULL")
+                }
+            }
             if (is_inner) {
-                this.table2Name = tableName
-                this.table2Columns = columns.map(column => column[0])
+                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName).all() // 存储表2的列名
             }
             else {
-                this.table1Name = tableName
-                this.table1Columns = columns.map(column => column[0])
+                this.table1Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName).all() // 存储表1的列名
             }
-            columns = columns.map(column => column.join(" "))
+            const tableName = is_inner ? this.table2Name : this.table1Name
             const columnsString = columns.join(", ")
             this.db.prepare("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnsString + ")").run()
             return { status: "Success", message: "Table " + tableName + " has been created." }
         }
         catch (err) {
-            throw { status: "Error", message: "Error creating table " + tableName + "\n" + err }
+            throw { status: "Error", message: "Error creating table " + (is_inner ? this.table2Name : this.table1Name) + "\n" + err }
         }
     }
     insertData(row, is_inner = false) {
@@ -69,7 +113,7 @@ class Database {
             const tableName = is_inner ? this.table2Name : this.table1Name
             const placeholders = Object.keys(row).map(() => "?").join(", ") + ", ?"
             const columns = is_inner ? this.table2Columns : this.table1Columns
-            const values = columns.map(column => {
+            const values = columns.map(column => { // 计算插入数据的值
                 if (row[column] == undefined) {
                     return null
                 }
@@ -118,6 +162,16 @@ class Database {
             throw { status: "Error", message: "Error retrieving data from table " + tableName + "\n" + err }
         }
     }
+    getInfo(is_inner = false) {
+        try {
+            const infoTableName = is_inner ? this.infoTable2Name : this.infoTable1Name
+            const rows = this.db.prepare("SELECT * FROM " + infoTableName).all()
+            return { status: "Success", message: "Info has been retrieved from table " + infoTableName, data: rows }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error retrieving info from table " + infoTableName + "\n" + err }
+        }
+    }
     closeDatabase() {
         try {
             this.db.close()
@@ -141,19 +195,24 @@ class DatabaseManager {
             }
             else {
                 this.MainDB.createDatabase()
-                this.MainDB.createTable("DATABASELIST", [
-                    ["DATABASENAME", "TEXT", "NOT NULL"],
-                    ["ENABLEGRID", "INTEGER"],
-                    ["ENABLEDOUBLETABLE", "INTEGER"],
-                    ["ENABLETIMESTAMP", "INTEGER"],
-                    ["DATABASEPATH", "TEXT"]
-                ])
+                this.MainDB.createTable(tableInfo)
             }
             this.MainDB.closeDatabase()
             return { status: "Success", message: "Main database has been initialized." }
         }
         catch (err) {
             throw { status: "Error", message: "Error initializing main database\n" + err.message }
+        }
+    }
+    getMainDBInfo() {
+        try {
+            this.MainDB.openDatabase()
+            const rows = this.MainDB.getInfo().data
+            this.MainDB.closeDatabase()
+            return { status: "Success", message: "Info have been gotten from main database.", data: rows }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error getting info from main database\n" + err.message }
         }
     }
     getMainDB() {

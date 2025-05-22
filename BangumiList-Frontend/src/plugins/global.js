@@ -11,6 +11,7 @@ export default {
     isDatabase: ref(false),
     viewOpt: reactive(viewOpt),
 
+    isTableReady: ref(false),
     tableData: reactive(databaseTable),
     comTool: http
 }
