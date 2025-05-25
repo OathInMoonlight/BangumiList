@@ -61,7 +61,7 @@
                         <!-- 被选中颜色控制 -->
                         <v-card rounded="0" elevation="0"
                                 :color="rowColor[row[global.tableData.values[global.tableData.keys[0]]]]"
-                                :class="'d-flex justify-' + header.align + ' align-center fill-height'">
+                                :class="'d-flex justify-' + header.align + ' align-center fill-height pa-2'">
                             <label v-if="global.tableData.dataDisplay[header.key] == 'text'" id="tableItemText">
                                 {{ row[header.value] }}
                             </label>
@@ -112,8 +112,6 @@ const tableHeaders = computed(() => { // 计算表头
 })
 
 // 获取数据
-global.tableData.getInfoReq() // 发送请求获取数据
-global.tableData.getReq() // 发送请求获取数据
 const filteredData = ref(global.tableData.data)
 let sortOfHeaders = reactive({})
 let groupKey = null

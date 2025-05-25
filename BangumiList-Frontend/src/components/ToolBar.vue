@@ -99,7 +99,7 @@ import global from "@/plugins/global.js"
 const addItemDialog = ref(false)
 const initAddDatabaseForm = {
     databaseName: null,
-    databasePath: null,
+    databasePath: "/",
     gridView: false,
     doubleTable: false,
     timeStamp: false
@@ -125,7 +125,7 @@ function deleteItemButton() {
         for (let row of global.tableData.data) {
             if (row[global.tableData.values[global.tableData.keys[0]]] == global.tableData.selectedRow) {
                 deleteRowName.value = row[global.tableData.values[global.tableData.keys[1]]]
-                return
+                break
             }
         }
         deleteItemDialog.value = true

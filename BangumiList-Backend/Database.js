@@ -36,9 +36,9 @@ class Database {
         }
         try {
             this.db = new sqlite(this.dbPath, { fileMustExist: true }) // 打开数据库
-            this.table1Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable1Name).all() // 获取表1的列名
+            this.table1Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable1Name + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 获取表1的列名
             if (has_inner) {
-                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable2Name).all() // 获取表2的列名
+                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable2Name + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 获取表2的列名
             }
             return { status: "Success", message: "Database " + this.dbPath + " has been opened." }
         }
@@ -49,9 +49,11 @@ class Database {
     createTable(tableInfo, is_inner = false) {
         try {
             // 储存表的元数据
-            const infoTableColumns = Object.keys(tableInfo).map(key => { // 计算元数据的列名
-                if (key == "keys") {
-                    return "[" + key.toUpperCase() + "] TEXT PRIMARY KEY"
+            const infoTableKeys = Object.keys(tableInfo)
+            infoTableKeys.unshift("id")
+            const infoTableColumns = infoTableKeys.map(key => { // 计算元数据的列名
+                if (key == "id") {
+                    return "[" + key.toUpperCase() + "] INTEGER PRIMARY KEY AUTOINCREMENT"
                 }
                 else if (key == "shownColumns") {
                     return "[" + key.toUpperCase() + "] BOOLEAN NOT NULL"
@@ -62,10 +64,10 @@ class Database {
             }).join(", ")
             const infoTableName = is_inner ? this.infoTable2Name : this.infoTable1Name
             this.db.prepare("CREATE TABLE IF NOT EXISTS " + infoTableName + " (" + infoTableColumns + ")").run() // 创建元数据表
-            const placeholders = Object.keys(tableInfo).map(() => "?").join(", ")
+            const placeholders = infoTableKeys.map(() => "?").join(", ")
             const insertInfoTransact = this.db.prepare("INSERT INTO " + infoTableName + " VALUES (" + placeholders + ")")
             for (let key of tableInfo.keys) { // 将各列的元数据插入元数据表
-                const row = []
+                const row = [null] // 第一列是自增ID
                 for (let value of Object.values(tableInfo)) {
                     if (Array.isArray(value)) {
                         row.push(key)
@@ -94,10 +96,10 @@ class Database {
                 }
             }
             if (is_inner) {
-                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName).all() // 存储表2的列名
+                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 存储表2的列名
             }
             else {
-                this.table1Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName).all() // 存储表1的列名
+                this.table1Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 存储表1的列名
             }
             const tableName = is_inner ? this.table2Name : this.table1Name
             const columnsString = columns.join(", ")
@@ -114,21 +116,22 @@ class Database {
             const placeholders = Object.keys(row).map(() => "?").join(", ") + ", ?"
             const columns = is_inner ? this.table2Columns : this.table1Columns
             const values = columns.map(column => { // 计算插入数据的值
-                if (row[column] == undefined) {
+                let value = row[column.toUpperCase()]
+                if (value == undefined) {
                     return null
                 }
-                else if (typeof row[column] == "boolean") {
-                    return row[column] ? 1 : 0
+                else if (typeof value == "boolean") {
+                    return value ? 1 : 0
                 }
                 else {
-                    return row[column]
+                    return value
                 }
             })
             this.db.prepare("INSERT INTO " + tableName + " VALUES (" + placeholders + ")").run([...values])
             return { status: "Success", message: "Data has been inserted into table " + tableName }
         }
         catch (err) {
-            throw { status: "Error", message: "Error inserting data into table " + tableName + "\n" + err }
+            throw { status: "Error", message: "Error inserting data into table " + (is_inner ? this.table2Name : this.table1Name) + "\n" + err }
         }
     }
     deleteData(rowid, is_inner = false) {
@@ -138,7 +141,7 @@ class Database {
             return { status: "Success", message: "Data has been deleted from table " + tableName }
         }
         catch (err) {
-            throw { status: "Error", message: "Error deleting data from table " + tableName + "\n" + err }
+            throw { status: "Error", message: "Error deleting data from table " + (is_inner ? this.table2Name : this.table1Name) + "\n" + err }
         }
     }
     updateData(rowid, row, is_inner = false) {
@@ -149,7 +152,7 @@ class Database {
             return { status: "Success", message: "Data has been updated in table " + tableName }
         }
         catch (err) {
-            throw { status: "Error", message: "Error updating data in table " + tableName + "\n" + err }
+            throw { status: "Error", message: "Error updating data in table " + (is_inner ? this.table2Name : this.table1Name) + "\n" + err }
         }
     }
     getData(is_inner = false) {
@@ -159,7 +162,7 @@ class Database {
             return { status: "Success", message: "Data has been retrieved from table " + tableName, data: rows }
         }
         catch (err) {
-            throw { status: "Error", message: "Error retrieving data from table " + tableName + "\n" + err }
+            throw { status: "Error", message: "Error retrieving data from table " + (is_inner ? this.table2Name : this.table1Name) + "\n" + err }
         }
     }
     getInfo(is_inner = false) {
