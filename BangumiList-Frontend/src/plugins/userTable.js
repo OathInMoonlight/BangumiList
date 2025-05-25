@@ -7,6 +7,7 @@ export default {
 
     keys: [],
     values: {},
+    dataType: {},
     sortMap: {},
     text: {},
     align: {},
@@ -21,12 +22,12 @@ export default {
     filterText: null,
 
     getInfoReq() {
-        global.isTableReady.value = false
-        global.comTool.getData("main/info/get", res => {
+        global.comTool.getData("user/info/get", res => {
             for (let row of res) {
                 const key = row["KEYS"]
                 this.keys.push(key)
                 this.values[key] = key.toUpperCase()
+                this.dataType[key] = row["DATATYPE"]
                 this.sortMap[key] = row["SORTMAP"]
                 this.text[key] = JSON.parse(row["TEXT"])
                 this.align[key] = row["ALIGN"]
@@ -37,12 +38,11 @@ export default {
                 this.group[key] = row["GROUP"]
                 this.shownColumns[key] = row["SHOWNCOLUMNS"] == 1 ? true : false
             }
-            global.isTableReady.value = true
         })
     },
     getReq() {
         this.loading = true
-        global.comTool.getData("main/get", res => {
+        global.comTool.getData("user/get", res => {
             if (res.length > 0) {
                 this.data = res
             }

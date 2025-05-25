@@ -1,17 +1,17 @@
 import { ref, reactive } from "vue"
 import lang from "@/plugins/lang.js"
 import viewOpt from "@/plugins/view.js"
-import databaseTable from "@/plugins/databaseTable.js"
+import mainTable from "@/plugins/mainTable.js"
 import http from "@/plugins/http.js"
 
 export default {
     lang: reactive(lang),
     primaryColor: ref("blue"),
   
-    isDatabase: ref(false),
+    isMain: ref(true),
     viewOpt: reactive(viewOpt),
 
     isTableReady: ref(false),
-    tableData: reactive(databaseTable),
+    tableData: reactive(mainTable),
     comTool: http
 }

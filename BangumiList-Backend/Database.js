@@ -36,9 +36,11 @@ class Database {
         }
         try {
             this.db = new sqlite(this.dbPath, { fileMustExist: true }) // 打开数据库
-            this.table1Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable1Name + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 获取表1的列名
+            this.table1Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable1Name + " ORDER BY ID ASC").all()
+                .map(value => value["KEYS"].toUpperCase()) // 获取表1的列名
             if (has_inner) {
-                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable2Name + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 获取表2的列名
+                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable2Name + " ORDER BY ID ASC").all()
+                    .map(value => value["KEYS"].toUpperCase()) // 获取表2的列名
             }
             return { status: "Success", message: "Database " + this.dbPath + " has been opened." }
         }
@@ -78,7 +80,7 @@ class Database {
                     else if (typeof value[key] == "boolean") {
                         row.push(value[key] ? 1 : 0)
                     }
-                    else{
+                    else {
                         row.push(value[key])
                     }
                 }
@@ -96,10 +98,12 @@ class Database {
                 }
             }
             if (is_inner) {
-                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 存储表2的列名
+                this.table2Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all()
+                    .map(value => value["KEYS"].toUpperCase()) // 存储表2的列名
             }
             else {
-                this.table1Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all().map(value => value["KEYS"]) // 存储表1的列名
+                this.table1Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all()
+                    .map(value => value["KEYS"].toUpperCase()) // 存储表1的列名
             }
             const tableName = is_inner ? this.table2Name : this.table1Name
             const columnsString = columns.join(", ")
@@ -116,7 +120,7 @@ class Database {
             const placeholders = Object.keys(row).map(() => "?").join(", ") + ", ?"
             const columns = is_inner ? this.table2Columns : this.table1Columns
             const values = columns.map(column => { // 计算插入数据的值
-                let value = row[column.toUpperCase()]
+                let value = row[column]
                 if (value == undefined) {
                     return null
                 }
