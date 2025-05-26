@@ -34,7 +34,7 @@ mainTableInfo = {
     },
     width: {
         id: "tight",
-        databaseName: "fixed",
+        databaseName: "flex",
         gridView: "tight",
         doubleTable: "tight",
         timeStamp: "tight",

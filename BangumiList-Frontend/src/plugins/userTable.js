@@ -33,7 +33,7 @@ export default {
                 this.align[key] = row["ALIGN"]
                 this.width[key] = row["WIDTH"] == "tight" ?
                     (global.lang.currentLang === "en" ? this.text[key][global.lang.currentLang].length * 8 + 30 : this.text[key][global.lang.currentLang].length * 16 + 30)
-                    : (row["WIDTH"] == "fixed" ? 256 : -1)
+                    : -1
                 this.dataDisplay[key] = row["DATADISPLAY"]
                 this.group[key] = row["GROUP"]
                 this.shownColumns[key] = row["SHOWNCOLUMNS"] == 1 ? true : false
