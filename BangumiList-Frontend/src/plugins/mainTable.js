@@ -50,5 +50,11 @@ export default {
             }
             this.loading = false
         })
+    },
+    insertReq(data, callback){
+        global.comTool.postData("main/insert", data, () => {
+            this.getReq()
+            callback()
+        })
     }
 }

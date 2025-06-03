@@ -14,6 +14,17 @@ export default {
     width: {},
     dataDisplay: {},
     group: {},
+    secondTable: {
+        keys: [],
+        values: {},
+        dataType: {},
+        sortMap: {},
+        text: {},
+        align: {},
+        width: {},
+        dataDisplay: {},
+        group: {}
+    },
 
     loading: true,
     shownColumns: {},

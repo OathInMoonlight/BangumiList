@@ -38,6 +38,8 @@ export default [
             "vue/component-tags-order": ["error", {
                 "order": [["style", "template"], "script"]
             }], // 组件标签顺序
+            "vue/require-prop-types": ["off"], // 组件属性不强制要求类型
+            "vue/no-mutating-props": ["off"], // 组件属性不强制禁止修改
             
             "vue/html-indent": ["error", 4], // html 缩进4个空格
             indent: ["error", 4], // 缩进4个空格
