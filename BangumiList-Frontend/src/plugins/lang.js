@@ -33,8 +33,13 @@ export default {
         deleteColumn: {"zh": "删除列", "ja": "列を削除", "en": "Delete Column"},
         true: {"zh": "是", "ja": "はい", "en": "True"},
         false: {"zh": "否", "ja": "いいえ", "en": "False"},
+        // 提交
+        notEmpty: {"zh": "可填项目不能为空", "ja": "空欄は空にできません", "en": "Blank cannot be empty"},
+        noConflict: {"zh": "列键不能与已有的列冲突", "ja": "列キーは既存の列と競合できません", "en": "Cannot conflict with existing column keys"},
+        notValidName: {"zh": "列名不合法", "ja": "列名が無効です", "en": "Invalid column name"},
         submit: {"zh": "提交", "ja": "送信", "en": "Submit"},
         cancel: {"zh": "取消", "ja": "キャンセル", "en": "Cancel"},
+        confirm: {"zh": "确认", "ja": "確認", "en": "Confirm"},
         // 导入
         import: {"zh": "导入", "ja": "インポート", "en": "Import"},
         // 导出
@@ -44,7 +49,6 @@ export default {
         deleteErrorText: {"zh":"请选择要删除的数据库", "ja":"削除するデータベースを選択してください", "en":"Please select the database to delete"},
         deleteConfirm1: {"zh": "确认要删除", "ja": "", "en": "Are you sure to delete"},
         deleteConfirm2: {"zh": "吗？", "ja": "を削除しますか？", "en": "?"},
-        confirm: {"zh": "确认", "ja": "確認", "en": "Confirm"},
         // 编辑
         edit: {"zh": "编辑", "ja": "編集", "en": "Edit"},
 

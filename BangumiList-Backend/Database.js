@@ -37,10 +37,10 @@ class Database {
         try {
             this.db = new sqlite(this.dbPath, { fileMustExist: true }) // 打开数据库
             this.table1Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable1Name + " ORDER BY ID ASC").all()
-                .map(value => value["KEYS"].toUpperCase()) // 获取表1的列名
+                .map(value => value["KEYS"]) // 获取表1的列名
             if (has_inner) {
                 this.table2Columns = this.db.prepare("SELECT KEYS FROM " + this.infoTable2Name + " ORDER BY ID ASC").all()
-                    .map(value => value["KEYS"].toUpperCase()) // 获取表2的列名
+                    .map(value => value["KEYS"]) // 获取表2的列名
             }
             return { status: "Success", message: "Database " + this.dbPath + " has been opened." }
         }
@@ -99,11 +99,11 @@ class Database {
             }
             if (is_inner) {
                 this.table2Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all()
-                    .map(value => value["KEYS"].toUpperCase()) // 存储表2的列名
+                    .map(value => value["KEYS"]) // 存储表2的列名
             }
             else {
                 this.table1Columns = this.db.prepare("SELECT KEYS FROM " + infoTableName + " ORDER BY ID ASC").all()
-                    .map(value => value["KEYS"].toUpperCase()) // 存储表1的列名
+                    .map(value => value["KEYS"]) // 存储表1的列名
             }
             const tableName = is_inner ? this.table2Name : this.table1Name
             const columnsString = columns.join(", ")
@@ -117,8 +117,8 @@ class Database {
     insertData(row, is_inner = false) {
         try {
             const tableName = is_inner ? this.table2Name : this.table1Name
-            const placeholders = Object.keys(row).map(() => "?").join(", ") + ", ?"
             const columns = is_inner ? this.table2Columns : this.table1Columns
+            const placeholders = Object.keys(columns).map(() => "?")
             const values = columns.map(column => { // 计算插入数据的值
                 let value = row[column]
                 if (value == undefined) {
@@ -233,11 +233,69 @@ class DatabaseManager {
             throw { status: "Error", message: "Error getting data from main database\n" + err.message }
         }
     }
-    insertMainDB(row) {
+    insertMainDB(addForm) {
         try {
             this.MainDB.openDatabase()
-            this.MainDB.insertData(row)
+            this.MainDB.insertData(addForm)
             this.MainDB.closeDatabase()
+            const newUserDB = new Database(path.join(addForm.databasePath, addForm.databaseName + ".db"))
+            if (newUserDB.detectDatabase()) {
+                throw "A database with the same name already exists."
+            }
+            else {
+                newUserDB.createDatabase()
+                const newTableInfo = {
+                    keys : [],
+                    dataType : {},
+                    sortMap : {},
+                    text : {},
+                    align : {},
+                    width : {},
+                    dataDisplay : {},
+                    group : {},
+                    shownColumns : {}
+                }
+                for(let column of addForm.userDatabaseColumns){
+                    newTableInfo.keys.push(column.key)
+                    newTableInfo.dataType[column.key] = column.dataType
+                    newTableInfo.sortMap[column.key] = column.sortMap
+                    newTableInfo.text[column.key] = column.text
+                    newTableInfo.align[column.key] = column.width == "tight" ? "center" : "start"
+                    newTableInfo.width[column.key] = column.width
+                    newTableInfo.dataDisplay[column.key] = column.dataType == "BOOLEAN" ? "icon" : "text"
+                    newTableInfo.group[column.key] = column.dataType == column.dataType == "TEXT" ? "alphabet" :
+                    (column.dataType == "BOOLEAN" ? "classification" : "none")
+                    newTableInfo.shownColumns[column.key] = column.defaultShow
+                }
+                newUserDB.createTable(newTableInfo)
+                if(addForm.doubleTable){
+                    const newTableInfo2 = {
+                        keys : [],
+                        dataType : {},
+                        sortMap : {},
+                        text : {},
+                        align : {},
+                        width : {},
+                        dataDisplay : {},
+                        group : {},
+                        shownColumns : {}
+                    }
+                    for(let column of addForm.userDatabaseColumns){
+                        newTableInfo2.keys.push(column.key)
+                        newTableInfo2.dataType[column.key] = column.dataType
+                        newTableInfo2.sortMap[column.key] = column.sortMap
+                        newTableInfo2.text[column.key] = column.text
+                        newTableInfo2.align[column.key] = column.width == "tight" ? "center" : "start"
+                        newTableInfo2.width[column.key] = column.width
+                        newTableInfo2.dataDisplay[column.key] = column.dataType == "BOOLEAN" ? "icon" : "text"
+                        newTableInfo2.group[column.key] = column.dataType == column.dataType == "TEXT" ? "alphabet" :
+                        (column.dataType == "BOOLEAN" ? "classification" : "none")
+                        newTableInfo2.shownColumns[column.key] = column.defaultShow
+                    }
+                    newUserDB.createTable(newTableInfo2, true)
+                }
+            }
+            newUserDB.closeDatabase()
             return { status: "Success", message: "Data have been inserted into main database." }
         }
         catch (err) {

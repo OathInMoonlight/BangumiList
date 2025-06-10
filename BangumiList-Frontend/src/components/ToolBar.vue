@@ -17,22 +17,22 @@
             <!-- 工具栏 -->
             <div class="d-flex align-center mr-2">
                 <AddForm />
-                <v-tooltip :text="global.lang.text.import[global.lang.currentLang]">
+                <v-tooltip :text="global.lang.text.import[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" icon="mdi-import" />
                     </template>
                 </v-tooltip>
-                <v-tooltip :text="global.lang.text.export[global.lang.currentLang]">
+                <v-tooltip :text="global.lang.text.export[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" icon="mdi-export" />
                     </template>
                 </v-tooltip>
-                <v-tooltip :text="global.lang.text.delete[global.lang.currentLang]">
+                <v-tooltip :text="global.lang.text.delete[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" icon="mdi-delete" @click="deleteItemButton" />
                     </template>
                 </v-tooltip>
-                <v-tooltip :text="global.lang.text.edit[global.lang.currentLang]">
+                <v-tooltip :text="global.lang.text.edit[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" icon="mdi-square-edit-outline" />
                     </template>

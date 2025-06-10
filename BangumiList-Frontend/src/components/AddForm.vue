@@ -1,5 +1,5 @@
 <template>
-    <v-tooltip :text="global.lang.text.plus[global.lang.currentLang]">
+    <v-tooltip :text="global.lang.text.plus[global.lang.currentLang]" location="bottom center">
         <template v-slot:activator="{ props }">
             <v-btn v-bind="props" icon="mdi-plus" @click="addItemDialog = true" />
         </template>
@@ -35,7 +35,7 @@
             <div class="ma-4">
                 <div v-for="(column, index) in addDatabaseForm.userDatabaseColumns" :key="index"
                      class="d-flex flex-row align-center ga-2 pa-0 mt-2">
-                    <v-tooltip :text="global.lang.text.deleteColumn[global.lang.currentLang]">
+                    <v-tooltip :text="global.lang.text.deleteColumn[global.lang.currentLang]" location="bottom center">
                         <template v-slot:activator="{ props }">
                             <v-btn v-if="index == 0" rounded="0" v-bind="props" icon="mdi-minus" disabled />
                             <v-btn v-else-if="index == 1 && addDatabaseForm.gridView" rounded="0" v-bind="props" icon="mdi-minus" disabled />
@@ -53,7 +53,7 @@
                              :editable="[true, true, true, true, true, true, true, true]"
                              :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
                 </div>
-                <v-tooltip :text="global.lang.text.addNewColumn[global.lang.currentLang]">
+                <v-tooltip :text="global.lang.text.addNewColumn[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn block rounded="0" v-bind="props" icon="mdi-plus" class="mt-4" @click="addNewColumn(1)" />
                     </template>
@@ -63,7 +63,7 @@
             <div v-if="addDatabaseForm.doubleTable" class="ma-4">
                 <div v-for="(column, index) in addDatabaseForm.userDatabaseColumns2" :key="index"
                      class="d-flex flex-row align-center ga-2 pa-0 mt-2">
-                    <v-tooltip :text="global.lang.text.deleteColumn[global.lang.currentLang]">
+                    <v-tooltip :text="global.lang.text.deleteColumn[global.lang.currentLang]" location="bottom center">
                         <template v-slot:activator="{ props }">
                             <v-btn v-if="index == 0" rounded="0" v-bind="props" icon="mdi-minus" disabled />
                             <v-btn v-else-if="index == 1 && addDatabaseForm.gridView" rounded="0" v-bind="props" icon="mdi-minus" disabled />
@@ -81,7 +81,7 @@
                              :editable="[true, true, true, true, true, true, true, true]"
                              :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
                 </div>
-                <v-tooltip :text="global.lang.text.addNewColumn[global.lang.currentLang]">
+                <v-tooltip :text="global.lang.text.addNewColumn[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn block rounded="0" v-bind="props" icon="mdi-plus" class="mt-4" @click="addNewColumn(2)" />
                     </template>
@@ -97,6 +97,10 @@
             </div>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="checkAlert" max-width="512">
+        <v-alert :title="global.lang.text.error[global.lang.currentLang]"
+                 :text="checkAlertMessage" type="error" />
+    </v-dialog>
 </template>
 
 <script setup>
@@ -110,9 +114,14 @@ function initAddDatabaseForm() {
     const form = {}
     if (global.isMain.value) {
         for (let key of global.tableData.keys) {
-            form[key] = null
+            if(key != "id"){
+                form[key] = null
+            }
         }
         form.databasePath = "/databases/"
+        form.gridView = false
+        form.doubleTable = false
+        form.timeStamp = false
         form.firstTimeStamp = null
         form.secondTimeStamp = null
         form.userDatabaseColumns = []
@@ -188,21 +197,78 @@ const columnDefaultShow = computed(() => {
         { title: global.lang.text.false[global.lang.currentLang], value: false }]
 })
 
-// function notNullCheck(value){
-//     return (value != null && value != undefined && value != "") ? true : "This field cannot be empty"
-// }
-// function noConflictCheck(value) {
-//     if (global.tableData.keys.includes(value)) {
-//         return "This key already exists"
-//     }
-//     return true
-// }
+const checkAlert = ref(false)
+let checkAlertMessage = null
+function notNullCheck(value){
+    if(Array.isArray(value) || typeof value == "object"){
+        for(let index in value){
+            if(index == "scondTimeStamp" || (index == "firstTimeStamp" && !addDatabaseForm.timeStamp)
+            || (index == "userDatabaseColumns2" && !addDatabaseForm.doubleTable)){
+                continue
+            }
+            if(!notNullCheck(value[index])){
+                return false
+            }
+        }
+        return true
+    }
+    return (value !== null && value !== undefined && value !== "") ? true : false
+}
+function noConflictCheck(columns) {
+    const keys = []
+    for(let column of columns){
+        for(let key of keys){
+            if(key == column.key){
+                return false
+            }
+        }
+        keys.push(column.key)
+    }
+    return true
+}
+function nameCheck(value){
+    if(value.includes(" ") || value.includes("/") || value.includes("\\") || value.includes(":") ||
+       value.includes("*") || value.includes("?") || value.includes("'") || value.includes("<") ||
+       value.includes(">") || value.includes("|") || value.includes(".")){
+        return false
+    }
+    return true
+}
+function formCheck(form){
+    if(!notNullCheck(form)){
+        return global.lang.text.notEmpty[global.lang.currentLang]
+    }
+    if(!noConflictCheck(form.userDatabaseColumns) || (form.doubleTable && !noConflictCheck(form.userDatabaseColumns2))){
+        return global.lang.text.noConflict[global.lang.currentLang]
+    }
+    if(!nameCheck(form.databaseName)){
+        return global.lang.text.notValidName[global.lang.currentLang]
+    }
+    for(let column of form.userDatabaseColumns){
+        if(!nameCheck(column.key)){
+            return global.lang.text.notValidName[global.lang.currentLang]
+        }
+    }
+    if(form.doubleTable){
+        for(let column of form.userDatabaseColumns2){
+            if(!nameCheck(column.key)){
+                return global.lang.text.notValidName[global.lang.currentLang]
+            }
+        }
+    }
+    return true
+}
 
 function addItemSubmit() {
     addItemDialog.value = false
-    console.log(addDatabaseForm)
-    // global.tableData.insertReq(addDatabaseForm, () => {
-    //     addDatabaseForm = reactive(initAddDatabaseForm())
-    // })
+    const checkResult = formCheck(addDatabaseForm)
+    if(checkResult != true){
+        checkAlertMessage = ref(checkResult)
+        checkAlert.value = true
+        return
+    }
+    global.tableData.insertReq(addDatabaseForm, () => {
+        addDatabaseForm = reactive(initAddDatabaseForm())
+    })
 }
 </script>
