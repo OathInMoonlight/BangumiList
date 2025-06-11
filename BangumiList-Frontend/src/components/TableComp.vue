@@ -242,7 +242,7 @@ function groupData() {
         groupedData.value = []
         groupKey = ref(global.viewOpt.groupSortBy.split("-")[0]) // 获取分组的key
         if (global.tableData.group[groupKey.value] == "alphabet") { // 如果分组为字母，则按字母分组
-            let alphabet = "abcdefghijklmnopqrstuvwxyz"
+            let alphabet = "#abcdefghijklmnopqrstuvwxyz"
             const alphabetCount = {}
             for (let i of alphabet) { // 初始化字母分组
                 alphabetCount[i] = []

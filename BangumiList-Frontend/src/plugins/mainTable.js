@@ -24,7 +24,8 @@ export default {
     getInfoReq() {
         global.isTableReady.value = false
         global.comTool.getData("main/info/get", res => {
-            for (let row of res) {
+            const rows = res.rows
+            for (let row of rows) {
                 const key = row["KEYS"]
                 this.keys.push(key)
                 this.values[key] = key.toUpperCase()

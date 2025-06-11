@@ -16,11 +16,11 @@
             </div>
             <div class="d-flex flex-row justify-space-around pa-0 ml-4 mr-4 mb-2">
                 <v-switch v-model="addDatabaseForm.gridView" :color="global.primaryColor.value"
-                          :label="global.tableData.text.gridView[global.lang.currentLang]" hide-details />
+                          :label="global.lang.text.gridView[global.lang.currentLang]" hide-details />
                 <v-switch v-model="addDatabaseForm.doubleTable" :color="global.primaryColor.value"
-                          :label="global.tableData.text.doubleTable[global.lang.currentLang]" hide-details />
+                          :label="global.lang.text.doubleTable[global.lang.currentLang]" hide-details />
                 <v-switch v-model="addDatabaseForm.timeStamp" :color="global.primaryColor.value"
-                          :label="global.tableData.text.timeStamp[global.lang.currentLang]" hide-details />
+                          :label="global.lang.text.timeStamp[global.lang.currentLang]" hide-details />
             </div>
             <v-divider />
             <div v-if="addDatabaseForm.timeStamp" class="d-flex flex-row justify-space-around ga-4 pa-0 ma-4">

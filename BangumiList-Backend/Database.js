@@ -2,11 +2,13 @@ const fs = require("fs")
 const path = require("path")
 const sqlite = require("better-sqlite3")
 const tableInfo = require("./tableInfo.js")
+const { timeStamp } = require("console")
 
 class Database {
     constructor(dbPath) {
         this.dbPath = path.join(__dirname, dbPath)
         this.db = null
+        this.infoTable0Name = "INFOTABLE0"
 
         this.infoTable1Name = "INFOTABLE1"
         this.infoTable2Name = "INFOTABLE2"
@@ -18,12 +20,19 @@ class Database {
     detectDatabase() {
         return fs.existsSync(this.dbPath)
     }
-    createDatabase() {
+    createDatabase(databaseInfo) {
         if (this.detectDatabase()) {
             throw { status: "Error", message: "Database \${this.dbPath} already exists." }
         }
         try {
             this.db = new sqlite(this.dbPath) // 创建新数据库
+            this.db.prepare("CREATE TABLE IF NOT EXISTS " + this.infoTable0Name + " (\
+                GRIDVIEW BOOLEAN NOT NULL,\
+                DOUBLETABLE BOOLEAN NOT NULL,\
+                TIMESTAMP BOOLEAN NOT NULL,\
+                FIRSTTIMESTAMP TEXT,\
+                SECONDTIMESTAMP TEXT)").run()
+            this.db.prepare("INSERT INTO " + this.infoTable0Name + " VALUES (?, ?, ?, ?, ?)").run([...Object.values(databaseInfo)])
             return { status: "Success", message: "Database " + this.dbPath + " has been created." }
         }
         catch (err) {
@@ -171,9 +180,10 @@ class Database {
     }
     getInfo(is_inner = false) {
         try {
+            const settings = this.db.prepare("SELECT * FROM " + this.infoTable0Name).get()
             const infoTableName = is_inner ? this.infoTable2Name : this.infoTable1Name
             const rows = this.db.prepare("SELECT * FROM " + infoTableName).all()
-            return { status: "Success", message: "Info has been retrieved from table " + infoTableName, data: rows }
+            return { status: "Success", message: "Info has been retrieved from table " + infoTableName, data: {settings: settings, rows: rows} }
         }
         catch (err) {
             throw { status: "Error", message: "Error retrieving info from table " + infoTableName + "\n" + err }
@@ -201,7 +211,12 @@ class DatabaseManager {
                 this.MainDB.openDatabase()
             }
             else {
-                this.MainDB.createDatabase()
+                this.MainDB.createDatabase({
+                    gridView: 0,
+                    doubleTable: 0,
+                    timeStamp: 0,
+                    firstTimeStamp: null,
+                    secondTimeStamp: null})
                 this.MainDB.createTable(tableInfo)
             }
             this.MainDB.closeDatabase()
@@ -214,9 +229,9 @@ class DatabaseManager {
     getMainDBInfo() {
         try {
             this.MainDB.openDatabase()
-            const rows = this.MainDB.getInfo().data
+            const data = this.MainDB.getInfo().data
             this.MainDB.closeDatabase()
-            return { status: "Success", message: "Info have been gotten from main database.", data: rows }
+            return { status: "Success", message: "Info have been gotten from main database.", data: data }
         }
         catch (err) {
             throw { status: "Error", message: "Error getting info from main database\n" + err.message }
@@ -243,7 +258,12 @@ class DatabaseManager {
                 throw "A database with the same name already exists."
             }
             else {
-                newUserDB.createDatabase()
+                newUserDB.createDatabase({
+                    gridView: addForm.gridView ? 1 : 0,
+                    doubleTable: addForm.doubleTable ? 1 : 0,
+                    timeStamp: addForm.timeStamp ? 1 : 0,
+                    firstTimeStamp: addForm.firstTimeStamp,
+                    secondTimeStamp: addForm.secondTimeStamp})
                 const newTableInfo = {
                     keys : [],
                     dataType : {},

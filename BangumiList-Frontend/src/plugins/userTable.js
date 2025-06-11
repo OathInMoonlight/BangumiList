@@ -4,6 +4,8 @@ export default {
     gridView: false,
     doubleTable: false,
     timeStamp: false,
+    firstTimeStamp: null,
+    secondTimeStamp: null,
 
     keys: [],
     values: {},
@@ -34,7 +36,13 @@ export default {
 
     getInfoReq() {
         global.comTool.getData("user/info/get", res => {
-            for (let row of res) {
+            this.gridView = res.settings.gridView
+            this.doubleTable = res.settings.doubleTable
+            this.timeStamp = res.settings.timeStamp
+            this.firstTimeStamp = res.settings.firstTimeStamp
+            this.secondTimeStamp = res.settings.secondTimeStamp
+            const rows = res.rows
+            for (let row of rows) {
                 const key = row["KEYS"]
                 this.keys.push(key)
                 this.values[key] = key.toUpperCase()

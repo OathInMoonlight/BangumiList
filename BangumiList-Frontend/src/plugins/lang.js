@@ -16,6 +16,8 @@ export default {
         backToList: {"zh": "返回列表", "ja": "リストに戻る", "en": "Back to List"},
         // 新建
         plus: {"zh": "新建", "ja": "新規作成", "en": "New"},
+        doubleTable: { "zh": "双层表", "ja": "二重テーブル", "en": "Double Table" },
+        timeStamp: { "zh": "时间戳", "ja": "タイムスタンプ", "en": "Time Stamp" },
         firstTimeStamp: {"zh": "主时间戳", "ja": "主要タイムスタンプ", "en": "First Time Stamp"},
         secondTimeStamp: {"zh": "次要时间戳", "ja": "第二タイムスタンプ", "en": "Second Time Stamp"},
         column: {"zh": "列", "ja": "列", "en": "Column"},
