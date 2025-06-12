@@ -17,11 +17,7 @@
             <!-- 工具栏 -->
             <div class="d-flex align-center mr-2">
                 <AddForm />
-                <v-tooltip :text="global.lang.text.import[global.lang.currentLang]" location="bottom center">
-                    <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-import" />
-                    </template>
-                </v-tooltip>
+                <ImportForm />
                 <v-tooltip :text="global.lang.text.export[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" icon="mdi-export" />
@@ -68,6 +64,7 @@
 import { ref } from "vue"
 import global from "@/plugins/global.js"
 import AddForm from "@/components/AddForm.vue"
+import ImportForm from "./ImportForm.vue"
 
 // 删除数据库对话框
 const deleteItemAlert = ref(false)

@@ -1,9 +1,11 @@
 const express = require('express')
 const cors = require('cors')
+const multer = require('multer')
 const database = require("./Database.js")
 
 const app = express()
 const port = 3001
+const upload = multer({ dest: "fileCache/" })
 
 app.use(cors()) // Enable CORS for all routes
 app.use(express.json()) // Parse JSON request body
@@ -37,6 +39,15 @@ app.get("/main/get", (req, res) => {
 app.post("/main/insert", (req, res) => {
     try {
         res.status(200).json(db.insertMainDB(req.body))
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500).send(err.message)
+    }
+})
+app.post("/main/import", upload.single('file'), (req, res) => {
+    try {
+        res.status(200).json(db.importMainDB({fileName: req.body.fileName, file: req.file}))
     }
     catch (err) {
         console.error(err.message)

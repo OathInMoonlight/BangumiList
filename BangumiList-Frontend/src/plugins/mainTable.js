@@ -57,5 +57,11 @@ export default {
             this.getReq()
             callback()
         })
+    },
+    importReq(data, callback){
+        global.comTool.postFile("main/import", data, () => {
+            this.getReq()
+            callback()
+        })
     }
 }

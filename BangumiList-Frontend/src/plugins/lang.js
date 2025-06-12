@@ -44,6 +44,8 @@ export default {
         confirm: {"zh": "确认", "ja": "確認", "en": "Confirm"},
         // 导入
         import: {"zh": "导入", "ja": "インポート", "en": "Import"},
+        importMassage: {"zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file"},
+        uploadFile: {"zh": "上传文件", "ja": "アップロードファイル", "en": "Upload File"},
         // 导出
         export: {"zh": "导出", "ja": "エクスポート", "en": "Export"},
         // 删除

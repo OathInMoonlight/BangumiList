@@ -322,6 +322,22 @@ class DatabaseManager {
             throw { status: "Error", message: "Error inserting data into main database\n" + err.message }
         }
     }
+    importMainDB(data){
+        try {
+            const targetPath = path.join(__dirname, "databases", data.fileName)
+            fs.renameSync(data.file.path, targetPath)
+            this.MainDB.openDatabase()
+            this.MainDB.insertData({
+                databaseName: path.parse(data.fileName).name,
+                databasePath: "databases/"
+            })
+            this.MainDB.closeDatabase()
+            return { status: "Success", message: "Database has been uploaded successfully." }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error updating database to backend\n" + err.message }
+        }
+    }
     deleteMainDB(rowid) {
         try {
             this.MainDB.openDatabase()

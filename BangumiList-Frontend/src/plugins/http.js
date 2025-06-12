@@ -19,5 +19,17 @@ export default {
             .then(response => response.json())
             .then(rdata => callback(rdata))
             .catch(err => console.error(err))
+    },
+    postFile(api, data, callback){
+        const formData = new FormData()
+        formData.append("fileName", data.fileName)
+        formData.append("file", data.file)
+        fetch(this.url + ":" + this.port + "/" + api, {
+            method: "POST",
+            body: formData
+        })
+            .then(response => response.json())
+            .then(rdata => callback(rdata))
+            .catch(err => console.error(err))
     }
 }
