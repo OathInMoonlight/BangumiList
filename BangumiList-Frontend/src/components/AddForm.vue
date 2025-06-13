@@ -284,7 +284,12 @@ function addItemSubmit() {
         checkAlert.value = true
         return
     }
-    global.tableData.insertReq(addDatabaseForm, () => {
+    global.tableData.insertReq(addDatabaseForm, status => {
+        if(status !== "Success"){
+            checkAlertMessage = ref(global.lang.text.newError[global.lang.currentLang])
+            checkAlert.value = true
+            return
+        }
         addDatabaseForm = reactive(initAddDatabaseForm())
     })
 }

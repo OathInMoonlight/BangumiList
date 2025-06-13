@@ -20,6 +20,11 @@
             </div>
         </v-card>
     </v-dialog>
+    <!-- 报错 -->
+    <v-dialog v-model="importAlert" max-width="512">
+        <v-alert :title="global.lang.text.error[global.lang.currentLang]"
+                 :text="global.lang.text.importError[global.lang.currentLang]" type="error" />
+    </v-dialog>
 </template>
 
 <script setup>
@@ -28,10 +33,15 @@ import global from "@/plugins/global.js"
 
 const importItemDialog = ref(false)
 const file = ref(null)
+const importAlert = ref(false)
 
 function uploadFileSubmit(){
     importItemDialog.value = false
-    global.tableData.importReq({fileName: file.value.name, file: file.value}, () => {
+    global.tableData.importReq({fileName: file.value.name, file: file.value}, status => {
+        if(status !== "Success"){
+            importAlert.value = true
+            return
+        }
         file.value = null
     })
 }

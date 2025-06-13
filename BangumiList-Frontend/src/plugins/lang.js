@@ -35,6 +35,7 @@ export default {
         deleteColumn: {"zh": "删除列", "ja": "列を削除", "en": "Delete Column"},
         true: {"zh": "是", "ja": "はい", "en": "True"},
         false: {"zh": "否", "ja": "いいえ", "en": "False"},
+        newError: {"zh": "新建失败", "ja": "新規作成に失敗しました", "en": "Failed to create new item"},
         // 提交
         notEmpty: {"zh": "可填项目不能为空", "ja": "空欄は空にできません", "en": "Blank cannot be empty"},
         noConflict: {"zh": "列键不能与已有的列冲突", "ja": "列キーは既存の列と競合できません", "en": "Cannot conflict with existing column keys"},
@@ -46,6 +47,7 @@ export default {
         import: {"zh": "导入", "ja": "インポート", "en": "Import"},
         importMassage: {"zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file"},
         uploadFile: {"zh": "上传文件", "ja": "アップロードファイル", "en": "Upload File"},
+        importError: {"zh": "导入失败", "ja": "インポートに失敗しました", "en": "Failed to import"},
         // 导出
         export: {"zh": "导出", "ja": "エクスポート", "en": "Export"},
         // 删除
@@ -71,6 +73,7 @@ export default {
         // 表格
         noData: {"zh": "无数据", "ja": "データなし", "en": "No Data"},
         loading: {"zh": "加载中", "ja": "読み込み中", "en": "Loading"},
-        error: {"zh": "错误", "ja": "エラー", "en": "Error"}
+        error: {"zh": "错误", "ja": "エラー", "en": "Error"},
+        getError: {"zh": "获取数据失败", "ja": "データの取得に失敗しました", "en": "Failed to get data"}
     }
 }

@@ -5,8 +5,8 @@ export default {
     getData(api, callback) {
         fetch(this.url + ":" + this.port + "/" + api)
             .then(response => response.json())
-            .then(rdata => callback(rdata.data))
-            .catch(err => console.error(err))
+            .then(rdata => callback(rdata))
+            .catch(err => callback(err))
     },
     postData(api, data, callback) {
         fetch(this.url + ":" + this.port + "/" + api, {
@@ -18,7 +18,7 @@ export default {
         })
             .then(response => response.json())
             .then(rdata => callback(rdata))
-            .catch(err => console.error(err))
+            .catch(err => callback(err))
     },
     postFile(api, data, callback){
         const formData = new FormData()
@@ -30,6 +30,6 @@ export default {
         })
             .then(response => response.json())
             .then(rdata => callback(rdata))
-            .catch(err => console.error(err))
+            .catch(err => callback(err))
     }
 }

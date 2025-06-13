@@ -21,10 +21,14 @@ export default {
     selectedRow: null,
     filterText: null,
 
-    getInfoReq() {
+    getInfoReq(callback) {
         global.isTableReady.value = false
         global.comTool.getData("main/info/get", res => {
-            const rows = res.rows
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
+            const rows = res.data.rows
             for (let row of rows) {
                 const key = row["KEYS"]
                 this.keys.push(key)
@@ -43,25 +47,37 @@ export default {
             global.isTableReady.value = true
         })
     },
-    getReq() {
+    getReq(callback) {
         this.loading = true
         global.comTool.getData("main/get", res => {
-            if (res.length > 0) {
-                this.data = res
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
+            if (res.data.length > 0) {
+                this.data = res.data
             }
             this.loading = false
         })
     },
     insertReq(data, callback){
-        global.comTool.postData("main/insert", data, () => {
+        global.comTool.postData("main/insert", data, res => {
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
             this.getReq()
-            callback()
+            callback(res.status)
         })
     },
     importReq(data, callback){
-        global.comTool.postFile("main/import", data, () => {
+        global.comTool.postFile("main/import", data, res => {
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
             this.getReq()
-            callback()
+            callback(res.status)
         })
     }
 }

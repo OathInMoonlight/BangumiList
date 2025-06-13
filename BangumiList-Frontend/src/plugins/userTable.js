@@ -34,14 +34,18 @@ export default {
     selectedRow: null,
     filterText: null,
 
-    getInfoReq() {
+    getInfoReq(callback) {
         global.comTool.getData("user/info/get", res => {
-            this.gridView = res.settings.gridView
-            this.doubleTable = res.settings.doubleTable
-            this.timeStamp = res.settings.timeStamp
-            this.firstTimeStamp = res.settings.firstTimeStamp
-            this.secondTimeStamp = res.settings.secondTimeStamp
-            const rows = res.rows
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
+            this.gridView = res.data.settings.gridView
+            this.doubleTable = res.data.settings.doubleTable
+            this.timeStamp = res.data.settings.timeStamp
+            this.firstTimeStamp = res.data.settings.firstTimeStamp
+            this.secondTimeStamp = res.data.settings.secondTimeStamp
+            const rows = res.data.rows
             for (let row of rows) {
                 const key = row["KEYS"]
                 this.keys.push(key)
@@ -59,11 +63,15 @@ export default {
             }
         })
     },
-    getReq() {
+    getReq(callback) {
         this.loading = true
         global.comTool.getData("user/get", res => {
-            if (res.length > 0) {
-                this.data = res
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
+            if (res.data.length > 0) {
+                this.data = res.data
             }
             this.loading = false
         })
