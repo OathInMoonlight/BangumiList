@@ -7,7 +7,7 @@
 
     <v-dialog v-model="importItemDialog" persistent>
         <v-card v-if="global.isMain.value" width="512" class="ga-4 pa-4 ma-auto">
-            <label>{{ global.lang.text.importMassage[global.lang.currentLang] }}</label>
+            <label>{{ global.lang.text.importDatabase[global.lang.currentLang] }}</label>
             <v-file-input v-model="file" :label="global.lang.text.uploadFile[global.lang.currentLang]" variant="outlined"
                           accept=".db" hide-details />
             <div class="d-flex flex-row-reverse">

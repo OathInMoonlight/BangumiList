@@ -338,6 +338,20 @@ class DatabaseManager {
             throw { status: "Error", message: "Error updating database to backend\n" + err.message }
         }
     }
+    exportMainDB(fileName){
+        try{
+            const filePath = path.join(__dirname, "databases", fileName + ".db")
+            if(fs.existsSync(filePath)){
+                return { status: "Success", message: "File exists.", filePath: filePath }
+            }
+            else{
+                throw { status: "Error", message: "File does not exist." }
+            }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error exporting database from backend\n" + err.message }
+        }
+    }
     deleteMainDB(rowid) {
         try {
             this.MainDB.openDatabase()

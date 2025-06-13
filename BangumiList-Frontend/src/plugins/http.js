@@ -8,6 +8,14 @@ export default {
             .then(rdata => callback(rdata))
             .catch(err => callback(err))
     },
+    getFile(api, fileName, callback){
+        try{
+            window.open(this.url + ":" + this.port + "/" + api + "?fileName=" + fileName)
+        }
+        catch (err) {
+            callback(err)
+        }
+    },
     postData(api, data, callback) {
         fetch(this.url + ":" + this.port + "/" + api, {
             method: "POST",

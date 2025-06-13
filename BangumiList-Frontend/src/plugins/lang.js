@@ -45,11 +45,14 @@ export default {
         confirm: {"zh": "确认", "ja": "確認", "en": "Confirm"},
         // 导入
         import: {"zh": "导入", "ja": "インポート", "en": "Import"},
-        importMassage: {"zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file"},
+        importDatabase: {"zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file"},
         uploadFile: {"zh": "上传文件", "ja": "アップロードファイル", "en": "Upload File"},
         importError: {"zh": "导入失败", "ja": "インポートに失敗しました", "en": "Failed to import"},
         // 导出
         export: {"zh": "导出", "ja": "エクスポート", "en": "Export"},
+        exportDatabase: {"zh": "导出一个数据库文件", "ja": "データベースファイルをエクスポートする", "en": "Export a database file"},
+        exportSelect: {"zh": "选择导出的数据库", "ja": "エクスポートするデータベースを選択してください", "en": "Please select the database to export"},
+        exportError: {"zh": "导出失败", "ja": "エクスポートに失敗しました", "en": "Failed to export"},
         // 删除
         delete: {"zh": "删除", "ja": "削除", "en": "Delete"},
         deleteErrorText: {"zh":"请选择要删除的数据库", "ja":"削除するデータベースを選択してください", "en":"Please select the database to delete"},

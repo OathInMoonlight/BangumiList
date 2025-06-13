@@ -21,6 +21,9 @@ export default {
     selectedRow: null,
     filterText: null,
 
+    getNameList(){
+        return this.data.map(row => row.DATABASENAME)
+    },
     getInfoReq(callback) {
         global.isTableReady.value = false
         global.comTool.getData("main/info/get", res => {
@@ -77,6 +80,15 @@ export default {
                 return
             }
             this.getReq()
+            callback(res.status)
+        })
+    },
+    exportReq(fileName, callback){
+        global.comTool.getFile("main/export", fileName, res => {
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
             callback(res.status)
         })
     }

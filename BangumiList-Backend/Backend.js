@@ -54,6 +54,20 @@ app.post("/main/import", upload.single('file'), (req, res) => {
         res.status(500).send(err.message)
     }
 })
+app.get("/main/export", (req, res) => {
+    try {
+        res.download(db.exportMainDB(req.query.fileName).filePath, (err) => {
+            if(err){
+                console.error(err)
+                res.status(500).send(err)
+            }
+        })
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500).send(err.message)
+    }
+})
 app.post("/main/delete", (req, res) => {
     try {
         res.status(200).json(db.deleteMainDB(req.body.id))
