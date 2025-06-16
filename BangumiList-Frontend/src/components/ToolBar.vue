@@ -19,11 +19,7 @@
                 <AddForm />
                 <ImportForm />
                 <ExportForm />
-                <v-tooltip :text="global.lang.text.delete[global.lang.currentLang]" location="bottom center">
-                    <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-delete" @click="deleteItemButton" />
-                    </template>
-                </v-tooltip>
+                <DeleteForm />
                 <v-tooltip :text="global.lang.text.edit[global.lang.currentLang]" location="bottom center">
                     <template v-slot:activator="{ props }">
                         <v-btn v-bind="props" icon="mdi-square-edit-outline" />
@@ -32,60 +28,12 @@
             </div>
         </div>
     </v-toolbar>
-
-    <!-- 删除表单 -->
-    <v-dialog v-model="deleteItemAlert" max-width="512">
-        <v-alert :title="global.lang.text.error[global.lang.currentLang]"
-                 :text="global.lang.text.deleteErrorText[global.lang.currentLang]" type="warning" />
-    </v-dialog>
-    <v-dialog v-model="deleteItemDialog" persistent max-width="512">
-        <v-card>
-            <div class="ma-4">
-                <label>{{ global.lang.text.deleteConfirm1[global.lang.currentLang] }} "{{ deleteRowName }}" {{
-                    global.lang.text.deleteConfirm2[global.lang.currentLang] }}</label>
-            </div>
-            <div class="d-flex flex-row-reverse ma-4">
-                <v-btn size="large" :color="global.primaryColor.value" @click="deleteItemSubmit">
-                    {{ global.lang.text.confirm[global.lang.currentLang] }}
-                </v-btn>
-                <v-btn size="large" class="mr-4" @click="deleteItemDialog = false">
-                    {{ global.lang.text.cancel[global.lang.currentLang] }}
-                </v-btn>
-            </div>
-        </v-card>
-    </v-dialog>
 </template>
 
 <script setup>
-import { ref } from "vue"
 import global from "@/plugins/global.js"
 import AddForm from "@/components/AddForm.vue"
-import ImportForm from "./ImportForm.vue"
-import ExportForm from "./exportForm.vue"
-
-// 删除数据库对话框
-const deleteItemAlert = ref(false)
-const deleteItemDialog = ref(false)
-const deleteRowName = ref(null)
-function deleteItemButton() {
-    if (global.tableData.selectedRow == null) {
-        deleteItemAlert.value = true
-    }
-    else {
-        for (let row of global.tableData.data) {
-            if (row[global.tableData.values[global.tableData.keys[0]]] == global.tableData.selectedRow) {
-                deleteRowName.value = row[global.tableData.values[global.tableData.keys[1]]]
-                break
-            }
-        }
-        deleteItemDialog.value = true
-    }
-}
-function deleteItemSubmit() {
-    deleteItemDialog.value = false
-    global.comTool.postData("main/delete", { id: global.tableData.selectedRow }, () => {
-        global.tableData.selectedRow = null
-        global.tableData.getReq()
-    })
-}
+import ImportForm from "@/components/ImportForm.vue"
+import ExportForm from "@/components/ExportForm.vue"
+import DeleteForm from "@/components/DeleteForm.vue"
 </script>

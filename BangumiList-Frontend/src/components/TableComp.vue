@@ -39,7 +39,7 @@
             <tbody>
                 <!-- 行单击选择 -->
                 <tr v-for="row in groupedData" :key="row[global.tableData.values[global.tableData.keys[0]]]"
-                    @click="selectRow(row[global.tableData.values[global.tableData.keys[0]]])">
+                    @click="selectRow(row[global.tableData.values[global.tableData.keys[0]]], global.tableData.getSelectedName(row))">
                     <!-- 分组列 -->
                     <td v-if="global.viewOpt.groupSortBy != 'none' && row.GROUPSPAN != null"
                         :rowspan="global.viewOpt.groupSortBy == 'none' ? null : row['GROUPSPAN']" class="border-e pa-0">
@@ -308,11 +308,11 @@ function groupData() {
 
 // 选中行
 let rowColor = reactive({})
-function selectRow(id) {
+function selectRow(id, name) {
     if (global.tableData.selectedRow != null) { // 如果有选中行，则取消选中
-        rowColor[global.tableData.selectedRow] = "transparent"
+        rowColor[global.tableData.selectedRow.id] = "transparent"
     }
-    global.tableData.selectedRow = id // 设置选中行
+    global.tableData.selectedRow = {id: id, name: name} // 设置选中行
     rowColor[id] = "#9E9E9E20"
 }
 </script>

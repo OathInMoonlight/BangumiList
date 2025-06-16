@@ -24,6 +24,9 @@ export default {
     getNameList(){
         return this.data.map(row => row.DATABASENAME)
     },
+    getSelectedName(row){
+        return row.DATABASENAME
+    },
     getInfoReq(callback) {
         global.isTableReady.value = false
         global.comTool.getData("main/info/get", res => {
@@ -60,6 +63,9 @@ export default {
             if (res.data.length > 0) {
                 this.data = res.data
             }
+            else{
+                this.data = []
+            }
             this.loading = false
         })
     },
@@ -89,6 +95,17 @@ export default {
                 callback()
                 return
             }
+            callback(res.status)
+        })
+    },
+    deleteReq(ifDeleteFile, callback){
+        global.comTool.postData("main/delete", {id: this.selectedRow.id, name:this.selectedRow.name, ifDeleteFile: ifDeleteFile}, res => {
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
+            this.selectedRow = null
+            this.getReq()
             callback(res.status)
         })
     }

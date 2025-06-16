@@ -58,6 +58,8 @@ export default {
         deleteErrorText: {"zh":"请选择要删除的数据库", "ja":"削除するデータベースを選択してください", "en":"Please select the database to delete"},
         deleteConfirm1: {"zh": "确认要删除", "ja": "", "en": "Are you sure to delete"},
         deleteConfirm2: {"zh": "吗？", "ja": "を削除しますか？", "en": "?"},
+        deleteFile: {"zh": "同时删除文件本体", "ja": "ファイル本体も削除する", "en": "Also delete the file itself"},
+        deleteError: {"zh": "删除失败", "ja": "削除に失敗しました", "en": "Failed to delete"},
         // 编辑
         edit: {"zh": "编辑", "ja": "編集", "en": "Edit"},
 

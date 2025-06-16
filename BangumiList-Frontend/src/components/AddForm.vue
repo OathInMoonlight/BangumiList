@@ -125,22 +125,22 @@ import Columns from "@/components/Columns.vue"
 
 // 添加数据库对话框
 const addItemDialog = ref(false)
+let addDatabaseForm = reactive({})
 function initAddDatabaseForm() { // 新建表单
-    const form = {}
     if (global.isMain.value) {
         for (let key of global.tableData.keys) {
             if(key != "id"){
-                form[key] = null
+                addDatabaseForm[key] = null
             }
         }
-        form.databasePath = "databases/"
-        form.gridView = false
-        form.doubleTable = false
-        form.timeStamp = false
-        form.firstTimeStamp = null
-        form.secondTimeStamp = null
-        form.userDatabaseColumns = []
-        form.userDatabaseColumns2 = []
+        addDatabaseForm.databasePath = "databases/"
+        addDatabaseForm.gridView = false
+        addDatabaseForm.doubleTable = false
+        addDatabaseForm.timeStamp = false
+        addDatabaseForm.firstTimeStamp = null
+        addDatabaseForm.secondTimeStamp = null
+        addDatabaseForm.userDatabaseColumns = []
+        addDatabaseForm.userDatabaseColumns2 = []
 
         const idColumn = {
             key: "id",
@@ -150,12 +150,11 @@ function initAddDatabaseForm() { // 新建表单
             width: "tight",
             defaultShow: true
         }
-        form.userDatabaseColumns.push(idColumn)
-        form.userDatabaseColumns2.push(idColumn)
+        addDatabaseForm.userDatabaseColumns.push(idColumn)
+        addDatabaseForm.userDatabaseColumns2.push(idColumn)
     }
-    return form
 }
-let addDatabaseForm = reactive(initAddDatabaseForm())
+initAddDatabaseForm() // 初始化表单
 watch(() => addDatabaseForm.gridView, (newValue) => { // 监控网格视图选项
     if (newValue) {
         const newColumn = {
@@ -290,7 +289,7 @@ function addItemSubmit() {
             checkAlert.value = true
             return
         }
-        addDatabaseForm = reactive(initAddDatabaseForm())
+        initAddDatabaseForm()
     })
 }
 </script>

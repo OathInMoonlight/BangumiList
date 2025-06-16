@@ -70,7 +70,7 @@ app.get("/main/export", (req, res) => {
 })
 app.post("/main/delete", (req, res) => {
     try {
-        res.status(200).json(db.deleteMainDB(req.body.id))
+        res.status(200).json(db.deleteMainDB(req.body))
     }
     catch (err) {
         console.error(err.message)

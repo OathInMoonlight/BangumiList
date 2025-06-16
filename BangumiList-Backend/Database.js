@@ -352,11 +352,20 @@ class DatabaseManager {
             throw { status: "Error", message: "Error exporting database from backend\n" + err.message }
         }
     }
-    deleteMainDB(rowid) {
+    deleteMainDB(deleteReq) {
         try {
             this.MainDB.openDatabase()
-            this.MainDB.deleteData(rowid)
+            this.MainDB.deleteData(deleteReq.id)
             this.MainDB.closeDatabase()
+            if(deleteReq.ifDeleteFile){
+                const filePath = path.join(__dirname, "databases", deleteReq.name + ".db")
+                if (fs.existsSync(filePath)) {
+                    fs.rmSync(filePath)
+                }
+                else {
+                    throw { status: "Error", message: "Database file does not exist." }
+                }
+            }
             return { status: "Success", message: "Data have been deleted from main database." }
         }
         catch (err) {

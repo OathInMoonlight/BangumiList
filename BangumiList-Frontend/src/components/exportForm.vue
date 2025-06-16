@@ -52,6 +52,7 @@ function exportFileSubmit(){
             exportAlert.value = true
             return
         }
+        exportFileName.value = null
     })
 }
 </script>
