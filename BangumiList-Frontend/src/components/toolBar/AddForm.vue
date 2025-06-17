@@ -121,7 +121,7 @@
 <script setup>
 import { ref, reactive, computed, watch } from "vue"
 import global from "@/plugins/global.js"
-import Columns from "@/components/Columns.vue"
+import Columns from "@/components/toolBar/Columns.vue"
 
 // 添加数据库对话框
 const addItemDialog = ref(false)

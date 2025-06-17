@@ -20,11 +20,7 @@
                 <ImportForm />
                 <ExportForm />
                 <DeleteForm />
-                <v-tooltip :text="global.lang.text.edit[global.lang.currentLang]" location="bottom center">
-                    <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon="mdi-square-edit-outline" />
-                    </template>
-                </v-tooltip>
+                <!-- <EditForm /> -->
             </div>
         </div>
     </v-toolbar>
@@ -32,8 +28,9 @@
 
 <script setup>
 import global from "@/plugins/global.js"
-import AddForm from "@/components/AddForm.vue"
-import ImportForm from "@/components/ImportForm.vue"
-import ExportForm from "@/components/ExportForm.vue"
-import DeleteForm from "@/components/DeleteForm.vue"
+import AddForm from "@/components/toolBar/AddForm.vue"
+import ImportForm from "@/components/toolBar/ImportForm.vue"
+import ExportForm from "@/components/toolBar/ExportForm.vue"
+import DeleteForm from "@/components/toolBar/DeleteForm.vue"
+// import EditForm from "@/components/toolBar/EditForm.vue"
 </script>
