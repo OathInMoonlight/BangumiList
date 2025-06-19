@@ -2,8 +2,8 @@ export default {
     url: "http://localhost",
     port: 3001,
 
-    getData(api, callback) {
-        fetch(this.url + ":" + this.port + "/" + api)
+    getData(api, databaseName, callback) {
+        fetch(this.url + ":" + this.port + "/" + api + "?databaseName=" + databaseName)
             .then(response => response.json())
             .then(rdata => callback(rdata))
             .catch(err => callback(err))

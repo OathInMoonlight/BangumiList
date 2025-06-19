@@ -34,8 +34,8 @@ export default {
     selectedRow: null,
     filterText: null,
 
-    getInfoReq(callback) {
-        global.comTool.getData("user/info/get", res => {
+    getInfoReq(databaseName, callback) {
+        global.comTool.getData("user/info/get", databaseName, res => {
             if(res.status !== "Success"){
                 callback()
                 return
@@ -63,9 +63,9 @@ export default {
             }
         })
     },
-    getReq(callback) {
+    getReq(databaseName, callback) {
         this.loading = true
-        global.comTool.getData("user/get", res => {
+        global.comTool.getData("user/get", databaseName, res => {
             if(res.status !== "Success"){
                 callback()
                 return

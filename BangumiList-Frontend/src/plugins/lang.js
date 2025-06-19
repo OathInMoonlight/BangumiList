@@ -62,6 +62,8 @@ export default {
         deleteError: {"zh": "删除失败", "ja": "削除に失敗しました", "en": "Failed to delete"},
         // 编辑
         edit: {"zh": "编辑", "ja": "編集", "en": "Edit"},
+        editErrorText: {"zh":"请选择要编辑的数据库", "ja":"編集するデータベースを選択してください", "en":"Please select the database to edit"},
+        editError: {"zh": "编辑失败", "ja": "編集に失敗しました", "en": "Failed to edit"},
 
         // 视图栏
         search: {"zh": "搜索", "ja": "検索", "en": "Search"},

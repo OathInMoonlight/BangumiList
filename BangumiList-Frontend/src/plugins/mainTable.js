@@ -29,7 +29,7 @@ export default {
     },
     getInfoReq(callback) {
         global.isTableReady.value = false
-        global.comTool.getData("main/info/get", res => {
+        global.comTool.getData("main/info/get", null, res => {
             if(res.status !== "Success"){
                 callback()
                 return
@@ -55,7 +55,7 @@ export default {
     },
     getReq(callback) {
         this.loading = true
-        global.comTool.getData("main/get", res => {
+        global.comTool.getData("main/get", null, res => {
             if(res.status !== "Success"){
                 callback()
                 return
