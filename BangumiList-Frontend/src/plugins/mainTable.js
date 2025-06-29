@@ -24,9 +24,6 @@ export default {
     getNameList(){
         return this.data.map(row => row.DATABASENAME)
     },
-    getSelectedName(row){
-        return row.DATABASENAME
-    },
     getInfoReq(callback) {
         global.isTableReady.value = false
         global.comTool.getData("main/info/get", null, res => {
@@ -35,6 +32,7 @@ export default {
                 return
             }
             const rows = res.data.rows
+            this.keys = []
             for (let row of rows) {
                 const key = row["KEYS"]
                 this.keys.push(key)

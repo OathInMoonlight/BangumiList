@@ -178,15 +178,18 @@ class Database {
             throw { status: "Error", message: "Error retrieving data from table " + (is_inner ? this.table2Name : this.table1Name) + "\n" + err }
         }
     }
-    getInfo(is_inner = false) {
+    getInfo() {
         try {
             const settings = this.db.prepare("SELECT * FROM " + this.infoTable0Name).get()
-            const infoTableName = is_inner ? this.infoTable2Name : this.infoTable1Name
-            const rows = this.db.prepare("SELECT * FROM " + infoTableName).all()
-            return { status: "Success", message: "Info has been retrieved from table " + infoTableName, data: {settings: settings, rows: rows} }
+            const rows = this.db.prepare("SELECT * FROM " + this.infoTable1Name).all()
+            let rows2 = null
+            if(settings.DOUBLETABLE){
+                rows2 = this.db.prepare("SELECT * FROM " + this.infoTable2Name).all()
+            }
+            return { status: "Success", message: "Info has been retrieved from Database", data: {settings: settings, rows: rows, rows2: rows2} }
         }
         catch (err) {
-            throw { status: "Error", message: "Error retrieving info from table " + infoTableName + "\n" + err }
+            throw { status: "Error", message: "Error retrieving info from Database" + "\n" + err }
         }
     }
     closeDatabase() {
@@ -370,6 +373,18 @@ class DatabaseManager {
         }
         catch (err) {
             throw { status: "Error", message: "Error deleting data from main database\n" + err.message }
+        }
+    }
+    getUserDBInfo(databaseName) {
+        try {
+            this.userDB = new Database(path.join("databases", databaseName + ".db"))
+            this.userDB.openDatabase()
+            const data = this.userDB.getInfo().data
+            this.userDB.closeDatabase()
+            return { status: "Success", message: "Info have been gotten from user database.", data: data }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error getting info from user database\n" + err.message }
         }
     }
 }

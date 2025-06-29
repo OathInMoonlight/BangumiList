@@ -20,7 +20,7 @@
                 <ImportForm />
                 <ExportForm />
                 <DeleteForm />
-                <!-- <EditForm /> -->
+                <EditForm />
             </div>
         </div>
     </v-toolbar>
@@ -32,5 +32,5 @@ import AddForm from "@/components/toolBar/AddForm.vue"
 import ImportForm from "@/components/toolBar/ImportForm.vue"
 import ExportForm from "@/components/toolBar/ExportForm.vue"
 import DeleteForm from "@/components/toolBar/DeleteForm.vue"
-// import EditForm from "@/components/toolBar/EditForm.vue"
+import EditForm from "@/components/toolBar/EditForm.vue"
 </script>

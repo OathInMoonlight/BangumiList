@@ -7,13 +7,13 @@
 
     <!-- 修改数据库 -->
     <v-dialog v-model="editItemDialog" persistent>
-        <contentsForm v-model="EditDatabaseForm" @error="errorHandler" @submit="editItemSubmit" @cancel="editItemDialog = false" />
+        <contentsForm v-model="editDatabaseForm" @error="errorHandler" @submit="editItemSubmit" @cancel="editItemCancel" />
     </v-dialog>
 
     <!-- 报错 -->
     <v-dialog v-model="editAlert" max-width="512">
         <v-alert :title="global.lang.text.error[global.lang.currentLang]"
-                 :text="checkAlertMessage" type="error" />
+                 :text="editAlertMessage" type="error" />
     </v-dialog>
 </template>
 
@@ -25,7 +25,7 @@ import contentsForm from "@/components/toolBar/ContentsForm.vue"
 
 const editAlert = ref(false)
 const editAlertMessage = ref(null)
-const editRowName = ref(null)
+let editRowName = null
 const editItemDialog = ref(false)
 function getDatabaseInfo(){
     if (global.tableData.selectedRow == null) {
@@ -33,12 +33,13 @@ function getDatabaseInfo(){
         editAlert.value = true
     }
     else {
-        editRowName.value = global.tableData.selectedRow.name
+        editRowName = global.tableData.selectedRow.DATABASENAME
         userTable.getInfoReq(editRowName, status => {
             if(status !== "Success") {
                 editAlert.value = true
                 return
             }
+            Object.assign(editDatabaseForm, initEditDatabaseForm())
             editItemDialog.value = true
         })
     }
@@ -47,8 +48,8 @@ function getDatabaseInfo(){
 function initEditDatabaseForm() { // 新建表单
     const form = {}
     if (global.isMain.value) {
-        form.databaseName = editRowName.value
-        form.databasePath = global.tableData.data[global.tableData.selectedRow.id].DATABASEPATH
+        form.databaseName = editRowName
+        form.databasePath = global.tableData.selectedRow.DATABASEPATH
         form.gridView = userTable.gridView
         form.doubleTable = userTable.doubleTable
         form.timeStamp = userTable.timeStamp
@@ -61,7 +62,7 @@ function initEditDatabaseForm() { // 新建表单
                 sortMap: userTable.sortMap[key],
                 text: userTable.text[key],
                 width: userTable.width[key],
-                defaultShow: userTable.defaultShow[key]
+                defaultShow: userTable.shownColumns[key]
             }
         })
         form.userDatabaseColumns2 = userTable.doubleTable ? userTable.secondTable.keys.map(key => {
@@ -71,7 +72,7 @@ function initEditDatabaseForm() { // 新建表单
                 sortMap: userTable.secondTable.sortMap[key],
                 text: userTable.secondTable.text[key],
                 width: userTable.secondTable.width[key],
-                defaultShow: userTable.secondTable.defaultShow[key]
+                defaultShow: true
             }
         }) : [{
             key: "id",
@@ -84,7 +85,7 @@ function initEditDatabaseForm() { // 新建表单
     }
     return form
 }
-const editDatabaseForm = reactive(initEditDatabaseForm())
+const editDatabaseForm = reactive({})
 
 // 处理错误
 function errorHandler(errorMassage){
@@ -93,6 +94,10 @@ function errorHandler(errorMassage){
 }
 
 // 提交
+function editItemCancel() {
+    editItemDialog.value = false
+    Object.assign(editDatabaseForm, {}) // 重置表单
+}
 function editItemSubmit() {
     editItemDialog.value = false
     global.tableData.insertReq(editDatabaseForm, status => {

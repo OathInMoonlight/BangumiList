@@ -77,6 +77,15 @@ app.post("/main/delete", (req, res) => {
         res.status(500).send(err.message)
     }
 })
+app.get("/user/info/get", (req, res) => {
+    try {
+        res.status(200).json(db.getUserDBInfo(req.query.databaseName))
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500).send(err.message)
+    }
+})
 
 app.listen(port, () => {
     console.log("Server is running on port " + port)

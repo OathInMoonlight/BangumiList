@@ -16,7 +16,7 @@
     <v-select v-model="localModels.width" variant="outlined"
               :label="global.lang.text.columnWidth[global.lang.currentLang]" hide-details :disabled="!editable[6]"
               :items="items[2]" />
-    <v-select v-model="localModels.defaultShow" variant="outlined"
+    <v-select v-if="!isSecond" v-model="localModels.defaultShow" variant="outlined"
               :label="global.lang.text.columnDefaultShow[global.lang.currentLang]" hide-details :disabled="!editable[7]"
               :items="items[3]" />
 </template>
@@ -24,6 +24,6 @@
 <script setup>
 import global from "@/plugins/global.js"
 
-defineProps(["editable", "items"])
+defineProps(["editable", "items", "isSecond"])
 const localModels = defineModel()
 </script>

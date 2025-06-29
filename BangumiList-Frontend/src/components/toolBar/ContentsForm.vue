@@ -44,13 +44,16 @@
                 <label>{{ global.lang.text.column[global.lang.currentLang] }} {{ index }}:</label>
                 <Columns v-if="index == 0" v-model="contentsForm.userDatabaseColumns[0]"
                          :editable="[false, false, false, false, false, false, false, true]"
-                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
+                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]"
+                         :is-second="false" />
                 <Columns v-else-if="index == 1 && contentsForm.gridView" v-model="contentsForm.userDatabaseColumns[1]"
                          :editable="[false, false, false, false, false, false, false, true]"
-                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
+                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]"
+                         :is-second="false" />
                 <Columns v-else v-model="contentsForm.userDatabaseColumns[index]"
                          :editable="[true, true, true, true, true, true, true, true]"
-                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
+                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]"
+                         :is-second="false" />
             </div>
             <!-- 添加新列 -->
             <v-tooltip :text="global.lang.text.addNewColumn[global.lang.currentLang]" location="bottom center">
@@ -75,14 +78,17 @@
                 <!-- 列信息 -->
                 <label>{{ global.lang.text.column[global.lang.currentLang] }} {{ index }}:</label>
                 <Columns v-if="index == 0" v-model="contentsForm.userDatabaseColumns2[0]"
-                         :editable="[false, false, false, false, false, false, false, true]"
-                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
+                         :editable="[false, false, false, false, false, false, false, false]"
+                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]"
+                         :is-second="true" />
                 <Columns v-else-if="index == 1 && contentsForm.gridView" v-model="contentsForm.userDatabaseColumns2[1]"
-                         :editable="[false, false, false, false, false, false, false, true]"
-                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
+                         :editable="[false, false, false, false, false, false, false, false]"
+                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]"
+                         :is-second="true" />
                 <Columns v-else v-model="contentsForm.userDatabaseColumns2[index]"
-                         :editable="[true, true, true, true, true, true, true, true]"
-                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]" />
+                         :editable="[true, true, true, true, true, true, true, false]"
+                         :items="[columnDataTypes, columnSortMaps, columnWidths, columnDefaultShow]"
+                         :is-second="true" />
             </div>
             <!-- 添加新列 -->
             <v-tooltip :text="global.lang.text.addNewColumn[global.lang.currentLang]" location="bottom center">
