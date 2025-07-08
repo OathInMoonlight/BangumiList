@@ -2,7 +2,6 @@ const fs = require("fs")
 const path = require("path")
 const sqlite = require("better-sqlite3")
 const tableInfo = require("./tableInfo.js")
-const { timeStamp } = require("console")
 
 class Database {
     constructor(dbPath) {
@@ -55,6 +54,19 @@ class Database {
         }
         catch (err) {
             throw { status: "Error", message: "Error opening database " + this.dbPath + "\n" + err }
+        }
+    }
+    updateDatabase(databaseInfo){
+        if (!this.detectDatabase()) {
+            throw { status: "Error", message: "Database " + this.dbPath + " does not exist." }
+        }
+        try{
+            this.db.prepare("UPDATE " + this.infoTable0Name + " SET GRIDVIEW = ?, DOUBLETABLE = ?, TIMESTAMP = ?, FIRSTTIMESTAMP = ?, SECONDTIMESTAMP = ?")
+                .run([...Object.values(databaseInfo)])
+            return { status: "Success", message: "Database " + this.dbPath + " has been updated." }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error updating database " + this.dbPath + "\n" + err }
         }
     }
     createTable(tableInfo, is_inner = false) {
@@ -121,6 +133,89 @@ class Database {
         }
         catch (err) {
             throw { status: "Error", message: "Error creating table " + (is_inner ? this.table2Name : this.table1Name) + "\n" + err }
+        }
+    }
+    alterTable(tableInfo){
+        try{
+            const table1columns = this.db.prepare("SELECT ID, KEYS FROM " + this.infoTable1Name + " ORDER BY ID ASC").all()
+                .map(row => {return {id: row["ID"], key: row["KEYS"]}})
+            for(let oldRow of table1columns){
+                let flag = false
+                for(let newRow of tableInfo.userDatabaseColumns){
+                    if(oldRow.id == newRow.id){
+                        flag = true
+                        const rowKey = Object.keys(newRow).map(key => (key == "key" ? "KEYS" : key.toUpperCase()) + " = ?").join(", ")
+                        const rowValue = Object.values(newRow).map(value => typeof value == "object" ? JSON.stringify(value) : (typeof value == "boolean" ? (value ? 1 : 0) : value))
+                        console.log(rowKey, rowValue)
+                        this.db.prepare("UPDATE " + this.infoTable1Name + " SET " + rowKey + " WHERE ID = ?").run([...rowValue, oldRow.id])
+                        if(newRow.key != oldRow.key){
+                            this.db.prepare("ALTER TABLE " + this.table1Name + " RENAME COLUMN " + oldRow.key + " TO " + newRow.key).run()
+                        }
+                        newRow.id = null
+                        break
+                    }
+                }
+                if(!flag){
+                    this.db.prepare("DELETE FROM " + this.infoTable1Name + " WHERE ID = ?").run(oldRow.id)
+                    this.db.prepare("ALTER TABLE " + this.table1Name + " DROP COLUMN " + oldRow.key).run()
+                }
+            }
+            for(let newRow of tableInfo.userDatabaseColumns){
+                if(newRow.id != null){
+                    let placeholders = Object.keys(newRow)
+                    placeholders.shift()
+                    palaceholders = placeholders.map(() => "?").join(", ")
+                    const values = Object.values(newRow)
+                    values.shift()
+                    this.db.prepare("INSERT INTO " + this.infoTable1Name + " VALUES (" + placeholders + ")").run([...values])
+                    const columnDef = newRow.key == "id" ? "ID INTEGER PRIMARY KEY AUTOINCREMENT" :
+                        (newRow.dataType == "BOOLEAN" ? "[" + newRow.key.toUpperCase() + "] BOOLEAN NOT NULL" :
+                        "[" + newRow.key.toUpperCase() + "] TEXT NOT NULL")
+                    this.db.prepare("ALTER TABLE " + this.table1Name + " ADD COLUMN " + columnDef).run()
+                }
+            }
+            if(tableInfo.doubleTable){
+                const table2columns = this.db.prepare("SELECT ID, KEYS FROM " + this.infoTable2Name + " ORDER BY ID ASC").all()
+                    .map(row => {return {id: row["ID"], key: row["KEYS"]}})
+                for(let oldRow of table2columns){
+                    let flag = false
+                    for(let newRow of tableInfo.userDatabaseColumns2){
+                        if(oldRow.id == newRow.id){
+                            flag = true
+                            newRow.id = null
+                            const rowKey = Object.keys(newRow).map(key => (key == "key" ? "KEYS" : key.toUpperCase()) + " = ?").join(", ")
+                            const rowValue = Object.values(newRow).map(value => typeof value == "object" ? JSON.stringify(value) : (typeof value == "boolean" ? (value ? 1 : 0) : value))
+                            this.db.prepare("UPDATE " + this.infoTable2Name + " SET " + rowKey + " WHERE ID = ?").run([...rowValue, oldRow.id])
+                            if(newRow.key != oldRow.key){
+                                this.db.prepare("ALTER TABLE " + this.table2Name + " RENAME COLUMN " + oldRow.key + " TO " + newRow.key).run()
+                            }
+                            break
+                        }
+                    }
+                    if(!flag){
+                        this.db.prepare("DELETE FROM " + this.infoTable2Name + " WHERE ID = ?").run(oldRow.id)
+                        this.db.prepare("ALTER TABLE " + this.table2Name + " DROP COLUMN " + oldRow.key).run()
+                    }
+                }
+                for(let newRow of tableInfo.userDatabaseColumns2){
+                    if(newRow.id != null){
+                        let placeholders = Object.keys(newRow)
+                        placeholders.shift()
+                        palaceholders = placeholders.map(() => "?").join(", ")
+                        const values = Object.values(newRow)
+                        values.shift()
+                        this.db.prepare("INSERT INTO " + this.infoTable2Name + " VALUES (" + placeholders + ")").run([...values])
+                        const columnDef = newRow.key == "id" ? "ID INTEGER PRIMARY KEY AUTOINCREMENT" :
+                            (newRow.dataType == "BOOLEAN" ? "[" + newRow.key.toUpperCase() + "] BOOLEAN NOT NULL" :
+                            "[" + newRow.key.toUpperCase() + "] TEXT NOT NULL")
+                        this.db.prepare("ALTER TABLE " + this.table2Name + " ADD COLUMN " + columnDef).run()
+                    }
+                }
+            }
+            return { status: "Success", message: "Tables of " + this.dbPath + " has been altered." }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error altering tables of " + this.dbPath + "\n" + err }
         }
     }
     insertData(row, is_inner = false) {
@@ -251,6 +346,32 @@ class DatabaseManager {
             throw { status: "Error", message: "Error getting data from main database\n" + err.message }
         }
     }
+    convertColumnData(columnsData) {
+        const newTableInfo = {
+            keys : [],
+            dataType : {},
+            sortMap : {},
+            text : {},
+            align : {},
+            width : {},
+            dataDisplay : {},
+            group : {},
+            shownColumns : {}
+        }
+        for(let column of columnsData){
+            newTableInfo.keys.push(column.key)
+            newTableInfo.dataType[column.key] = column.dataType
+            newTableInfo.sortMap[column.key] = column.sortMap
+            newTableInfo.text[column.key] = column.text
+            newTableInfo.align[column.key] = column.width == "tight" ? "center" : "start"
+            newTableInfo.width[column.key] = column.width
+            newTableInfo.dataDisplay[column.key] = column.dataType == "BOOLEAN" ? "icon" : "text"
+            newTableInfo.group[column.key] = column.dataType == "TEXT" ? "alphabet" :
+            (column.dataType == "BOOLEAN" ? "classification" : "none")
+            newTableInfo.shownColumns[column.key] = column.defaultShow
+        }
+        return newTableInfo
+    }
     insertMainDB(addForm) {
         try {
             this.MainDB.openDatabase()
@@ -266,57 +387,12 @@ class DatabaseManager {
                     doubleTable: addForm.doubleTable ? 1 : 0,
                     timeStamp: addForm.timeStamp ? 1 : 0,
                     firstTimeStamp: addForm.firstTimeStamp,
-                    secondTimeStamp: addForm.secondTimeStamp})
-                const newTableInfo = {
-                    keys : [],
-                    dataType : {},
-                    sortMap : {},
-                    text : {},
-                    align : {},
-                    width : {},
-                    dataDisplay : {},
-                    group : {},
-                    shownColumns : {}
-                }
-                for(let column of addForm.userDatabaseColumns){
-                    newTableInfo.keys.push(column.key)
-                    newTableInfo.dataType[column.key] = column.dataType
-                    newTableInfo.sortMap[column.key] = column.sortMap
-                    newTableInfo.text[column.key] = column.text
-                    newTableInfo.align[column.key] = column.width == "tight" ? "center" : "start"
-                    newTableInfo.width[column.key] = column.width
-                    newTableInfo.dataDisplay[column.key] = column.dataType == "BOOLEAN" ? "icon" : "text"
-                    newTableInfo.group[column.key] = column.dataType == column.dataType == "TEXT" ? "alphabet" :
-                    (column.dataType == "BOOLEAN" ? "classification" : "none")
-                    newTableInfo.shownColumns[column.key] = column.defaultShow
-                }
+                    secondTimeStamp: addForm.secondTimeStamp
+                })
+                const newTableInfo = convertColumnData(addForm.userDatabaseColumns)
                 newUserDB.createTable(newTableInfo)
-                if(addForm.doubleTable){
-                    const newTableInfo2 = {
-                        keys : [],
-                        dataType : {},
-                        sortMap : {},
-                        text : {},
-                        align : {},
-                        width : {},
-                        dataDisplay : {},
-                        group : {},
-                        shownColumns : {}
-                    }
-                    for(let column of addForm.userDatabaseColumns){
-                        newTableInfo2.keys.push(column.key)
-                        newTableInfo2.dataType[column.key] = column.dataType
-                        newTableInfo2.sortMap[column.key] = column.sortMap
-                        newTableInfo2.text[column.key] = column.text
-                        newTableInfo2.align[column.key] = column.width == "tight" ? "center" : "start"
-                        newTableInfo2.width[column.key] = column.width
-                        newTableInfo2.dataDisplay[column.key] = column.dataType == "BOOLEAN" ? "icon" : "text"
-                        newTableInfo2.group[column.key] = column.dataType == column.dataType == "TEXT" ? "alphabet" :
-                        (column.dataType == "BOOLEAN" ? "classification" : "none")
-                        newTableInfo2.shownColumns[column.key] = column.defaultShow
-                    }
-                    newUserDB.createTable(newTableInfo2, true)
-                }
+                const newTableInfo2 = convertColumnData(addForm.userDatabaseColumns2)
+                newUserDB.createTable(newTableInfo2, true)
             }
             newUserDB.closeDatabase()
             return { status: "Success", message: "Data have been inserted into main database." }
@@ -373,6 +449,35 @@ class DatabaseManager {
         }
         catch (err) {
             throw { status: "Error", message: "Error deleting data from main database\n" + err.message }
+        }
+    }
+    updateMainDB(updateForm){
+        try{
+            this.MainDB.openDatabase()
+            this.MainDB.updateData(updateForm.id, {databaseName: updateForm.databaseName, databasePath: updateForm.databasePath})
+            this.MainDB.closeDatabase()
+            this.userDB = new Database(path.join("databases", updateForm.databaseName + ".db"))
+            if(!this.userDB.detectDatabase()){
+                throw "Database file does not exist."
+            }
+            else{
+                this.userDB.openDatabase()
+                this.userDB.updateDatabase({
+                    gridView: updateForm.gridView ? 1 : 0,
+                    doubleTable: updateForm.doubleTable ? 1 : 0,
+                    timeStamp: updateForm.timeStamp ? 1 : 0,
+                    firstTimeStamp: updateForm.firstTimeStamp,
+                    secondTimeStamp: updateForm.secondTimeStamp
+                })
+                // updateForm.userDatabaseColumns = this.convertColumnData(updateForm.userDatabaseColumns)
+                // updateForm.userDatabaseColumns2 = this.convertColumnData(updateForm.userDatabaseColumns2)
+                this.userDB.alterTable(updateForm)
+                this.userDB.closeDatabase()
+            }
+            return { status: "Success", message: "Columns have been updated in user database." }
+        }
+        catch (err) {
+            throw { status: "Error", message: "Error updating columns of user database\n" + err.message }
         }
     }
     getUserDBInfo(databaseName) {

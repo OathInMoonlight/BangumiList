@@ -48,7 +48,7 @@ function deleteItemButton() {
         deleteItemAlert.value = true
     }
     else {
-        deleteRowName.value = global.tableData.selectedRow.name
+        deleteRowName.value = global.tableData.selectedRow.DATABASENAME
         deleteItemDialog.value = true
     }
 }

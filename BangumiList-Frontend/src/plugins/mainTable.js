@@ -97,12 +97,22 @@ export default {
         })
     },
     deleteReq(ifDeleteFile, callback){
-        global.comTool.postData("main/delete", {id: this.selectedRow.id, name:this.selectedRow.name, ifDeleteFile: ifDeleteFile}, res => {
+        global.comTool.postData("main/delete", {id: this.selectedRow.ID, name:this.selectedRow.DATABASENAME, ifDeleteFile: ifDeleteFile}, res => {
             if(res.status !== "Success"){
                 callback()
                 return
             }
             this.selectedRow = null
+            this.getReq()
+            callback(res.status)
+        })
+    },
+    editReq(data, callback){
+        global.comTool.postData("main/edit", data, res => {
+            if(res.status !== "Success"){
+                callback()
+                return
+            }
             this.getReq()
             callback(res.status)
         })

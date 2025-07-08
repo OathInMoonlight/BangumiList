@@ -47,6 +47,7 @@ function getDatabaseInfo(){
 
 function initEditDatabaseForm() { // 新建表单
     const form = {}
+    form.id = global.tableData.selectedRow.ID
     if (global.isMain.value) {
         form.databaseName = editRowName
         form.databasePath = global.tableData.selectedRow.DATABASEPATH
@@ -57,31 +58,48 @@ function initEditDatabaseForm() { // 新建表单
         form.secondTimeStamp = userTable.secondTimeStamp
         form.userDatabaseColumns = userTable.keys.map(key => {
             return {
+                id: userTable.ids[key],
                 key: key,
                 dataType: userTable.dataType[key],
                 sortMap: userTable.sortMap[key],
                 text: userTable.text[key],
                 width: userTable.width[key],
-                defaultShow: userTable.shownColumns[key]
+                shownColumns: userTable.shownColumns[key]
             }
         })
-        form.userDatabaseColumns2 = userTable.doubleTable ? userTable.secondTable.keys.map(key => {
-            return {
-                key: key,
-                dataType: userTable.secondTable.dataType[key],
-                sortMap: userTable.secondTable.sortMap[key],
-                text: userTable.secondTable.text[key],
-                width: userTable.secondTable.width[key],
-                defaultShow: true
+        if(userTable.doubleTable){
+            form.userDatabaseColumns2 = userTable.secondTable.keys.map(key => {
+                return {
+                    id: userTable.secondTable.ids[key],
+                    key: key,
+                    dataType: userTable.secondTable.dataType[key],
+                    sortMap: userTable.secondTable.sortMap[key],
+                    text: userTable.secondTable.text[key],
+                    width: userTable.secondTable.width[key],
+                    shownColumns: false
+                }
+            })
+        }
+        else{
+            form.userDatabaseColumns2 = [{
+                key: "id",
+                dataType: "INTEGER PRIMARY KEY AUTOINCREMENT",
+                sortMap: "id",
+                text: { zh: "序号", ja: "番号", en: "ID" },
+                width: "tight",
+                shownColumns: true
+            }]
+            if(userTable.gridView){
+                form.userDatabaseColumns2.push({
+                    key: "cover",
+                    dataType: "TEXT",
+                    sortMap: "cover",
+                    text: { zh: "封面", ja: "カバー", en: "Cover" },
+                    width: "flex",
+                    shownColumns: false
+                })
             }
-        }) : [{
-            key: "id",
-            dataType: "INTEGER PRIMARY KEY AUTOINCREMENT",
-            sortMap: "id",
-            text: { zh: "序号", ja: "番号", en: "ID" },
-            width: "tight",
-            defaultShow: true
-        }]
+        }
     }
     return form
 }
@@ -100,9 +118,9 @@ function editItemCancel() {
 }
 function editItemSubmit() {
     editItemDialog.value = false
-    global.tableData.insertReq(editDatabaseForm, status => {
+    global.tableData.editReq(editDatabaseForm, status => {
         if(status !== "Success"){
-            editAlertMessage.value = global.lang.text.newError[global.lang.currentLang]
+            editAlertMessage.value = global.lang.text.editError[global.lang.currentLang]
             editAlert.value = true
             return
         }

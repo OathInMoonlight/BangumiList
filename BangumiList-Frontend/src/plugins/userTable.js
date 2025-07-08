@@ -8,6 +8,7 @@ export default {
     secondTimeStamp: null,
 
     keys: [],
+    ids: {},
     values: {},
     dataType: {},
     sortMap: {},
@@ -18,6 +19,7 @@ export default {
     group: {},
     secondTable: {
         keys: [],
+        ids: {},
         values: {},
         dataType: {},
         sortMap: {},
@@ -50,6 +52,7 @@ export default {
             for (let row of rows) {
                 const key = row["KEYS"]
                 this.keys.push(key)
+                this.ids[key] = row["ID"]
                 this.values[key] = key.toUpperCase()
                 this.dataType[key] = row["DATATYPE"]
                 this.sortMap[key] = row["SORTMAP"]
@@ -68,6 +71,7 @@ export default {
                 for (let row of secondRows) {
                     const key = row["KEYS"]
                     this.secondTable.keys.push(key)
+                    this.secondTable.ids[key] = row["ID"]
                     this.secondTable.values[key] = key.toUpperCase()
                     this.secondTable.dataType[key] = row["DATATYPE"]
                     this.secondTable.sortMap[key] = row["SORTMAP"]
