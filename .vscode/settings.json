@@ -2,10 +2,8 @@
   // 使用 ESLint 作为默认格式化器
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
 
-  // 不在保存时自动修复
-  "editor.codeActionsOnSave": {},
-  
-  "[javascript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+  // 在保存时自动修复
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
   }
 }

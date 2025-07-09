@@ -7,13 +7,13 @@
 
     <!-- 修改数据库 -->
     <v-dialog v-model="editItemDialog" persistent>
-        <contentsForm v-model="editDatabaseForm" @error="errorHandler" @submit="editItemSubmit" @cancel="editItemCancel" />
+        <contentsForm v-model="editDatabaseForm" @error="errorHandler" @submit="editItemSubmit"
+                      @cancel="editItemCancel" />
     </v-dialog>
 
     <!-- 报错 -->
     <v-dialog v-model="editAlert" max-width="512">
-        <v-alert :title="global.lang.text.error[global.lang.currentLang]"
-                 :text="editAlertMessage" type="error" />
+        <v-alert :title="global.lang.text.error[global.lang.currentLang]" :text="editAlertMessage" type="error" />
     </v-dialog>
 </template>
 
@@ -27,7 +27,7 @@ const editAlert = ref(false)
 const editAlertMessage = ref(null)
 let editRowName = null
 const editItemDialog = ref(false)
-function getDatabaseInfo(){
+function getDatabaseInfo() {
     if (global.tableData.selectedRow == null) {
         editAlertMessage.value = global.lang.text.editErrorText[global.lang.currentLang]
         editAlert.value = true
@@ -35,7 +35,7 @@ function getDatabaseInfo(){
     else {
         editRowName = global.tableData.selectedRow.DATABASENAME
         userTable.getInfoReq(editRowName, status => {
-            if(status !== "Success") {
+            if (status !== "Success") {
                 editAlert.value = true
                 return
             }
@@ -67,7 +67,7 @@ function initEditDatabaseForm() { // 新建表单
                 shownColumns: userTable.shownColumns[key]
             }
         })
-        if(userTable.doubleTable){
+        if (userTable.doubleTable) {
             form.userDatabaseColumns2 = userTable.secondTable.keys.map(key => {
                 return {
                     id: userTable.secondTable.ids[key],
@@ -80,7 +80,7 @@ function initEditDatabaseForm() { // 新建表单
                 }
             })
         }
-        else{
+        else {
             form.userDatabaseColumns2 = [{
                 key: "id",
                 dataType: "INTEGER PRIMARY KEY AUTOINCREMENT",
@@ -89,7 +89,7 @@ function initEditDatabaseForm() { // 新建表单
                 width: "tight",
                 shownColumns: true
             }]
-            if(userTable.gridView){
+            if (userTable.gridView) {
                 form.userDatabaseColumns2.push({
                     key: "cover",
                     dataType: "TEXT",
@@ -106,7 +106,7 @@ function initEditDatabaseForm() { // 新建表单
 const editDatabaseForm = reactive({})
 
 // 处理错误
-function errorHandler(errorMassage){
+function errorHandler(errorMassage) {
     editAlert.value = true
     editAlertMessage.value = errorMassage
 }
@@ -119,7 +119,7 @@ function editItemCancel() {
 function editItemSubmit() {
     editItemDialog.value = false
     global.tableData.editReq(editDatabaseForm, status => {
-        if(status !== "Success"){
+        if (status !== "Success") {
             editAlertMessage.value = global.lang.text.editError[global.lang.currentLang]
             editAlert.value = true
             return
