@@ -4,6 +4,6 @@
 
   // 在保存时自动修复
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "always"
   }
 }
