@@ -6,7 +6,7 @@ interface BaseColumn {
 
 export interface Column extends BaseColumn {
     sortMap: string,
-    text: { "zh": string, "ja": string, "en": string },
+    text: { "zh": string, "ja": string, "en": string } | string,
     textAlign: string,
     widthType: string,
     displayType: string,
@@ -30,11 +30,11 @@ export interface DatabaseInfo {
     table2Info: TableInfo
 }
 
-interface TableDataRow { [ key: string ]: unknown }
+export interface TableDataRow { [ key: string ]: unknown }
 
-interface TableData { [ id: number ]: TableDataRow }
+export interface TableData { [ id: number ]: TableDataRow }
 
-export interface DatabaseData {
+export interface DatabaseData extends DatabaseInfo {
     table1Data: TableData,
     table2Data: TableData
 }
