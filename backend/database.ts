@@ -2,7 +2,7 @@ import * as fs from "fs"
 import * as path from "path"
 import Database, { Database as DatabaseType } from "better-sqlite3"
 import { Column, DatabaseInfo, TableDataRow, TableData, DatabaseData } from "./types.js"
-import { dbInfoTableInfo, infoTableInfo } from "./initialInfo.js"
+import { dbInfoTableInfo, infoTableInfo, mainInfo } from "./initialInfo.js"
 
 class DatabaseOpration {
     private dbPath: string
@@ -302,6 +302,169 @@ class DatabaseOpration {
         }
         catch (error) {
             throw new Error(`Error when updating data of ${tableName} of ${this.dbPath}.\n${error}`)
+        }
+    }
+}
+
+export class DatabaseManager {
+    private databasePath: string = path.join(__dirname, "databases")
+    private mainDB: DatabaseOpration
+    private userDB: DatabaseOpration | null = null
+
+    constructor() {
+        if(!fs.existsSync(this.databasePath)) {
+            fs.mkdirSync(this.databasePath)
+        }
+        this.mainDB = new DatabaseOpration(path.join(__dirname, "main.db"))
+    }
+    // 主数据库业务
+    initMainDB(): void {
+        try {
+            if(!this.mainDB.detectDatabase()) {
+                this.mainDB.createDatabase(mainInfo)
+                this.mainDB.closeDatabase()
+            }
+            console.log("Main database is ready.")
+        }
+        catch (error) {
+            throw new Error(`Error when initializing main database.\n${error}`)
+        }
+    }
+    getMainDBInfo(): DatabaseInfo {
+        try {
+            this.mainDB.openDatabase()
+            const mainDBInfo = this.mainDB.getDatabaseInfo()
+            this.mainDB.closeDatabase()
+            return mainDBInfo
+        }
+        catch (error) {
+            throw new Error(`Error when getting main database info.\n${error}`)
+        }
+    }
+    getMainDBData(): DatabaseData {
+        try {
+            this.mainDB.openDatabase()
+            const mainDBData = this.mainDB.getData()
+            this.mainDB.closeDatabase()
+            return mainDBData
+        }
+        catch (error) {
+            throw new Error(`Error when getting main database data.\n${error}`)
+        }
+    }
+    insertMainDB(newDBInfo: DatabaseInfo): void {
+        try {
+            const dbPath = path.join(this.databasePath, newDBInfo.dbPath)
+            this.userDB = new DatabaseOpration(dbPath)
+            if(this.userDB.detectDatabase()) {
+                throw new Error(`File of database ${newDBInfo.dbName} already exists.`)
+            }
+            this.userDB.createDatabase(newDBInfo)
+            this.userDB.closeDatabase()
+            this.mainDB.openDatabase()
+            this.mainDB.insertData(true, [ {
+                id: null,
+                databaseName: newDBInfo.dbName,
+                databasePath: newDBInfo.dbPath
+            } ])
+            this.mainDB.closeDatabase()
+        }
+        catch (error) {
+            throw new Error(`Error when inserting data into main database.\n${error}`)
+        }
+    }
+    importMainDB(fileName: string, tmpFilePath: string): void {
+        try {
+            const newFilePath = path.join(this.databasePath, fileName + ".db")
+            if(fs.existsSync(newFilePath)) {
+                throw new Error(`File of database ${fileName} already exists.`)
+            }
+            fs.renameSync(tmpFilePath, newFilePath)
+            this.mainDB.openDatabase()
+            this.mainDB.insertData(true, [ {
+                id: null,
+                databaseName: fileName,
+                databasePath: path.join(path.basename(path.dirname(newFilePath)), fileName + ".db")
+            } ])
+            this.mainDB.closeDatabase()
+        }
+        catch (error) {
+            throw new Error(`Error when importing database ${fileName}.\n${error}`)
+        }
+    }
+    exportMainDB(fileName: string): string {
+        try {
+            const filePath = path.join(this.databasePath, fileName + ".db")
+            if(!fs.existsSync(filePath)) {
+                throw new Error(`File of database ${fileName} does not exist.`)
+            }
+            return filePath
+        }
+        catch (error) {
+            throw new Error(`Error when exporting database ${fileName}.\n${error}`)
+        }
+    }
+    deleteMainDB(dbMainInfo: TableDataRow, ifDeleteFile: boolean): void {
+        try {
+            this.mainDB.openDatabase()
+            this.mainDB.deleteData(true, dbMainInfo.id as number)
+            this.mainDB.closeDatabase()
+            if(ifDeleteFile) {
+                const filePath = path.join(this.databasePath, dbMainInfo.databaseName + ".db")
+                if(fs.existsSync(filePath)) {
+                    fs.rmSync(filePath)
+                }
+                else {
+                    throw new Error(`File of database ${filePath} does not exist.`)
+                }
+            }
+        }
+        catch (error) {
+            throw new Error(`Error when deleting database ${dbMainInfo.databaseName}.\n${error}`)
+        }
+    }
+    updateMainDB(dbMainInfo: TableDataRow, newDBInfo: DatabaseInfo): void {
+        try {
+            const dbPath = path.join(this.databasePath, newDBInfo.dbPath)
+            const ifNameChanged = dbMainInfo.databaseName !== newDBInfo.dbName
+            if(ifNameChanged) {
+                if(!fs.existsSync(dbMainInfo.databasePath as string)) {
+                    throw new Error(`Old database ${dbMainInfo.databasePath} does not exist.`)
+                }
+                fs.renameSync(path.join(this.databasePath, dbMainInfo.databasePath as string), dbPath)
+            }
+            this.userDB = new DatabaseOpration(dbPath)
+            if(!this.userDB.detectDatabase()) {
+                throw new Error(`File of database ${newDBInfo.dbName} does not exist.`)
+            }
+            this.userDB.openDatabase()
+            this.userDB.updateDatabase(newDBInfo)
+            this.userDB.closeDatabase()
+            if(ifNameChanged) {
+                this.mainDB.openDatabase()
+                this.mainDB.updateData(true, {
+                    id: dbMainInfo.id,
+                    databaseName: newDBInfo.dbName,
+                    databasePath: newDBInfo.dbPath
+                })
+                this.mainDB.closeDatabase()
+            }
+        }
+        catch (error) {
+            throw new Error(`Error when updating database ${newDBInfo.dbName}.\n${error}`)
+        }
+    }
+    // 用户数据库业务
+    getUserDBInfo(dbMainInfo: TableDataRow): DatabaseInfo {
+        try {
+            this.userDB = new DatabaseOpration(dbMainInfo.databasePath as string)
+            this.userDB.openDatabase()
+            const userDBInfo = this.userDB.getDatabaseInfo()
+            this.userDB.closeDatabase()
+            return userDBInfo
+        }
+        catch (error) {
+            throw new Error(`Error when getting user database ${dbMainInfo.dbName} info.\n${error}`)
         }
     }
 }

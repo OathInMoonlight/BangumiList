@@ -16,7 +16,7 @@ export interface Column extends BaseColumn {
 
 export interface BaseTableInfo { [ index: number ]: BaseColumn }
 
-export interface TableInfo { [ index: number ]: Column }
+interface TableInfo { [ index: number ]: Column }
 
 export interface DatabaseInfo {
     dbName: string,
@@ -24,8 +24,8 @@ export interface DatabaseInfo {
     gridView: boolean,
     doubleTable: boolean,
     timeStamp: boolean,
-    firstStamp: string,
-    secondStamp: string,
+    firstStamp: string | null,
+    secondStamp: string | null,
     table1Info: TableInfo,
     table2Info: TableInfo
 }

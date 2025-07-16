@@ -1,4 +1,4 @@
-import { BaseTableInfo, TableInfo } from "./types.js"
+import { BaseTableInfo, DatabaseInfo } from "./types.js"
 
 export const dbInfoTableInfo: BaseTableInfo = {
     0: { id:0, key: "gridView", dataType: "BOOLEAN NOT NULL" },
@@ -21,41 +21,51 @@ export const infoTableInfo: BaseTableInfo = {
     9: { id:9, key: "displayIndex", dataType: "INTEGER NOT NULL" }
 }
 
-export const mainInfo: TableInfo = {
-    0: {
-        id: 0,
-        key: "id",
-        dataType: "INTEGER",
-        sortMap: "id",
-        text: { "zh": "序号", "ja": "番号", "en": "ID" },
-        textAlign: "center",
-        widthType: "tight",
-        displayType: "text",
-        groupType: "none",
-        displayIndex: 0
+export const mainInfo: DatabaseInfo = {
+    dbName: "main",
+    dbPath: "main.db",
+    gridView: false,
+    doubleTable: false,
+    timeStamp: false,
+    firstStamp: null,
+    secondStamp: null,
+    table1Info: {
+        0: {
+            id: 0,
+            key: "id",
+            dataType: "INTEGER",
+            sortMap: "id",
+            text: { "zh": "序号", "ja": "番号", "en": "ID" },
+            textAlign: "center",
+            widthType: "tight",
+            displayType: "text",
+            groupType: "none",
+            displayIndex: 0
+        },
+        1: {
+            id: 1,
+            key: "databaseName",
+            dataType: "TEXT",
+            sortMap: "databaseName",
+            text: { "zh": "数据库名称", "ja": "データベース名", "en": "Database Name" },
+            textAlign: "center",
+            widthType: "flex",
+            displayType: "text",
+            groupType: "alphabet",
+            displayIndex: 1
+        },
+        2: {
+            id: 2,
+            key: "databasePath",
+            dataType: "TEXT",
+            sortMap: "databasePath",
+            text: { "zh": "数据库路径", "ja": "データベースパス", "en": "Database Path" },
+            textAlign: "start",
+            widthType: "flex",
+            displayType: "text",
+            groupType: "none",
+            displayIndex: 2
+        }
     },
-    1: {
-        id: 1,
-        key: "databaseName",
-        dataType: "TEXT",
-        sortMap: "databaseName",
-        text: { "zh": "数据库名称", "ja": "データベース名", "en": "Database Name" },
-        textAlign: "center",
-        widthType: "flex",
-        displayType: "text",
-        groupType: "alphabet",
-        displayIndex: 1
-    },
-    2: {
-        id: 2,
-        key: "databasePath",
-        dataType: "TEXT",
-        sortMap: "databasePath",
-        text: { "zh": "数据库路径", "ja": "データベースパス", "en": "Database Path" },
-        textAlign: "start",
-        widthType: "flex",
-        displayType: "text",
-        groupType: "none",
-        displayIndex: 2
-    }
+    table2Info: {}
 }
