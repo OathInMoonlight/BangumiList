@@ -28,11 +28,11 @@ class DatabaseOpration {
         try {
             this.db = new Database(this.dbPath)
             // 创建数据库元数据表
-            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.dbInfoTableName} (` +
+            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.dbInfoTableName} (${
                 Object.values(dbInfoTableInfo).map(column => `${column.key} ${column.dataType}`).join(", ")
-            + ")").run()
-            const dbInfoTableCol = [ dbInfo.gridView, dbInfo.doubleTable,
-                dbInfo.timeStamp, dbInfo.firstStamp, dbInfo.secondStamp ]
+            })`).run()
+            const dbInfoTableCol = [ dbInfo.gridView ? 1 : 0, dbInfo.doubleTable ? 1 : 0,
+                dbInfo.timeStamp ? 1 : 0, dbInfo.firstStamp, dbInfo.secondStamp ]
             this.db.prepare(`INSERT INTO ${this.dbInfoTableName} VALUES (?, ?, ?, ?, ?)`).run(...dbInfoTableCol)
             // 创建表1元数据表
             const infoTableCol = Object.values(infoTableInfo)
@@ -46,14 +46,14 @@ class DatabaseOpration {
                 const columnValues = Object.values(column)
                 columnValues[0] = null
                 insertInfoTable1Transact.run(
-                    ...(columnValues.map(value => typeof value === "object" ? JSON.stringify(value) : value))
+                    ...(columnValues.map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
                 )
             }
             // 创建表1
-            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.table1Name} (` +
+            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.table1Name} (${
                 table1InfoCol.map(column => `${column.key} ${column.dataType} ${
                     column.key === "id" ? "PRIMARY KEY AUTOINCREMENT" : "NOT NULL"}`).join(", ")
-            + ")").run()
+            })`).run()
             // 创建表2元数据表
             this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.infoTable2Name} (${infoTableCol})`).run()
             // 插入表2元数据
@@ -63,14 +63,14 @@ class DatabaseOpration {
                 const columnValues = Object.values(column)
                 columnValues[0] = null
                 insertInfoTable2Transact.run(
-                    ...(columnValues.map(value => typeof value === "object" ? JSON.stringify(value) : value))
+                    ...(columnValues.map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
                 )
             }
             // 创建表2
-            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.table2Name} (` +
+            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.table2Name} (${
                 table2InfoCol.map(column => `${column.key} ${column.dataType} ${
                     column.key === "id" ? "PRIMARY KEY AUTOINCREMENT" : "NOT NULL"}`).join(", ")
-            + ")").run()
+            })`).run()
         }
         catch (error) {
             throw new Error(`Error when creating database ${this.dbPath}.\n${error}`)
@@ -114,7 +114,7 @@ class DatabaseOpration {
                     const newColumn = newTable1Columns.get(id)
                     if(JSON.stringify(column) !== JSON.stringify(newColumn)) {
                         updateInfoTable1Transact.run(
-                            ...(Object.values(newColumn).map(value => typeof value === "object" ? JSON.stringify(value) : value)), id
+                            ...(Object.values(newColumn).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value)), id
                         )
                         if(column.key !== newColumn.key) {
                             renameTable1Transact.run(column.key, newColumn.key)
@@ -131,7 +131,7 @@ class DatabaseOpration {
                     const columnValues = Object.values(column)
                     columnValues[0] = null
                     insertInfoTable1Transact.run(
-                        ...(Object.values(column).map(value => typeof value === "object" ? JSON.stringify(value) : value))
+                        ...(Object.values(column).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
                     )
                     addTable1Transact.run(column.key, column.dataType)
                 }
@@ -151,7 +151,7 @@ class DatabaseOpration {
                     const newColumn = newTable2Columns.get(id)
                     if(JSON.stringify(column) !== JSON.stringify(newColumn)) {
                         updateInfoTable2Transact.run(
-                            ...(Object.values(newColumn).map(value => typeof value === "object" ? JSON.stringify(value) : value)), id
+                            ...(Object.values(newColumn).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value)), id
                         )
                         if(column.key !== newColumn.key) {
                             renameTable2Transact.run(column.key, newColumn.key)
@@ -168,7 +168,7 @@ class DatabaseOpration {
                     const columnValues = Object.values(column)
                     columnValues[0] = null
                     insertInfoTable2Transact.run(
-                        ...(Object.values(column).map(value => typeof value === "object" ? JSON.stringify(value) : value))
+                        ...(Object.values(column).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
                     )
                     addTable2Transact.run(column.key, column.dataType)
                 }
@@ -246,6 +246,9 @@ class DatabaseOpration {
         }
     }
     convertDataType(value: unknown): unknown {
+        if(value === null) {
+            return null
+        }
         if(Array.isArray(value)) {
             return JSON.stringify(value)
         }
@@ -307,7 +310,7 @@ class DatabaseOpration {
 }
 
 export class DatabaseManager {
-    private databasePath: string = path.join(__dirname, "databases")
+    private databasePath: string = path.join(path.resolve(), "databases")
     private mainDB: DatabaseOpration
     private userDB: DatabaseOpration | null = null
 
@@ -315,7 +318,7 @@ export class DatabaseManager {
         if(!fs.existsSync(this.databasePath)) {
             fs.mkdirSync(this.databasePath)
         }
-        this.mainDB = new DatabaseOpration(path.join(__dirname, "main.db"))
+        this.mainDB = new DatabaseOpration(path.join(path.resolve(), "main.db"))
     }
     // 主数据库业务
     initMainDB(): void {
@@ -324,7 +327,6 @@ export class DatabaseManager {
                 this.mainDB.createDatabase(mainInfo)
                 this.mainDB.closeDatabase()
             }
-            console.log("Main database is ready.")
         }
         catch (error) {
             throw new Error(`Error when initializing main database.\n${error}`)
@@ -457,7 +459,8 @@ export class DatabaseManager {
     // 用户数据库业务
     getUserDBInfo(dbMainInfo: TableDataRow): DatabaseInfo {
         try {
-            this.userDB = new DatabaseOpration(dbMainInfo.databasePath as string)
+            const dbPath = path.join(this.databasePath, dbMainInfo.databasePath as string)
+            this.userDB = new DatabaseOpration(dbPath)
             this.userDB.openDatabase()
             const userDBInfo = this.userDB.getDatabaseInfo()
             this.userDB.closeDatabase()

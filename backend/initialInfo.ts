@@ -67,5 +67,18 @@ export const mainInfo: DatabaseInfo = {
             displayIndex: 2
         }
     },
-    table2Info: {}
+    table2Info: {
+        0: {
+            id: 0,
+            key: "id",
+            dataType: "INTEGER",
+            sortMap: "id",
+            text: { "zh": "序号", "ja": "番号", "en": "ID" },
+            textAlign: "center",
+            widthType: "tight",
+            displayType: "text",
+            groupType: "none",
+            displayIndex: 0
+        }
+    }
 }
