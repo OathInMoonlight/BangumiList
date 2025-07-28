@@ -4,7 +4,7 @@ interface BaseColumn {
     dataType: string
 }
 
-export interface Column extends BaseColumn {
+interface Column extends BaseColumn {
     sortMap: string,
     text: { "zh": string, "ja": string, "en": string } | string,
     textAlign: string,

@@ -4,7 +4,7 @@ import express from "express"
 import cors from "cors"
 import multer from "multer"
 import { DatabaseManager } from "./database.js"
-import { TableDataRow } from "./types.js"
+import type { MainDataRow } from "./types.js"
 
 // 初始化网络服务
 const app = express()
@@ -61,7 +61,7 @@ app.post("/main/import", upload.single("file"), (req, res) => {
             res.status(400).send("No file uploaded.")
             return
         }
-        res.status(200).json(dbManager.importMainDB(req.body.fileName, req.file.path))
+        res.status(200).json(dbManager.importMainDB(req.file.filename, req.file.path))
     }
     catch (error) {
         res.status(500).send(error)
@@ -81,7 +81,7 @@ app.get("/main/export", (req, res) => {
 })
 app.post("/main/delete", (req, res) => {
     try {
-        res.status(200).json(dbManager.deleteMainDB(req.body.dbMainInfo, req.body.ifDeleteFile))
+        res.status(200).json(dbManager.deleteMainDB(req.body.mainDataRow, req.body.ifDeleteFile))
     }
     catch (error) {
         res.status(500).send(error)
@@ -89,7 +89,7 @@ app.post("/main/delete", (req, res) => {
 })
 app.post("/main/update", (req, res) => {
     try {
-        res.status(200).json(dbManager.updateMainDB(req.body.dbMainInfo, req.body.newDBInfo))
+        res.status(200).json(dbManager.updateMainDB(req.body.mainDataRow, req.body.newDBInfo))
     }
     catch (error) {
         res.status(500).send(error)
@@ -97,7 +97,7 @@ app.post("/main/update", (req, res) => {
 })
 app.get("/user/getInfo", (req, res) => {
     try {
-        res.status(200).json(dbManager.getUserDBInfo(req.query.dbMainInfo as TableDataRow))
+        res.status(200).json(dbManager.getUserDBInfo(req.query.mainDataRow as MainDataRow))
     }
     catch (error) {
         res.status(500).send(error)

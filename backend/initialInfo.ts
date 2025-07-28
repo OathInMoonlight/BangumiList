@@ -1,4 +1,4 @@
-import { BaseTableInfo, DatabaseInfo } from "./types.js"
+import type { BaseTableInfo, DatabaseInfo } from "./types.js"
 
 export const dbInfoTableInfo: BaseTableInfo = {
     0: { id:0, key: "gridView", dataType: "BOOLEAN NOT NULL" },
