@@ -8,7 +8,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
-    Test: typeof import('./src/components/Test.vue')['default']
+    AppBar: typeof import('./src/components/AppBar.vue')['default']
+    MainAddForm: typeof import('./src/components/DataOperation/MainAddForm.vue')['default']
+    NewColumn: typeof import('./src/components/DataOperation/NewColumn.vue')['default']
+    NewTableForm: typeof import('./src/components/DataOperation/NewTableForm.vue')['default']
+    TableDisplay: typeof import('./src/components/TableDisplay.vue')['default']
+    ToolBar: typeof import('./src/components/ToolBar.vue')['default']
+    ViewBar: typeof import('./src/components/ViewBar.vue')['default']
   }
 }

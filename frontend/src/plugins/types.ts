@@ -1,50 +1,47 @@
-import type { MainDataRow, DatabaseInfo, DatabaseData } from "@/plugins/transportTypes"
-
-type LanguageType = "zh" | "ja" | "en"
+import type { LanguageType, MainDataRow, DatabaseInfo, DatabaseData, TableData } from "@/plugins/transportTypes"
 
 export interface Languages {
+    langList: { title: string, value: LanguageType }[],
     currentLang: LanguageType,
     text: {
         [ key: string ]: {
             [ lang in LanguageType ]: string
         }
-    }
+    },
+    getText: (key: string) => string,
+    getTextLength: (text: { [ lang in LanguageType ]: string }) => number
 }
 
-export type CallbackFunction = (status: string, result?: unknown) => void
+type TransportPromise = Promise<{ status: string, result?: unknown }>
 
 export interface DynamicDBData extends DatabaseData {
     loading: boolean,
-    displayColumns: number[],
-    filterText: string | null,
-    selctedRow: number | null,
+    displayColumns1: number[],
+    displayColumns2: number[],
+    selctedRow1: number | null,
+    selctedRow2: number | null,
+    selectedChildTable: TableData | null,
 
-    getInfoRequest: ((callback: CallbackFunction) => void) | 
-        ((mainDataRow: MainDataRow, callback: CallbackFunction) => void),
-    getDataRequest: ((callback: CallbackFunction) => void) | 
-        ((mainDataRow: MainDataRow, callback: CallbackFunction) => void),
-    insertRequest: ((databaseInfo: DatabaseInfo, callback: CallbackFunction) => void) |
-        ((mainDataRow: MainDataRow, databaseInfo: DatabaseInfo, callback: CallbackFunction) => void),
-    importRequest: ((file: File, callback: CallbackFunction) => void) |
-        ((mainDataRow: MainDataRow, file: File, callback: CallbackFunction) => void),
-    exportRequest: ((fileName: string, callback: CallbackFunction) => void) |
-        ((mainDataRow: MainDataRow, fileName: string, callback: CallbackFunction) => void),
-    deleteRequest: ((ifDeleteFile: boolean, callback: CallbackFunction) => void) |
-        ((mainDataRow: MainDataRow, ifDeleteFile: boolean, callback: CallbackFunction) => void),
-    updateRequest: ((databaseInfo: DatabaseInfo, callback: CallbackFunction) => void) |
-        ((mainDataRow: MainDataRow, databaseInfo: DatabaseInfo, callback: CallbackFunction) => void)
+    // getInfoRequest: ((mainDataRow?: MainDataRow) => TransportPromise),
+    // getDataRequest: ((mainDataRow?: MainDataRow) => TransportPromise),
+    // insertRequest: ((databaseInfo: DatabaseInfo) => TransportPromise) |
+    //     ((mainDataRow: MainDataRow, databaseInfo: DatabaseInfo) => TransportPromise),
+    // importRequest: ((file: File) => TransportPromise) |
+    //     ((mainDataRow: MainDataRow, file: File) => TransportPromise),
+    // exportRequest: ((fileName: string) => TransportPromise) |
+    //     ((mainDataRow: MainDataRow, fileName: string) => TransportPromise),
+    // deleteRequest: ((ifDeleteFile: boolean) => TransportPromise) |
+    //     ((mainDataRow: MainDataRow, ifDeleteFile: boolean) => TransportPromise),
+    // updateRequest: ((databaseInfo: DatabaseInfo) => TransportPromise) |
+    //     ((mainDataRow: MainDataRow, databaseInfo: DatabaseInfo) => TransportPromise)
 }
 
 export interface Http {
     url: string,
     port: number,
 
-    getData: (api: string, mainDataRow: MainDataRow | null,
-        callback: CallbackFunction) => void,
-    postData: (api: string, mainDataRow: MainDataRow | null,
-        data: unknown, callback: CallbackFunction) => void,
-    getFile: (api: string, mainDataRow: MainDataRow | null,
-        callback: CallbackFunction) => void,
-    postFile: (api: string, mainDataRow: MainDataRow | null,
-        file: File, callback: CallbackFunction) => void
+    getData: (api: string, mainDataRow: MainDataRow | null) => TransportPromise,
+    postData: (api: string, mainDataRow: MainDataRow | null, data: unknown) => TransportPromise,
+    getFile: (api: string, mainDataRow: MainDataRow | null) => TransportPromise,
+    postFile: (api: string, file: File) => TransportPromise
 }

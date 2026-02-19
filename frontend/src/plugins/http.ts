@@ -4,44 +4,45 @@ const http: Http = {
     url: "http://localhost",
     port: 3001,
 
-    getData(api, mainDataRow, callback) {
-        fetch(`${this.url}:${this.port}/${api}?mainDataRow=${mainDataRow}`)
-            .then(response => response.json())
-            .then(result => callback("success", result))
-            .catch(error => callback(error.message, null))
-    },
-    postData(api, mainDataRow, data, callback) {
-        fetch(`${this.url}:${this.port}/${api}`, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({ mainDataRow, data })
-        })
-            .then(response => response.json())
-            .then(result => callback("success", result))
-            .catch(error => callback(error.message, null))
-    },
-    getFile(api, mainDataRow, callback) {
+    async getData(api, mainDataRow) {
         try {
-            window.open(`${this.url}:${this.port}/${api}?mainDataRow=${mainDataRow}`)
-        }
-        catch (error) {
-            if(error instanceof Error) {
-                callback(error.message, null)
-            } else {
-                callback(String(error), null)
-            }
+            const response = await fetch(`${this.url}:${this.port}/${
+                api}?mainDataRow=${JSON.stringify(mainDataRow)}`)
+            return { status: "success", result: await response.json() }
+        } catch (error) {
+            return { status: String(error) }
         }
     },
-    postFile(api, mainDataRow, file, callback) {
-        fetch(`${this.url}:${this.port}/${api}`, {
-            method: "POST",
-            body: file
-        })
-            .then(response => response.json())
-            .then(result => callback("success", result))
-            .catch(error => callback(error.message, null))
+    async postData(api, mainDataRow, data) {
+        try {
+            await fetch(`${this.url}:${this.port}/${api}`, {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify({ mainDataRow, data })
+            })
+            return { status: "success" }
+        } catch (error) {
+            return { status: String(error) }
+        }
+    },
+    async getFile(api, mainDataRow) {
+        try {
+            await window.open(`${this.url}:${this.port}/${api}?mainDataRow=${mainDataRow}`)
+            return { status: "success" }
+        } catch (error) {
+            return { status: String(error) }
+        }
+    },
+    async postFile(api, file) {
+        try {
+            await fetch(`${this.url}:${this.port}/${api}`, {
+                method: "POST",
+                body: file
+            })
+            return { status: "success" }
+        } catch (error) {
+            return { status: String(error) }
+        }
     }
 }
 

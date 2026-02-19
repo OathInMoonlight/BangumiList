@@ -16,6 +16,9 @@ export default defineConfig([
         files: [ "**/*.{js,mjs,cjs,ts,mts,cts,vue}" ],
         rules: {
             "vue/multi-word-component-names": "off",
+            "vue/max-attributes-per-line": "off",
+            "vue/html-closing-bracket-newline": "off",
+            "vue/first-attribute-linebreak": "off",
 
             "vue/html-indent": [ "error", 4 ],
 
@@ -29,7 +32,8 @@ export default defineConfig([
             "comma-dangle": [ "error", "never" ], // 不使用尾逗号
             "array-bracket-spacing": [ "error", "always" ],
             "object-curly-spacing": [ "error", "always" ], // 大括号内有空格
-            "space-before-blocks": [ "error", "always" ] // 块前有空格
+            "space-before-blocks": [ "error", "always" ], // 块前有空格
+            "brace-style": [ "error", "1tbs", { "allowSingleLine": true } ] // 大括号风格为1TBS，允许单行
         }
     }
 ])

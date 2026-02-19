@@ -1,8 +1,9 @@
 import * as fs from "fs"
 import * as path from "path"
 import Database, { Database as DatabaseType } from "better-sqlite3"
-import type { Column, DatabaseInfo, TableDataRow, MainDataRow, TableData, DatabaseData } from "./types.js"
-import { dbInfoTableInfo, infoTableInfo, mainInfo } from "./initialInfo.js"
+import type { Column, TableInfo, TimeStampType, DatabaseInfo,
+    TableDataRow, MainDataRow, TableData, SortOrder, DatabaseData } from "./types.js"
+import { dbInfoTableInfo, defaultSort, infoTableInfo, mainInfo } from "./initialInfo.js"
 
 class DatabaseOpration {
     private dbPath: string
@@ -11,11 +12,34 @@ class DatabaseOpration {
 
     private infoTable1Name: string = "INFO_TABLE_1"
     private infoTable2Name: string = "INFO_TABLE_2"
-    private table1Name: string = "TABLE_1"
-    private table2Name: string = "TABLE_2"
+    private dataTableName: string = "DATA_TABLE"
 
     constructor(dbPath: string) {
         this.dbPath = path.join(dbPath)
+    }
+    convertDataType(value: unknown): unknown {
+        if(value === null) {
+            return null
+        }
+        if(Array.isArray(value) || typeof value === "object") {
+            return JSON.stringify(value)
+        }
+        if(typeof value === "boolean") {
+            return value ? 1 : 0
+        }
+        return value
+    }
+    inverseConvertDataType(value: unknown, dataType: null | "array" | "object" | "boolean"): unknown {
+        if(value === null) {
+            return null
+        }
+        if(dataType === "array" || dataType === "object") {
+            return JSON.parse(value as string)
+        }
+        if(dataType === "boolean") {
+            return (value as number) === 1
+        }
+        return value
     }
     // 数据库操作
     detectDatabase(): boolean {
@@ -29,50 +53,36 @@ class DatabaseOpration {
             this.db = new Database(this.dbPath)
             // 创建数据库元数据表
             this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.dbInfoTableName} (${
-                Object.values(dbInfoTableInfo).map(column => `${column.key} ${column.dataType}`).join(", ")
+                dbInfoTableInfo.map(column => `${column.key} ${column.dataType}`).join(", ")
             })`).run()
-            const dbInfoTableCol = [ dbInfo.gridView ? 1 : 0, dbInfo.doubleTable ? 1 : 0,
-                dbInfo.timeStamp ? 1 : 0, dbInfo.firstStamp, dbInfo.secondStamp ]
+            const dbInfoTableCol = [ this.convertDataType(dbInfo.gridView), this.convertDataType(dbInfo.doubleTable),
+                this.convertDataType(dbInfo.timeStamp), defaultSort, defaultSort, defaultSort, defaultSort ]
             this.db.prepare(`INSERT INTO ${this.dbInfoTableName} VALUES (?, ?, ?, ?, ?)`).run(...dbInfoTableCol)
             // 创建表1元数据表
-            const infoTableCol = Object.values(infoTableInfo)
-                .map(column => `${column.key} ${column.dataType}`).join(", ")
+            const infoTableCol = infoTableInfo.map(column => `${column.key} ${column.dataType}`).join(", ")
             this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.infoTable1Name} (${infoTableCol})`).run()
             // 插入表1元数据
-            const placeholders = Object.keys(infoTableInfo).map(() => "?").join(", ")
+            const placeholders = infoTableInfo.map(() => "?").join(", ")
             const insertInfoTable1Transact = this.db.prepare(`INSERT INTO ${this.infoTable1Name} VALUES (${placeholders})`)
-            const table1InfoCol = Object.values(dbInfo.table1Info)
-            for(const column of table1InfoCol) {
+            for(const column of dbInfo.table1Info) {
                 const columnValues = Object.values(column)
                 columnValues[0] = null
-                insertInfoTable1Transact.run(
-                    ...(columnValues.map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
-                )
+                insertInfoTable1Transact.run(...(columnValues.map(this.convertDataType)))
             }
-            // 创建表1
-            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.table1Name} (${
-                table1InfoCol.map(column => `${column.key} ${column.dataType} ${
-                    column.key === "id" ? "PRIMARY KEY AUTOINCREMENT" : "NOT NULL"}`).join(", ")
-            })`).run()
             // 创建表2元数据表
             this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.infoTable2Name} (${infoTableCol})`).run()
             // 插入表2元数据
             const insertInfoTable2Transact = this.db.prepare(`INSERT INTO ${this.infoTable2Name} VALUES (${placeholders})`)
-            const table2InfoCol = Object.values(dbInfo.table2Info)
-            for(const column of table2InfoCol) {
+            for(const column of dbInfo.table2Info) {
                 const columnValues = Object.values(column)
                 columnValues[0] = null
-                insertInfoTable2Transact.run(
-                    ...(columnValues.map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
-                )
+                insertInfoTable2Transact.run(...(columnValues.map(this.convertDataType)))
             }
-            // 创建表2
-            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.table2Name} (${
-                table2InfoCol.map(column => `${column.key} ${column.dataType} ${
-                    column.key === "id" ? "PRIMARY KEY AUTOINCREMENT" : "NOT NULL"}`).join(", ")
+            // 创建数据表
+            this.db.prepare(`CREATE TABLE IF NOT EXISTS ${this.dataTableName} (${
+                dbInfo.table1Info.map(column => `${column.key} ${column.dataType}`).join(", ")
             })`).run()
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when creating database ${this.dbPath}.\n${error}`)
         }
     }
@@ -82,8 +92,7 @@ class DatabaseOpration {
         }
         try {
             this.db = new Database(this.dbPath, { fileMustExist: true })
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when opening database ${this.dbPath}.\n${error}`)
         }
     }
@@ -94,30 +103,35 @@ class DatabaseOpration {
         try {
             // 更新数据库元数据表
             this.db.prepare(`UPDATE ${this.dbInfoTableName} SET ${
-                Object.values(dbInfoTableInfo).map(column => `${column.key} = ?`).join(", ")
-            }`).run(dbInfo.gridView, dbInfo.doubleTable,
-                dbInfo.timeStamp, dbInfo.firstStamp, dbInfo.secondStamp)
+                dbInfoTableInfo.slice(0,3).map(column => `${column.key} = ?`).join(", ")
+            }`).run(this.convertDataType(dbInfo.gridView),
+                this.convertDataType(dbInfo.doubleTable), this.convertDataType(dbInfo.timeStamp))
             // 更新表1元数据 
-            const table1Columns = this.db.prepare(`SELECT * FROM ${this.infoTable1Name}`).all() as Column[]
+            const table1Columns = this.db.prepare(`SELECT * FROM ${this.infoTable1Name}`).all() as TableInfo
             const originalTable1Columns = new Map(table1Columns.map(column => [ column.id, column ]))
-            const newTable1Columns = new Map(Object.values(dbInfo.table1Info).map(column => [ column.id, column ]))
-            const infoTableCol = Object.values(infoTableInfo).map(column => `${column.key} = ?`).join(", ")
+            const newTable1Columns = new Map(dbInfo.table1Info.map(column => [ column.id, column ]))
+
+            const infoTableCol = infoTableInfo.slice(1).map(column => `${column.key} = ?`).join(", ")
             const updateInfoTable1Transact = this.db.prepare(`UPDATE ${this.infoTable1Name} SET ${infoTableCol} WHERE id = ?`)
-            const renameTable1Transact = this.db.prepare(`ALTER TABLE ${this.table1Name} RENAME COLUMN ? TO ?`)
+            const renameTable1Transact = this.db.prepare(`ALTER TABLE ${this.dataTableName} RENAME COLUMN ? TO ?`)
+
             const deleteInfoTable1Transact = this.db.prepare(`DELETE FROM ${this.infoTable1Name} WHERE id = ?`)
-            const dropTable1Transact = this.db.prepare(`ALTER TABLE ${this.table1Name} DROP COLUMN ?`)
-            const placeholders = Object.keys(infoTableInfo).map(() => "?").join(", ")
+            const dropTable1Transact = this.db.prepare(`ALTER TABLE ${this.dataTableName} DROP COLUMN ?`)
+
+            const placeholders = infoTableInfo.map(() => "?").join(", ")
             const insertInfoTable1Transact = this.db.prepare(`INSERT INTO ${this.infoTable1Name} VALUES (${placeholders})`)
-            const addTable1Transact = this.db.prepare(`ALTER TABLE ${this.table1Name} ADD COLUMN ? ?`)
+            const addTable1Transact = this.db.prepare(`ALTER TABLE ${this.dataTableName} ADD COLUMN ? ?`)
+
             for(const [ id, column ] of originalTable1Columns) {
                 if(newTable1Columns.has(id)) {
-                    const newColumn = newTable1Columns.get(id)
+                    const newColumn = newTable1Columns.get(id) as Column
                     if(JSON.stringify(column) !== JSON.stringify(newColumn)) {
-                        updateInfoTable1Transact.run(
-                            ...(Object.values(newColumn).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value)), id
-                        )
+                        updateInfoTable1Transact.run(...(Object.values(newColumn).slice(1).map(this.convertDataType)), id)
                         if(column.key !== newColumn.key) {
                             renameTable1Transact.run(column.key, newColumn.key)
+                        }
+                        if(column.dataType !== newColumn.dataType) {
+                            throw new Error(`Cannot change data type of column ${column.key} in infoTable 1.`)
                         }
                     }
                 } else {
@@ -129,31 +143,34 @@ class DatabaseOpration {
                 if(!originalTable1Columns.has(id)) {
                     const columnValues = Object.values(column)
                     columnValues[0] = null
-                    insertInfoTable1Transact.run(
-                        ...(Object.values(column).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
-                    )
+                    insertInfoTable1Transact.run(...(Object.values(column).map(this.convertDataType)))
                     addTable1Transact.run(column.key, column.dataType)
                 }
             }
             // 更新表2元数据
-            const table2Columns = this.db.prepare(`SELECT * FROM ${this.infoTable2Name}`).all() as Column[]
+            const table2Columns = this.db.prepare(`SELECT * FROM ${this.infoTable2Name}`).all() as TableInfo
             const originalTable2Columns = new Map(table2Columns.map(column => [ column.id, column ]))
-            const newTable2Columns = new Map(Object.values(dbInfo.table2Info).map(column => [ column.id, column ]))
+            const newTable2Columns = new Map(dbInfo.table2Info.map(column => [ column.id, column ]))
+
             const updateInfoTable2Transact = this.db.prepare(`UPDATE ${this.infoTable2Name} SET ${infoTableCol} WHERE id = ?`)
-            const renameTable2Transact = this.db.prepare(`ALTER TABLE ${this.table2Name} RENAME COLUMN ? TO ?`)
+            const renameTable2Transact = this.db.prepare(`ALTER TABLE ${this.dataTableName} RENAME COLUMN ? TO ?`)
+
             const deleteInfoTable2Transact = this.db.prepare(`DELETE FROM ${this.infoTable2Name} WHERE id = ?`)
-            const dropTable2Transact = this.db.prepare(`ALTER TABLE ${this.table2Name} DROP COLUMN ?`)
+            const dropTable2Transact = this.db.prepare(`ALTER TABLE ${this.dataTableName} DROP COLUMN ?`)
+
             const insertInfoTable2Transact = this.db.prepare(`INSERT INTO ${this.infoTable2Name} VALUES (${placeholders})`)
-            const addTable2Transact = this.db.prepare(`ALTER TABLE ${this.table2Name} ADD COLUMN ? ?`)
+            const addTable2Transact = this.db.prepare(`ALTER TABLE ${this.dataTableName} ADD COLUMN ? ?`)
+
             for(const [ id, column ] of originalTable2Columns) {
                 if(newTable2Columns.has(id)) {
-                    const newColumn = newTable2Columns.get(id)
+                    const newColumn = newTable2Columns.get(id) as Column
                     if(JSON.stringify(column) !== JSON.stringify(newColumn)) {
-                        updateInfoTable2Transact.run(
-                            ...(Object.values(newColumn).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value)), id
-                        )
+                        updateInfoTable2Transact.run(...(Object.values(newColumn).slice(1).map(this.convertDataType)), id)
                         if(column.key !== newColumn.key) {
                             renameTable2Transact.run(column.key, newColumn.key)
+                        }
+                        if(column.dataType !== newColumn.dataType) {
+                            throw new Error(`Cannot change data type of column ${column.key} in infoTable 2.`)
                         }
                     }
                 } else {
@@ -165,14 +182,11 @@ class DatabaseOpration {
                 if(!originalTable2Columns.has(id)) {
                     const columnValues = Object.values(column)
                     columnValues[0] = null
-                    insertInfoTable2Transact.run(
-                        ...(Object.values(column).map(value => (typeof value === "object" && value !== null) ? JSON.stringify(value) : value))
-                    )
+                    insertInfoTable2Transact.run(...(Object.values(column).map(this.convertDataType)))
                     addTable2Transact.run(column.key, column.dataType)
                 }
             }
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when updating database ${this.dbPath}.\n${error}`)
         }
     }
@@ -182,8 +196,7 @@ class DatabaseOpration {
         }
         try {
             this.db.close()
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when closing database ${this.dbPath}.\n${error}`)
         }
     }
@@ -193,28 +206,20 @@ class DatabaseOpration {
         }
         try {
             const dbInfo = {} as DatabaseInfo
-            const dbPathInfo = path.parse(this.dbPath)
-            dbInfo.dbName = dbPathInfo.name
-            dbInfo.dbPath = dbPathInfo.dir
-            const dbInfoRow = this.db.prepare(`SELECT * FROM ${this.dbInfoTableName}`).get() as { [ key: string ]: unknown }
-            dbInfo.gridView = dbInfoRow.gridView ? true : false
-            dbInfo.doubleTable = dbInfoRow.doubleTable ? true : false
-            dbInfo.timeStamp = dbInfoRow.timeStamp ? true : false
-            dbInfo.firstStamp = dbInfoRow.firstStamp as string
-            dbInfo.secondStamp = dbInfoRow.secondStamp as string
-            const table1Info = this.db.prepare(`SELECT * FROM ${this.infoTable1Name}`).all() as Column[]
-            for(const column of table1Info) {
-                column.text = JSON.parse(column.text as string) as { "zh": string, "ja": string, "en": string }
-                dbInfo.table1Info[column.id] = column
+            dbInfo.dbName = path.parse(this.dbPath).name
+            dbInfo.dbPath = this.dbPath
+            const dbInfoRow = this.inverseConvertDataType(
+                this.db.prepare(`SELECT * FROM ${this.dbInfoTableName}`).get(), "object") as {
+                gridView: boolean, doubleTable: boolean, timeStamp: TimeStampType,
+                sort1: SortOrder, groupSort1: SortOrder, sort2: SortOrder, groupSort2: SortOrder
             }
-            const table2Info = this.db.prepare(`SELECT * FROM ${this.infoTable2Name}`).all() as Column[]
-            for(const column of table2Info) {
-                column.text = JSON.parse(column.text as string) as { "zh": string, "ja": string, "en": string }
-                dbInfo.table2Info[column.id] = column
-            }
+            dbInfo.gridView = dbInfoRow.gridView
+            dbInfo.doubleTable = dbInfoRow.doubleTable
+            dbInfo.timeStamp = dbInfoRow.timeStamp
+            dbInfo.table1Info = this.db.prepare(`SELECT * FROM ${this.infoTable1Name}`).all() as TableInfo // 考虑到性能开销，放弃反序列化text字段
+            dbInfo.table2Info = this.db.prepare(`SELECT * FROM ${this.infoTable2Name}`).all() as TableInfo
             return dbInfo
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when getting database info from ${this.dbPath}.\n${error}`)
         }
     }
@@ -226,83 +231,76 @@ class DatabaseOpration {
         try {
             const dbData = {
                 ...this.getDatabaseInfo(),
-                table1Data: {} as TableData,
-                table2Data: {} as TableData
+                tableData: {} as TableData,
+                sort1: defaultSort,
+                groupSort1: defaultSort,
+                sort2: defaultSort,
+                groupSort2: defaultSort
             } as DatabaseData
-            const table1Data = this.db.prepare(`SELECT * FROM ${this.table1Name}`).all() as TableDataRow[]
-            for(const row of table1Data) {
-                dbData.table1Data[row.id as number] = row
+            dbData.tableData = this.db.prepare(`SELECT * FROM ${this.dataTableName}`).all() as TableData // 考虑到性能开销，放弃反序列化
+            const dbInfoRow = this.inverseConvertDataType(
+                this.db.prepare(`SELECT * FROM ${this.dbInfoTableName}`).get(), "object") as {
+                gridView: boolean, doubleTable: boolean, timeStamp: TimeStampType,
+                sort1: SortOrder, groupSort1: SortOrder, sort2: SortOrder, groupSort2: SortOrder
             }
-            const table2Data = this.db.prepare(`SELECT * FROM ${this.table2Name}`).all() as TableDataRow[]
-            for(const row of table2Data) {
-                dbData.table2Data[row.id as number] = row
-            }
+            dbData.sort1 = dbInfoRow.sort1
+            dbData.groupSort1 = dbInfoRow.groupSort1
+            dbData.sort2 = dbInfoRow.sort2
+            dbData.groupSort2 = dbInfoRow.groupSort2
             return dbData
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when getting database data from ${this.dbPath}.\n${error}`)
         }
     }
-    convertDataType(value: unknown): unknown {
-        if(value === null) {
-            return null
-        }
-        if(Array.isArray(value)) {
-            return JSON.stringify(value)
-        }
-        if(typeof value === "object") {
-            return JSON.stringify(value)
-        }
-        if(typeof value === "boolean") {
-            return value ? 1 : 0
-        }
-        return value
-    }
-    insertData(isTable1: boolean, newRows: TableDataRow[]): void {
+    updateSortInfo(sort1: SortOrder, groupSort1: SortOrder, sort2: SortOrder, groupSort2: SortOrder) {
         if (this.db === null) {
             throw new Error(`Database ${this.dbPath} is null.`)
         }
-        const tableName = isTable1 ? this.table1Name : this.table2Name
+        try {
+            this.db.prepare(`UPDATE ${this.dbInfoTableName} SET ${
+                Object.values(dbInfoTableInfo).slice(3).map(column => `${column.key} = ?`).join(", ")
+            }`).run(sort1, groupSort1, sort2, groupSort2)
+        } catch (error) {
+            throw new Error(`Error when updating sort info in database ${this.dbPath}.\n${error}`)
+        }
+    }
+    insertData(newRows: TableData): void {
+        if (this.db === null) {
+            throw new Error(`Database ${this.dbPath} is null.`)
+        }
         try {
             const placeholders = Object.keys(newRows[0]).map(() => "?").join(", ")
-            const insertTransact = this.db.prepare(`INSERT INTO ${tableName} VALUES (${placeholders})`)
+            const insertTransact = this.db.prepare(`INSERT INTO ${this.dataTableName} VALUES (${placeholders})`)
             for(const newRow of newRows) {
                 const rowValues = Object.values(newRow)
                 rowValues[0] = null
-                insertTransact.run(
-                    ...(rowValues.map(this.convertDataType))
-                )
+                insertTransact.run(...(rowValues.map(this.convertDataType)))
             }
-        }
-        catch (error) {
-            throw new Error(`Error when inserting data into ${tableName} of ${this.dbPath}.\n${error}`)
+        } catch (error) {
+            throw new Error(`Error when inserting data into ${this.dataTableName} of ${this.dbPath}.\n${error}`)
         }
     }
-    deleteData(isTable1: boolean, rowId: number): void {
+    deleteData(rowId: number): void {
         if (this.db === null) {
             throw new Error(`Database ${this.dbPath} is null.`)
         }
-        const tableName = isTable1 ? this.table1Name : this.table2Name
         try {
-            this.db.prepare(`DELETE FROM ${tableName} WHERE id = ?`).run(rowId)
-        }
-        catch (error) {
-            throw new Error(`Error when deleting data from ${tableName} of ${this.dbPath}.\n${error}`)
+            this.db.prepare(`DELETE FROM ${this.dataTableName} WHERE id = ?`).run(rowId)
+        } catch (error) {
+            throw new Error(`Error when deleting data from ${this.dataTableName} of ${this.dbPath}.\n${error}`)
         }
     }
-    updateData(isTable1: boolean, newRow: TableDataRow): void {
+    updateData(newRow: TableDataRow): void {
         if (this.db === null) {
             throw new Error(`Database ${this.dbPath} is null.`)
         }
-        const tableName = isTable1 ? this.table1Name : this.table2Name
         try {
-            const setClause = Object.keys(newRow).map(key => `${key} = ?`).join(", ")
-            this.db.prepare(`UPDATE ${tableName} SET ${setClause} WHERE id = ?`).run(
-                ...(Object.values(newRow).map(this.convertDataType)), newRow.id
+            const setClause = Object.keys(newRow).slice(1).map(key => `${key} = ?`).join(", ")
+            this.db.prepare(`UPDATE ${this.dataTableName} SET ${setClause} WHERE id = ?`).run(
+                ...(Object.values(newRow).slice(1).map(this.convertDataType)), newRow[0]
             )
-        }
-        catch (error) {
-            throw new Error(`Error when updating data of ${tableName} of ${this.dbPath}.\n${error}`)
+        } catch (error) {
+            throw new Error(`Error when updating data of ${this.dataTableName} of ${this.dbPath}.\n${error}`)
         }
     }
 }
@@ -325,8 +323,7 @@ export class DatabaseManager {
                 this.mainDB.createDatabase(mainInfo)
                 this.mainDB.closeDatabase()
             }
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when initializing main database.\n${error}`)
         }
     }
@@ -336,8 +333,7 @@ export class DatabaseManager {
             const mainDBInfo = this.mainDB.getDatabaseInfo()
             this.mainDB.closeDatabase()
             return mainDBInfo
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when getting main database info.\n${error}`)
         }
     }
@@ -347,8 +343,7 @@ export class DatabaseManager {
             const mainDBData = this.mainDB.getData()
             this.mainDB.closeDatabase()
             return mainDBData
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when getting main database data.\n${error}`)
         }
     }
@@ -362,14 +357,9 @@ export class DatabaseManager {
             this.userDB.createDatabase(newDBInfo)
             this.userDB.closeDatabase()
             this.mainDB.openDatabase()
-            this.mainDB.insertData(true, [ {
-                id: null,
-                databaseName: newDBInfo.dbName,
-                databasePath: newDBInfo.dbPath
-            } ])
+            this.mainDB.insertData([ { 0: null, 1: newDBInfo.dbName, 2: newDBInfo.dbPath } ])
             this.mainDB.closeDatabase()
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when inserting data into main database.\n${error}`)
         }
     }
@@ -381,14 +371,9 @@ export class DatabaseManager {
             }
             fs.renameSync(tmpFilePath, newFilePath)
             this.mainDB.openDatabase()
-            this.mainDB.insertData(true, [ {
-                id: null,
-                databaseName: fileName,
-                databasePath: path.join(path.basename(path.dirname(newFilePath)), fileName + ".db")
-            } ])
+            this.mainDB.insertData([ { 0: null, 1: fileName, 2: fileName + ".db" } ])
             this.mainDB.closeDatabase()
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when importing database ${fileName}.\n${error}`)
         }
     }
@@ -399,38 +384,37 @@ export class DatabaseManager {
                 throw new Error(`File of database ${fileName} does not exist.`)
             }
             return filePath
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when exporting database ${fileName}.\n${error}`)
         }
     }
     deleteMainDB(mainDataRow: MainDataRow, ifDeleteFile: boolean): void {
         try {
             this.mainDB.openDatabase()
-            this.mainDB.deleteData(true, mainDataRow.id as number)
+            this.mainDB.deleteData(mainDataRow[0] as number)
             this.mainDB.closeDatabase()
             if(ifDeleteFile) {
-                const filePath = path.join(this.databasePath, mainDataRow.databaseName + ".db")
+                const filePath = path.join(this.databasePath, mainDataRow[2])
                 if(fs.existsSync(filePath)) {
                     fs.rmSync(filePath)
                 } else {
                     throw new Error(`File of database ${filePath} does not exist.`)
                 }
             }
-        }
-        catch (error) {
-            throw new Error(`Error when deleting database ${mainDataRow.databaseName}.\n${error}`)
+        } catch (error) {
+            throw new Error(`Error when deleting database ${mainDataRow[1]}.\n${error}`)
         }
     }
     updateMainDB(mainDataRow: MainDataRow, newDBInfo: DatabaseInfo): void {
         try {
             const dbPath = path.join(this.databasePath, newDBInfo.dbPath)
-            const ifNameChanged = mainDataRow.databaseName !== newDBInfo.dbName
+            const ifNameChanged = mainDataRow[1] !== newDBInfo.dbName
+            const oldDBPath = path.join(this.databasePath, mainDataRow[2])
             if(ifNameChanged) {
-                if(!fs.existsSync(mainDataRow.databasePath as string)) {
-                    throw new Error(`Old database ${mainDataRow.databasePath} does not exist.`)
+                if(!fs.existsSync(oldDBPath)) {
+                    throw new Error(`Old database ${oldDBPath} does not exist.`)
                 }
-                fs.renameSync(path.join(this.databasePath, mainDataRow.databasePath as string), dbPath)
+                fs.renameSync(oldDBPath, dbPath)
             }
             this.userDB = new DatabaseOpration(dbPath)
             if(!this.userDB.detectDatabase()) {
@@ -441,30 +425,28 @@ export class DatabaseManager {
             this.userDB.closeDatabase()
             if(ifNameChanged) {
                 this.mainDB.openDatabase()
-                this.mainDB.updateData(true, {
-                    id: mainDataRow.id,
-                    databaseName: newDBInfo.dbName,
-                    databasePath: newDBInfo.dbPath
+                this.mainDB.updateData({
+                    0: mainDataRow[0],
+                    1: newDBInfo.dbName,
+                    2: newDBInfo.dbPath
                 })
                 this.mainDB.closeDatabase()
             }
-        }
-        catch (error) {
+        } catch (error) {
             throw new Error(`Error when updating database ${newDBInfo.dbName}.\n${error}`)
         }
     }
     // 用户数据库业务
     getUserDBInfo(mainDataRow: MainDataRow): DatabaseInfo {
         try {
-            const dbPath = path.join(this.databasePath, mainDataRow.databasePath as string)
+            const dbPath = path.join(this.databasePath, mainDataRow[2])
             this.userDB = new DatabaseOpration(dbPath)
             this.userDB.openDatabase()
             const userDBInfo = this.userDB.getDatabaseInfo()
             this.userDB.closeDatabase()
             return userDBInfo
-        }
-        catch (error) {
-            throw new Error(`Error when getting user database ${mainDataRow.dbName} info.\n${error}`)
+        } catch (error) {
+            throw new Error(`Error when getting user database ${mainDataRow[1]} info.\n${error}`)
         }
     }
 }

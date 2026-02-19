@@ -1,48 +1,71 @@
+type HSV = { h: number, s: number, v: number, a?: number; }
+type RGB = { r: number, g: number, b: number, a?: number; }
+type HSL = { h: number, s: number, l: number, a?: number; }
+type Color = string | number | HSV | RGB | HSL
+
+type ColumnDataType = "INTEGER PRIMARY KEY AUTOINCREMENT" |
+    "BOOLEAN NOT NULL" | "INTEGER NOT NULL" | "TEXT NOT NULL"
+
 interface BaseColumn {
     id: number,
     key: string,
-    dataType: string
+    dataType: ColumnDataType
 }
 
+export type LanguageType = "zh" | "ja" | "en"
+type TextType = { [ lang in LanguageType ]: string }
+type TextAlignType = "start" | "center" | "end"
+type WidthType = "tight" | "flex"
+type DisplayType = "text" | "bool" | "tag"
+type FrameColorType = { [ key: string ]: Color } | null
+type GroupType = null | "alphabet" | string[]
+
 export interface Column extends BaseColumn {
-    sortMap: string,
-    text: { "zh": string, "ja": string, "en": string } | string,
-    textAlign: string,
-    widthType: string,
-    displayType: string,
-    groupType: string,
+    sortMap: number,
+    text: TextType,
+    textAlign: TextAlignType,
+    widthType: WidthType,
+    displayType: DisplayType,
+    frameColor: FrameColorType,
+    groupType: GroupType,
     displayIndex: number
 }
 
-export interface BaseTableInfo { [ index: number ]: BaseColumn }
+export type BaseTableInfo = BaseColumn[]
+export type TableInfo = Column[]
 
-interface TableInfo { [ index: number ]: Column }
+export type TimeStampType = { enabled: boolean, firstStamp: number | null, secondStamp: number | null }
 
 export interface DatabaseInfo {
     dbName: string,
     dbPath: string,
     gridView: boolean,
     doubleTable: boolean,
-    timeStamp: boolean,
-    firstStamp: string | null,
-    secondStamp: string | null,
+    timeStamp: TimeStampType,
     table1Info: TableInfo,
     table2Info: TableInfo
 }
 
 export interface TableDataRow {
-    id: number | null,
-    [ key: string ]: unknown
+    0: number | null,
+    [ key: number ]: unknown
 }
 
 export interface MainDataRow extends TableDataRow {
-    databaseName: string,
-    databasePath: string
+    1: string,
+    2: string
 }
 
-export interface TableData { [ id: number ]: TableDataRow }
+export type TableData = TableDataRow[]
+
+export type Order = "asc" | "desc" | "-"
+
+export type SortOrder = { column: number | null, order: Order }
 
 export interface DatabaseData extends DatabaseInfo {
-    table1Data: TableData,
-    table2Data: TableData
+    tableData: TableData,
+    sort1: SortOrder,
+    groupSort1: SortOrder,
+    sort2: SortOrder,
+    groupSort2: SortOrder
 }
