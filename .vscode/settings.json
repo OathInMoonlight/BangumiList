@@ -5,5 +5,10 @@
   // 在保存时自动修复
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
-  }
+  },
+
+  // Rust Analyzer 配置
+  "rust-analyzer.linkedProjects": [
+    "bangumilist/src-tauri/Cargo.toml"
+  ]
 }
