@@ -13,6 +13,12 @@ const name = ref("");
 async function greet() {
   greetMsg.value = await invoke("greet", { name: name.value });
 }
+
+const path = ref("")
+const data = ref({})
+async function getData(path: string) {
+  data.value = await invoke("read_db", { path })
+}
 </script>
 
 <template>
@@ -27,6 +33,12 @@ async function greet() {
       <n-input v-model:value="name" type="text" :style="{width:'50%'}"/>
       <n-button @click="greet">Greet</n-button>
       <p>{{ greetMsg }}</p>
+    </div>
+
+    <div>
+      <n-input v-model:value="path" type="text" :style="{width:'50%'}"/>
+      <n-button @click="getData(path)">Get Data</n-button>
+      <p>{{ data }}</p>
     </div>
 
   </n-flex>
