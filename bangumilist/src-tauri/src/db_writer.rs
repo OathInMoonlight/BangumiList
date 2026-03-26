@@ -7,12 +7,11 @@ use std::fs;
 pub fn write_db(db_data: DBData) -> Result<String, String> {
     let err_to_string = |err: rusqlite::Error| err.to_string();
     let path = Path::new(&db_data.path);
-    let tmp_path_str = format!("{}.tmp", path.file_stem().unwrap().to_string_lossy());
-    let tmp_path = Path::new(&tmp_path_str);
+    let tmp_path = path.with_extension("tmpdb");
     if tmp_path.exists() {
         return Err("Temporary file already exists".to_string());
     }
-    let db = Connection::open(tmp_path).map_err(err_to_string)?;
+    let db = Connection::open(&tmp_path).map_err(err_to_string)?;
     db.execute("CREATE TABLE IF NOT EXISTS DATABASE_INFO (grid_view BOOLEAN NOT NULL, dual_table BOOLEAN NOT NULL,
         sort1 TEXT NOT NULL, sort2 TEXT NOT NULL, group1 TEXT NOT NULL, group2 TEXT NOT NULL)", []).map_err(err_to_string)?;
     db.execute("INSERT INTO DATABASE_INFO (grid_view, dual_table, sort1, sort2, group1, group2) VALUES (?, ?, ?, ?, ?, ?)",
