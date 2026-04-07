@@ -9,6 +9,7 @@ const languages: Languages = {
     currentLang: "zh",
     text: {
         // 抽象动作
+        back: { "zh": "返回", "ja": "戻る", "en": "Back" },
         true: { "zh": "是", "ja": "はい", "en": "True" },
         false: { "zh": "否", "ja": "いいえ", "en": "False" },
         submit: { "zh": "提交", "ja": "送信", "en": "Submit" },

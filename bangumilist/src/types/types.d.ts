@@ -8,5 +8,11 @@ export interface Languages {
 }
 
 export interface Global {
-    lang: Languages
+    lang: Languages,
+    globalZoom: number,
+    primaryColor: string,
+    contentsType: "grid" | "table",
+    gridSize: "small" | "default" | "large",
+    filterText: string,
+    settingPage: boolean
 }

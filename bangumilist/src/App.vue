@@ -1,38 +1,6 @@
-<script setup lang="ts">
-import { ref } from "vue"
-import { invoke } from "@tauri-apps/api/core"
-
-import { NButton, NInput, NFlex, NAvatar, NDivider, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NPopover, NPopselect } from "naive-ui"
-import { Window } from '@tauri-apps/api/window'
-
-import SvgIcon from '@jamescoyle/vue-icon'
-import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium, mdiCog, mdiTranslate, mdiDatabasePlus, mdiContentSave, mdiContentSavePlus, mdiDatabaseRemove, mdiDatabaseCog } from '@mdi/js'
-
-import global from "./plugins/global"
-
-const appWindow = new Window('main')
-
-const greetMsg = ref("")
-const name = ref("")
-
-async function greet() {
-  greetMsg.value = await invoke("greet", { name: name.value })
-}
-
-const path = ref("")
-const data = ref({ path: "", grid_view: false })
-async function getData(path: string) {
-  data.value = await invoke("read_db", { pathStr: path })
-}
-async function saveData() {
-  data.value.path = path.value
-  data.value.grid_view = false
-  await invoke("write_db", { dbData: data.value })
-}
-</script>
-
 <template>
   <n-layout>
+    <!-- 标题栏 -->
     <n-layout-header>
       <n-flex justify="space-between" data-tauri-drag-region>
         <n-flex align="center" size="small" style="padding-left:3px" data-tauri-drag-region>
@@ -63,11 +31,13 @@ async function saveData() {
       </n-flex>
       <n-divider style="margin:0px"/>
     </n-layout-header>
+
     <n-layout has-sider style="height:calc(100vh - 29px)">
+      <!-- 侧边栏 -->
       <n-layout-sider bordered :width="56">
         <n-flex vertical justify="space-between" style="height:100%">
           <n-flex vertical align="center">
-            <n-popover placement="right">
+            <n-tooltip placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -76,8 +46,8 @@ async function saveData() {
                 </n-button>
               </template>
               <label>{{ global.lang.getText("newDatabase") }}</label>
-            </n-popover>
-            <n-popover placement="right">
+            </n-tooltip>
+            <n-tooltip placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -86,8 +56,8 @@ async function saveData() {
                 </n-button>
               </template>
               <label>{{ global.lang.getText("editDatabase") }}</label>
-            </n-popover>
-            <n-popover placement="right">
+            </n-tooltip>
+            <n-tooltip placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -96,8 +66,8 @@ async function saveData() {
                 </n-button>
               </template>
               <label>{{ global.lang.getText("saveDatabase") }}</label>
-            </n-popover>
-            <n-popover placement="right">
+            </n-tooltip>
+            <n-tooltip placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -106,8 +76,8 @@ async function saveData() {
                 </n-button>
               </template>
               <label>{{ global.lang.getText("saveDatabaseAs") }}</label>
-            </n-popover>
-            <n-popover placement="right">
+            </n-tooltip>
+            <n-tooltip placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -116,10 +86,10 @@ async function saveData() {
                 </n-button>
               </template>
               <label>{{ global.lang.getText("closeDatabase") }}</label>
-            </n-popover>
+            </n-tooltip>
           </n-flex>
           <n-flex vertical justify="end" align="center" style="margin-bottom:8px">
-            <n-popover placement="right">
+            <n-tooltip placement="right">
               <template #trigger>
                 <n-popselect v-model:value="global.lang.currentLang" :options="global.lang.langList" placement="right" size="large" trigger="click">
                   <n-button quaternary size="large">
@@ -130,34 +100,38 @@ async function saveData() {
                 </n-popselect>
               </template>
               <label>{{ global.lang.getText("language") }}</label>
-            </n-popover>
-            <n-popover placement="right">
+            </n-tooltip>
+            <n-tooltip placement="right">
               <template #trigger>
-                <n-button quaternary size="large">
+                <n-button quaternary size="large" @click="global.settingPage = !global.settingPage">
                   <template #icon>
                     <svg-icon type="mdi" :path="mdiCog"/>
                   </template>
                 </n-button>
               </template>
               <label>{{ global.lang.getText("settings") }}</label>
-            </n-popover>
+            </n-tooltip>
           </n-flex>
         </n-flex>
       </n-layout-sider>
+      <!-- 正文 -->
       <n-layout-content>
-        <div>
-          <n-input v-model:value="name" type="text" style="width:50%"/>
-          <n-button @click="greet">Greet</n-button>
-          <p>{{ greetMsg }}</p>
-        </div>
-
-        <div>
-          <n-input v-model:value="path" type="text" style="width:50%"/>
-          <n-button @click="getData(path)">Get Data</n-button>
-          <n-button @click="saveData">Save Data</n-button>
-          <p>{{ data }}</p>
-        </div>
+        <Settings v-if="global.settingPage"/>
+        <Test v-else/>
       </n-layout-content>
     </n-layout>
   </n-layout>
 </template>
+
+<script setup lang="ts">
+import { Window } from "@tauri-apps/api/window"
+import { NButton, NFlex, NAvatar, NDivider, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NTooltip, NPopselect } from "naive-ui"
+import SvgIcon from "@jamescoyle/vue-icon"
+import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium, mdiCog, mdiTranslate,
+  mdiDatabasePlus, mdiContentSave, mdiContentSavePlus, mdiDatabaseRemove, mdiDatabaseCog } from "@mdi/js"
+import Settings from "./components/settings.vue"
+import Test from "./components/Test.vue"
+import global from "./plugins/global"
+
+const appWindow = new Window("main")
+</script>
