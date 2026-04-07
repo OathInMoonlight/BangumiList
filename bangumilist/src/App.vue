@@ -2,11 +2,13 @@
 import { ref } from "vue"
 import { invoke } from "@tauri-apps/api/core"
 
-import { NButton, NInput, NFlex, NAvatar, NDivider, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NPopover } from "naive-ui"
+import { NButton, NInput, NFlex, NAvatar, NDivider, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NPopover, NPopselect } from "naive-ui"
 import { Window } from '@tauri-apps/api/window'
 
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium, mdiCog, mdiTranslate, mdiDatabasePlus, mdiContentSave, mdiContentSavePlus, mdiDatabaseRemove, mdiDatabaseCog } from '@mdi/js'
+
+import global from "./plugins/global"
 
 const appWindow = new Window('main')
 
@@ -65,7 +67,7 @@ async function saveData() {
       <n-layout-sider bordered :width="56">
         <n-flex vertical justify="space-between" style="height:100%">
           <n-flex vertical align="center">
-            <n-popover placement="right" :show-arrow="false">
+            <n-popover placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -73,9 +75,9 @@ async function saveData() {
                   </template>
                 </n-button>
               </template>
-              <label>New Database</label>
+              <label>{{ global.lang.getText("newDatabase") }}</label>
             </n-popover>
-            <n-popover placement="right" :show-arrow="false">
+            <n-popover placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -83,9 +85,9 @@ async function saveData() {
                   </template>
                 </n-button>
               </template>
-              <label>Edit Database</label>
+              <label>{{ global.lang.getText("editDatabase") }}</label>
             </n-popover>
-            <n-popover placement="right" :show-arrow="false">
+            <n-popover placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -93,9 +95,9 @@ async function saveData() {
                   </template>
                 </n-button>
               </template>
-              <label>Save Database</label>
+              <label>{{ global.lang.getText("saveDatabase") }}</label>
             </n-popover>
-            <n-popover placement="right" :show-arrow="false">
+            <n-popover placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -103,9 +105,9 @@ async function saveData() {
                   </template>
                 </n-button>
               </template>
-              <label>Save Database As</label>
+              <label>{{ global.lang.getText("saveDatabaseAs") }}</label>
             </n-popover>
-            <n-popover placement="right" :show-arrow="false">
+            <n-popover placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -113,21 +115,23 @@ async function saveData() {
                   </template>
                 </n-button>
               </template>
-              <label>Close Database</label>
+              <label>{{ global.lang.getText("closeDatabase") }}</label>
             </n-popover>
           </n-flex>
           <n-flex vertical justify="end" align="center" style="margin-bottom:8px">
-            <n-popover placement="right" :show-arrow="false">
+            <n-popover placement="right">
               <template #trigger>
-                <n-button quaternary size="large">
-                  <template #icon>
-                    <svg-icon type="mdi" :path="mdiTranslate"/>
-                  </template>
-                </n-button>
+                <n-popselect v-model:value="global.lang.currentLang" :options="global.lang.langList" placement="right" size="large" trigger="click">
+                  <n-button quaternary size="large">
+                    <template #icon>
+                      <svg-icon type="mdi" :path="mdiTranslate"/>
+                    </template>
+                  </n-button>
+                </n-popselect>
               </template>
-              <label>Language</label>
+              <label>{{ global.lang.getText("language") }}</label>
             </n-popover>
-            <n-popover placement="right" :show-arrow="false">
+            <n-popover placement="right">
               <template #trigger>
                 <n-button quaternary size="large">
                   <template #icon>
@@ -135,7 +139,7 @@ async function saveData() {
                   </template>
                 </n-button>
               </template>
-              <label>Setting</label>
+              <label>{{ global.lang.getText("settings") }}</label>
             </n-popover>
           </n-flex>
         </n-flex>

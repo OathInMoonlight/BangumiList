@@ -5,12 +5,12 @@ use std::collections::HashMap;
 #[derive(Deserialize)]
 pub struct Column {
     pub id: u32,
-    pub name: String,
     pub data_type: String,
     pub title: String,
     pub sort_map: u32,
-    pub group_type: String,
+    pub group_type: Option<String>,
     pub if_display: bool,
+    pub display_lang: Option<String>,
     pub tag_color: Option<String>
 }
 

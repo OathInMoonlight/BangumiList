@@ -20,14 +20,14 @@ pub fn write_db(db_data: DBData) -> Result<String, String> {
         sort_map INTEGER NOT NULL, group_type TEXT NOT NULL, if_display BOOLEAN NOT NULL, tag_color TEXT)", []).map_err(err_to_string)?;
     for column in &db_data.table1_info {
         db.execute("INSERT INTO INFO_TABLE_1 (name, data_type, title, sort_map, group_type, if_display, tag_color) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            rusqlite::params![&column.name, &column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.tag_color])
+            rusqlite::params![&column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.display_lang, &column.tag_color])
             .map_err(err_to_string)?;
     }
     db.execute("CREATE TABLE IF NOT EXISTS INFO_TABLE_2 (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, data_type TEXT NOT NULL, title TEXT NOT NULL,
         sort_map INTEGER NOT NULL, group_type TEXT NOT NULL, if_display BOOLEAN NOT NULL, tag_color TEXT)", []).map_err(err_to_string)?;
     for column in &db_data.table2_info {
         db.execute("INSERT INTO INFO_TABLE_2 (name, data_type, title, sort_map, group_type, if_display, tag_color) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            rusqlite::params![&column.name, &column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.tag_color])
+            rusqlite::params![&column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.display_lang, &column.tag_color])
             .map_err(err_to_string)?;
     }
     db.execute(&format!("CREATE TABLE IF NOT EXISTS DATA_TABLE (\"0\" INTEGER PRIMARY KEY AUTOINCREMENT{}{})",if db_data.table1_info.len() > 1 {", "} else {""},
