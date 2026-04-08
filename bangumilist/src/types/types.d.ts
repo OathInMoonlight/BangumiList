@@ -1,4 +1,5 @@
 import type { LanguageType } from "./dataTypes"
+import type { GlobalTheme } from "naive-ui"
 
 export interface Languages {
     langList: { label: string, value: LanguageType }[],
@@ -10,6 +11,7 @@ export interface Languages {
 export interface Global {
     lang: Languages,
     globalZoom: number,
+    darkMode: GlobalTheme | null,
     primaryColor: string,
     contentsType: "grid" | "table",
     gridSize: "small" | "default" | "large",

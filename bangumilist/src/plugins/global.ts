@@ -5,6 +5,7 @@ import languages from "./languages"
 const global: Global = reactive({
     lang: languages,
     globalZoom: 1,
+    darkMode: null,
     primaryColor: "#2196F3",
     contentsType: "table",
     gridSize: "default",

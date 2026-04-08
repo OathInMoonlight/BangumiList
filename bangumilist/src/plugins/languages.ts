@@ -19,9 +19,10 @@ const languages: Languages = {
         // 全局设置
         language: { "zh": "语言", "ja": "言語", "en": "Language" },
         settings: { "zh": "设置", "ja": "設定", "en": "Settings" },
+        globalZoom: { "zh": "全局缩放", "ja": "グローバルズーム", "en": "Global Zoom" },
+        darkModeSystem: { "zh": "跟随系统", "ja": "システムに従う", "en": "Follow System" },
         lightMode: { "zh": "浅色模式", "ja": "ライトモード", "en": "Light Mode" },
         darkMode: { "zh": "深色模式", "ja": "ダークモード", "en": "Dark Mode" },
-        globalZoom: { "zh": "全局缩放", "ja": "グローバルズーム", "en": "Global Zoom" },
         primaryColor: { "zh": "主色调", "ja": "プライマリカラー", "en": "Primary Color" },
         red: { "zh": "红色", "ja": "赤", "en": "Red" },
         yellow: { "zh": "黄色", "ja": "黄", "en": "Yellow" },
