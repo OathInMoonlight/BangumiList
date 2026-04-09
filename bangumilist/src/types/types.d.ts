@@ -10,11 +10,11 @@ export interface Languages {
 
 export interface Global {
     lang: Languages,
+    settingPage: boolean,
     globalZoom: number,
     darkMode: GlobalTheme | null,
     primaryColor: string,
     contentsType: "grid" | "table",
     gridSize: "small" | "default" | "large",
-    filterText: string,
-    settingPage: boolean
+    filterText: string
 }

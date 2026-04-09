@@ -9,31 +9,48 @@
                         </template>
                     </n-button>
                 </template>
-                <label>{{ global.lang.getText("back") }}</label>
+                <p style="margin: 0">{{ global.lang.getText("back") }}</p>
             </n-tooltip>
             <h3 style="margin: 0">{{ global.lang.getText("settings") }}</h3>
         </n-flex>
         <n-flex vertical align="center">
-            <n-card style="max-width: 768px">
+            <n-card embedded style="max-width: 512px">
                 <n-flex vertical :size="16">
                     <n-flex justify="space-between" align="center">
-                        <label>{{ global.lang.getText("globalZoom") }}</label>
+                        <p style="margin: 0">{{ global.lang.getText("globalZoom") }}</p>
                         <n-select v-model:value="global.globalZoom" :options="globalZoomOptions" style="width: 256px"/>
                     </n-flex>
                     <n-flex justify="space-between" align="center">
-                        <label>{{ global.lang.getText("darkMode") }}</label>
+                        <p style="margin: 0">{{ global.lang.getText("darkMode") }}</p>
                         <n-select v-model:value="selectedTheme" :options="darkModeOptions" style="width: 256px"/>
+                    </n-flex>
+                    <n-flex justify="space-between" align="center">
+                        <p style="margin: 0">{{ global.lang.getText("primaryColor") }}</p>
+                        <div style="width: 256px">
+                            <n-color-picker v-model:value="global.primaryColor" placement="bottom" :modes="['hex']" :show-alpha="false" :swatches="colorSwatches"/>
+                        </div>
                     </n-flex>
                 </n-flex>
             </n-card>
+            <n-flex vertical align="center" style="margin-top: 16px">
+                <p style="margin: 0">OathInMoonlight</p>
+                <n-flex justify="center" align="center" :size="8">
+                    <svg-icon type="mdi" :path="mdiGithub"/>
+                    <a href="https://github.com/OathInMoonlight/BangumiList" target="_blank">View On Github</a>
+                </n-flex>
+                <n-flex justify="center" align="center" :size="8">
+                    <svg-icon type="mdi" :path="mdiScaleBalance"/>
+                    <a href="https://github.com/OathInMoonlight/BangumiList?tab=MIT-1-ov-file" target="_blank">MIT License</a>
+                </n-flex>
+            </n-flex>
         </n-flex>
     </div>
 </template>
 
 <script setup lang="ts">
-import { darkTheme, useOsTheme, NTooltip, NButton, NFlex, NCard, NSelect } from "naive-ui"
+import { darkTheme, useOsTheme, NTooltip, NButton, NFlex, NCard, NSelect, NColorPicker } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiChevronLeft } from "@mdi/js"
+import { mdiChevronLeft, mdiGithub, mdiScaleBalance } from "@mdi/js"
 import { computed, ref, watch } from "vue"
 import global from "../plugins/global"
 
@@ -65,4 +82,8 @@ watch(selectedTheme, (newTheme) => {
             break
     }
 }, { immediate: true })
+
+const colorSwatches = [
+    "#F44336", "#2196F3", "#00BCD4", "#8BC34A", "#FFC107", "#795548"
+]
 </script>

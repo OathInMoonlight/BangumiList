@@ -4,13 +4,13 @@ import languages from "./languages"
 
 const global: Global = reactive({
     lang: languages,
+    settingPage: false,
     globalZoom: 1,
     darkMode: null,
     primaryColor: "#2196F3",
     contentsType: "table",
     gridSize: "default",
-    filterText: "",
-    settingPage: false
+    filterText: ""
 })
 
 export default global
