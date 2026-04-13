@@ -24,21 +24,21 @@ const languages: Languages = {
         lightMode: { "zh": "浅色模式", "ja": "ライトモード", "en": "Light Mode" },
         darkMode: { "zh": "深色模式", "ja": "ダークモード", "en": "Dark Mode" },
         primaryColor: { "zh": "主色调", "ja": "プライマリカラー", "en": "Primary Color" },
-        red: { "zh": "红色", "ja": "赤", "en": "Red" },
-        yellow: { "zh": "黄色", "ja": "黄", "en": "Yellow" },
-        green: { "zh": "绿色", "ja": "緑", "en": "Green" },
-        blue: { "zh": "蓝色", "ja": "青", "en": "Blue" },
-        transAddress: { "zh": "传输地址", "ja": "送信アドレス", "en": "Transport Address" },
 
         // 工具栏
         newDatabase: { "zh": "新建数据库", "ja": "データベースを新規作成", "en": "New Database" },
+        openDatabase: { "zh": "点击或者拖动文件到该区域来打开数据库", "ja": "クリックまたはファイルをドラッグしてデータベースを開く", "en": "Click or Drag File to Open Database" },
         editDatabase: { "zh": "编辑数据库", "ja": "データベースを編集", "en": "Edit Database" },
         saveDatabase: { "zh": "保存数据库", "ja": "データベースを保存", "en": "Save Database" },
         saveDatabaseAs: {"zh": "数据库另存为", "ja": "データベースを新規保存", "en": "Save Database As" },
         closeDatabase: { "zh": "关闭数据库", "ja": "データベースを閉じる", "en": "Close Database" },
+        plus: { "zh": "新建", "ja": "新規作成", "en": "New" },
+        import: { "zh": "导入", "ja": "インポート", "en": "Import" },
+        edit: { "zh": "编辑", "ja": "編集", "en": "Edit" },
+        export: { "zh": "导出", "ja": "エクスポート", "en": "Export" },
+        delete: { "zh": "删除", "ja": "削除", "en": "Delete" },
 
         // 新建
-        plus: { "zh": "新建", "ja": "新規作成", "en": "New" },
         databaseName: { "zh": "数据库名", "ja": "データベース名", "en": "Database Name" },
         databasePath: { "zh": "数据库路径", "ja": "データベースパス", "en": "Database Path" },
         doubleTable: { "zh": "双层表", "ja": "二重テーブル", "en": "Double Table" },
@@ -76,31 +76,27 @@ const languages: Languages = {
         noConflict: { "zh": "列键不能与已有的列冲突", "ja": "列キーは既存の列と競合できません", "en": "Cannot conflict with existing column keys" },
         notValidName: { "zh": "列名不合法", "ja": "列名が無効です", "en": "Invalid column name" },
         // 导入
-        import: { "zh": "导入", "ja": "インポート", "en": "Import" },
         importDatabase: { "zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file" },
         uploadFile: { "zh": "上传文件", "ja": "アップロードファイル", "en": "Upload File" },
         importError: { "zh": "导入失败", "ja": "インポートに失敗しました", "en": "Failed to import" },
         // 导出
-        export: { "zh": "导出", "ja": "エクスポート", "en": "Export" },
         exportDatabase: { "zh": "导出一个数据库文件", "ja": "データベースファイルをエクスポートする", "en": "Export a database file" },
         exportSelect: { "zh": "选择导出的数据库", "ja": "エクスポートするデータベースを選択してください", "en": "Please select the database to export" },
         exportError: { "zh": "导出失败", "ja": "エクスポートに失敗しました", "en": "Failed to export" },
         // 删除
-        delete: { "zh": "删除", "ja": "削除", "en": "Delete" },
         deleteErrorText: { "zh":"请选择要删除的数据库", "ja":"削除するデータベースを選択してください", "en":"Please select the database to delete" },
         deleteConfirm1: { "zh": "确认要删除", "ja": "", "en": "Are you sure to delete" },
         deleteConfirm2: { "zh": "吗？", "ja": "を削除しますか？", "en": "?" },
         deleteFile: { "zh": "同时删除文件本体", "ja": "ファイル本体も削除する", "en": "Also delete the file itself" },
         deleteError: { "zh": "删除失败", "ja": "削除に失敗しました", "en": "Failed to delete" },
         // 编辑
-        edit: { "zh": "编辑", "ja": "編集", "en": "Edit" },
         editErrorText: { "zh":"请选择要编辑的数据库", "ja":"編集するデータベースを選択してください", "en":"Please select the database to edit" },
         editError: { "zh": "编辑失败", "ja": "編集に失敗しました", "en": "Failed to edit" },
 
         // 视图栏
-        search: { "zh": "搜索", "ja": "検索", "en": "Search" },
         gridView: { "zh": "网格视图", "ja": "グリッドビュー", "en": "Grid View" },
         tableView: { "zh": "表格视图", "ja": "テーブルビュー", "en": "Table View" },
+        statisticView: { "zh": "统计视图", "ja": "統計ビュー", "en": "Statistic View" },
         tableDisplayItems: { "zh": "表格显示项", "ja": "テーブル表示項目", "en": "Table Display Items" },
         gridLarge: { "zh": "网格:大", "ja": "グリッド:大", "en": "Grid:Large" },
         gridDefault: { "zh": "网格:默认", "ja": "グリッド:デフォルト", "en": "Grid:Default" },
@@ -108,6 +104,7 @@ const languages: Languages = {
         sortBy: { "zh": "排序方式", "ja": "ソート順", "en": "Sort By" },
         groupSortBy: { "zh": "分组依据", "ja": "グループ分け", "en": "Group Sort By" },
         noGroup: { "zh": "不分组", "ja": "グループなし", "en": "No Group" },
+        search: { "zh": "搜索", "ja": "検索", "en": "Search" },
 
         // 表格
         noData: { "zh": "无数据", "ja": "データなし", "en": "No Data" },

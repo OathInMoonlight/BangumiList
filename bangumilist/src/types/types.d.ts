@@ -1,4 +1,4 @@
-import type { LanguageType } from "./dataTypes"
+import type { LanguageType, DatabaseData } from "./dataTypes"
 import type { GlobalTheme } from "naive-ui"
 
 export interface Languages {
@@ -14,7 +14,13 @@ export interface Global {
     globalZoom: number,
     darkMode: GlobalTheme | null,
     primaryColor: string,
-    contentsType: "grid" | "table",
+
+    databaseLoaded: boolean,
+    databaseData: DatabaseData | null,
+    isChildTable: boolean,
+
+
+    contentsType: "grid" | "table" | "statistic",
     gridSize: "small" | "default" | "large",
     filterText: string
 }

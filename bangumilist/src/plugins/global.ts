@@ -8,6 +8,11 @@ const global: Global = reactive({
     globalZoom: 1,
     darkMode: null,
     primaryColor: "#2196F3",
+
+    databaseLoaded: false,
+    databaseData: null,
+    isChildTable: false,
+
     contentsType: "table",
     gridSize: "default",
     filterText: ""

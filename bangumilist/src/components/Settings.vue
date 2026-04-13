@@ -1,7 +1,8 @@
 <template>
     <div>
+        <!-- 返回按钮 -->
         <n-flex align="center" style="margin: 8px">
-            <n-tooltip placement="bottom">
+            <n-popover placement="bottom">
                 <template #trigger>
                     <n-button quaternary size="large" circle @click="global.settingPage = false">
                         <template #icon>
@@ -9,31 +10,36 @@
                         </template>
                     </n-button>
                 </template>
-                <p style="margin: 0">{{ global.lang.getText("back") }}</p>
-            </n-tooltip>
+                {{ global.lang.getText("back") }}
+            </n-popover>
             <h3 style="margin: 0">{{ global.lang.getText("settings") }}</h3>
         </n-flex>
+
         <n-flex vertical align="center">
             <n-card embedded style="max-width: 512px">
                 <n-flex vertical :size="16">
+                    <!-- 全局缩放 -->
                     <n-flex justify="space-between" align="center">
-                        <p style="margin: 0">{{ global.lang.getText("globalZoom") }}</p>
+                        {{ global.lang.getText("globalZoom") }}
                         <n-select v-model:value="global.globalZoom" :options="globalZoomOptions" style="width: 256px"/>
                     </n-flex>
+                    <!-- 深色模式 -->
                     <n-flex justify="space-between" align="center">
-                        <p style="margin: 0">{{ global.lang.getText("darkMode") }}</p>
+                        {{ global.lang.getText("darkMode") }}
                         <n-select v-model:value="selectedTheme" :options="darkModeOptions" style="width: 256px"/>
                     </n-flex>
+                    <!-- 主色调 -->
                     <n-flex justify="space-between" align="center">
-                        <p style="margin: 0">{{ global.lang.getText("primaryColor") }}</p>
+                        {{ global.lang.getText("primaryColor") }}
                         <div style="width: 256px">
                             <n-color-picker v-model:value="global.primaryColor" placement="bottom" :modes="['hex']" :show-alpha="false" :swatches="colorSwatches"/>
                         </div>
                     </n-flex>
                 </n-flex>
             </n-card>
+            <!-- 关于 -->
             <n-flex vertical align="center" style="margin-top: 16px">
-                <p style="margin: 0">OathInMoonlight</p>
+                OathInMoonlight
                 <n-flex justify="center" align="center" :size="8">
                     <svg-icon type="mdi" :path="mdiGithub"/>
                     <a href="https://github.com/OathInMoonlight/BangumiList" target="_blank">View On Github</a>
@@ -48,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { darkTheme, useOsTheme, NTooltip, NButton, NFlex, NCard, NSelect, NColorPicker } from "naive-ui"
+import { darkTheme, useOsTheme, NPopover, NButton, NFlex, NCard, NSelect, NColorPicker } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiChevronLeft, mdiGithub, mdiScaleBalance } from "@mdi/js"
 import { computed, ref, watch } from "vue"

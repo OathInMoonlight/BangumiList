@@ -40,7 +40,7 @@
           <n-card embedded style="height: 100%" content-style="padding: 0">
             <n-flex vertical justify="space-between" style="height:100%">
               <n-flex vertical align="center">
-                <n-tooltip placement="right">
+                <n-popover placement="right">
                   <template #trigger>
                     <n-button quaternary size="large">
                       <template #icon>
@@ -48,9 +48,9 @@
                       </template>
                     </n-button>
                   </template>
-                  <p style="margin: 0">{{ global.lang.getText("newDatabase") }}</p>
-                </n-tooltip>
-                <n-tooltip placement="right">
+                  {{ global.lang.getText("newDatabase") }}
+                </n-popover>
+                <n-popover placement="right">
                   <template #trigger>
                     <n-button quaternary size="large">
                       <template #icon>
@@ -58,9 +58,9 @@
                       </template>
                     </n-button>
                   </template>
-                  <p style="margin: 0">{{ global.lang.getText("editDatabase") }}</p>
-                </n-tooltip>
-                <n-tooltip placement="right">
+                  {{ global.lang.getText("editDatabase") }}
+                </n-popover>
+                <n-popover placement="right">
                   <template #trigger>
                     <n-button quaternary size="large">
                       <template #icon>
@@ -68,9 +68,9 @@
                       </template>
                     </n-button>
                   </template>
-                  <p style="margin: 0">{{ global.lang.getText("saveDatabase") }}</p>
-                </n-tooltip>
-                <n-tooltip placement="right">
+                  {{ global.lang.getText("saveDatabase") }}
+                </n-popover>
+                <n-popover placement="right">
                   <template #trigger>
                     <n-button quaternary size="large">
                       <template #icon>
@@ -78,9 +78,9 @@
                       </template>
                     </n-button>
                   </template>
-                  <p style="margin: 0">{{ global.lang.getText("saveDatabaseAs") }}</p>
-                </n-tooltip>
-                <n-tooltip placement="right">
+                  {{ global.lang.getText("saveDatabaseAs") }}
+                </n-popover>
+                <n-popover placement="right">
                   <template #trigger>
                     <n-button quaternary size="large">
                       <template #icon>
@@ -88,11 +88,11 @@
                       </template>
                     </n-button>
                   </template>
-                  <p style="margin: 0">{{ global.lang.getText("closeDatabase") }}</p>
-                </n-tooltip>
+                  {{ global.lang.getText("closeDatabase") }}
+                </n-popover>
               </n-flex>
               <n-flex vertical justify="end" align="center" style="margin-bottom:8px">
-                <n-tooltip placement="right">
+                <n-popover placement="right">
                   <template #trigger>
                     <n-popselect v-model:value="global.lang.currentLang" :options="global.lang.langList" placement="right" size="large" trigger="click">
                       <n-button quaternary size="large">
@@ -102,9 +102,9 @@
                       </n-button>
                     </n-popselect>
                   </template>
-                  <p style="margin: 0">{{ global.lang.getText("language") }}</p>
-                </n-tooltip>
-                <n-tooltip placement="right">
+                  {{ global.lang.getText("language") }}
+                </n-popover>
+                <n-popover placement="right">
                   <template #trigger>
                     <n-button quaternary size="large" @click="global.settingPage = !global.settingPage">
                       <template #icon>
@@ -112,8 +112,8 @@
                       </template>
                     </n-button>
                   </template>
-                  <p style="margin: 0">{{ global.lang.getText("settings") }}</p>
-                </n-tooltip>
+                  {{ global.lang.getText("settings") }}
+                </n-popover>
               </n-flex>
             </n-flex>
           </n-card>
@@ -121,7 +121,8 @@
         <!-- 正文 -->
         <n-layout-content>
           <Settings v-show="global.settingPage"/>
-          <Test v-if="!global.settingPage"/>
+          <Toolbar v-if="!global.settingPage && global.databaseLoaded"/>
+          <OpenPage v-if="!global.settingPage && !global.databaseLoaded"/>
         </n-layout-content>
       </n-layout>
     </n-layout>
@@ -130,13 +131,14 @@
 
 <script setup lang="ts">
 import { Window } from "@tauri-apps/api/window"
-import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NCard, NTooltip, NPopselect } from "naive-ui"
+import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NCard, NPopover, NPopselect } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium, mdiCog, mdiTranslate,
   mdiDatabasePlus, mdiContentSave, mdiContentSavePlus, mdiDatabaseRemove, mdiDatabaseCog } from "@mdi/js"
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import Settings from "./components/Settings.vue"
-import Test from "./components/Test.vue"
+import Toolbar from "./components/Toolbar.vue"
+import OpenPage from "./components/OpenPage.vue"
 import global from "./plugins/global"
 
 const appWindow = new Window("main")
