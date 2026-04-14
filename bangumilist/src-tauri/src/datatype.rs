@@ -1,8 +1,7 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Serialize)]
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Column {
     pub id: u32,
     pub data_type: String,
@@ -11,18 +10,17 @@ pub struct Column {
     pub group_type: Option<String>,
     pub if_display: bool,
     pub display_lang: Option<String>,
-    pub tag_color: Option<String>
+    pub tag_color: Option<String>,
 }
 
-#[derive(Serialize)]
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UnknownDataType {
-    Number(i32), Text(String)
+    Number(i32),
+    Text(String),
 }
 
-#[derive(Serialize)]
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct DBData {
     pub path: String,
     pub grid_view: bool,
@@ -32,6 +30,6 @@ pub struct DBData {
     pub table_data: Vec<HashMap<i32, Option<UnknownDataType>>>,
     pub sort1: String,
     pub sort2: String,
-    pub group1: String,
-    pub group2: String
+    pub group_sort1: String,
+    pub group_sort2: String,
 }

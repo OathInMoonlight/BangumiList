@@ -23,14 +23,14 @@ interface DataRow {
 type SortOrder = { column: number | null, order: "asc" | "desc" | "-" }
 
 export interface DatabaseData {
-    dbPath: string,
+    path: string,
     gridView: boolean,
     dualTable: boolean,
     table1Info: Column[],
     table2Info: Column[],
     tableData: DataRow[],
     sort1: SortOrder,
-    sort2: SortOrder
-    groupSort1: SortOrder
+    sort2: SortOrder,
+    groupSort1: SortOrder,
     groupSort2: SortOrder
 }

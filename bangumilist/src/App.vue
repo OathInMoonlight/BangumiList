@@ -9,9 +9,9 @@
               <n-avatar src="Icon-64.png" size="small" color="#00000000"/>
               <p data-tauri-drag-region style="margin: 0">BangumiList</p>
             </n-flex>
-            <n-flex align="center" :size="0">
-              <p data-tauri-drag-region style="margin: 0">File Name</p>
-              <svg-icon type="mdi" :path="mdiCircleMedium"/>
+            <n-flex v-if="global.databaseLoaded" align="center" :size="0">
+              <p data-tauri-drag-region style="margin: 0">{{ global.databaseData?.path.split(/[/\\$]/).pop() }}</p>
+              <svg-icon v-if="!global.databaseSaved" type="mdi" :path="mdiCircleMedium"/>
             </n-flex>
             <n-flex justify="end" :size="0">
               <n-button quaternary size="small" @click="appWindow.minimize()">
@@ -122,7 +122,9 @@
         <n-layout-content>
           <Settings v-show="global.settingPage"/>
           <Toolbar v-if="!global.settingPage && global.databaseLoaded"/>
-          <OpenPage v-if="!global.settingPage && !global.databaseLoaded"/>
+          <n-dialog-provider>
+            <OpenPage v-if="!global.settingPage && !global.databaseLoaded"/>
+          </n-dialog-provider>
         </n-layout-content>
       </n-layout>
     </n-layout>
@@ -131,7 +133,8 @@
 
 <script setup lang="ts">
 import { Window } from "@tauri-apps/api/window"
-import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NCard, NPopover, NPopselect } from "naive-ui"
+import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent,
+  NCard, NPopover, NPopselect, NDialogProvider } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium, mdiCog, mdiTranslate,
   mdiDatabasePlus, mdiContentSave, mdiContentSavePlus, mdiDatabaseRemove, mdiDatabaseCog } from "@mdi/js"

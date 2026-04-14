@@ -1,7 +1,7 @@
-use rusqlite::{Connection, Result};
-use std::path::Path;
 use crate::datatype::{DBData, UnknownDataType};
+use rusqlite::{Connection, Result};
 use std::fs;
+use std::path::Path;
 
 #[tauri::command]
 pub fn write_db(db_data: DBData) -> Result<String, String> {
@@ -13,9 +13,9 @@ pub fn write_db(db_data: DBData) -> Result<String, String> {
     }
     let db = Connection::open(&tmp_path).map_err(err_to_string)?;
     db.execute("CREATE TABLE IF NOT EXISTS DATABASE_INFO (grid_view BOOLEAN NOT NULL, dual_table BOOLEAN NOT NULL,
-        sort1 TEXT NOT NULL, sort2 TEXT NOT NULL, group1 TEXT NOT NULL, group2 TEXT NOT NULL)", []).map_err(err_to_string)?;
-    db.execute("INSERT INTO DATABASE_INFO (grid_view, dual_table, sort1, sort2, group1, group2) VALUES (?, ?, ?, ?, ?, ?)",
-        rusqlite::params![&db_data.grid_view, &db_data.dual_table, &db_data.sort1, &db_data.sort2, &db_data.group1, &db_data.group2]).map_err(err_to_string)?;
+        sort1 TEXT NOT NULL, sort2 TEXT NOT NULL, group_sort1 TEXT NOT NULL, group_sort2 TEXT NOT NULL)", []).map_err(err_to_string)?;
+    db.execute("INSERT INTO DATABASE_INFO (grid_view, dual_table, sort1, sort2, group_sort1, group_sort2) VALUES (?, ?, ?, ?, ?, ?)",
+        rusqlite::params![&db_data.grid_view, &db_data.dual_table, &db_data.sort1, &db_data.sort2, &db_data.group_sort1, &db_data.group_sort2]).map_err(err_to_string)?;
     db.execute("CREATE TABLE IF NOT EXISTS INFO_TABLE_1 (id INTEGER PRIMARY KEY AUTOINCREMENT, data_type TEXT NOT NULL, title TEXT NOT NULL,
         sort_map INTEGER NOT NULL, group_type TEXT NOT NULL, if_display BOOLEAN NOT NULL, display_lang TEXT, tag_color TEXT)", []).map_err(err_to_string)?;
     for column in &db_data.table1_info {
@@ -30,15 +30,34 @@ pub fn write_db(db_data: DBData) -> Result<String, String> {
             rusqlite::params![&column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.display_lang, &column.tag_color])
             .map_err(err_to_string)?;
     }
-    db.execute(&format!("CREATE TABLE IF NOT EXISTS DATA_TABLE (\"0\" INTEGER PRIMARY KEY AUTOINCREMENT{}{})",if db_data.table1_info.len() > 1 {", "} else {""},
-        &db_data.table1_info[1..].iter().map(|column| format!("{} {}", column.id, match column.data_type.as_str() {
-            "bool" => "INTEGER",
-            "tag" => "TEXT",
-            "number" => "INTEGER",
-            "text" => "TEXT",
-            "paragraph" => "TEXT",
-            _ => "TEXT"
-        })).collect::<Vec<String>>().join(", ")), []).map_err(err_to_string)?;
+    db.execute(
+        &format!(
+            "CREATE TABLE IF NOT EXISTS DATA_TABLE (\"0\" INTEGER PRIMARY KEY AUTOINCREMENT{}{})",
+            if db_data.table1_info.len() > 1 {
+                ", "
+            } else {
+                ""
+            },
+            &db_data.table1_info[1..]
+                .iter()
+                .map(|column| format!(
+                    "{} {}",
+                    column.id,
+                    match column.data_type.as_str() {
+                        "bool" => "INTEGER",
+                        "tag" => "TEXT",
+                        "number" => "INTEGER",
+                        "text" => "TEXT",
+                        "paragraph" => "TEXT",
+                        _ => "TEXT",
+                    }
+                ))
+                .collect::<Vec<String>>()
+                .join(", ")
+        ),
+        [],
+    )
+    .map_err(err_to_string)?;
     for row in &db_data.table_data {
         let mut columns: Vec<String> = Vec::new();
         let mut placeholders: Vec<String> = Vec::new();
@@ -49,10 +68,18 @@ pub fn write_db(db_data: DBData) -> Result<String, String> {
             match value {
                 Some(UnknownDataType::Number(num)) => values.push(num),
                 Some(UnknownDataType::Text(text)) => values.push(text),
-                None => values.push(&rusqlite::types::Null)
+                None => values.push(&rusqlite::types::Null),
             }
         }
-        db.execute(&format!("INSERT INTO DATA_TABLE ({}) VALUES ({})", columns.join(", "), placeholders.join(", ")), values.as_slice()).map_err(err_to_string)?;
+        db.execute(
+            &format!(
+                "INSERT INTO DATA_TABLE ({}) VALUES ({})",
+                columns.join(", "),
+                placeholders.join(", ")
+            ),
+            values.as_slice(),
+        )
+        .map_err(err_to_string)?;
     }
     db.close().map_err(|(_, err)| err.to_string())?;
     if path.exists() {

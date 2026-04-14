@@ -9,12 +9,14 @@ const languages: Languages = {
     currentLang: "zh",
     text: {
         // 抽象动作
+        error: { "zh": "错误", "ja": "エラー", "en": "Error" },
         back: { "zh": "返回", "ja": "戻る", "en": "Back" },
         true: { "zh": "是", "ja": "はい", "en": "True" },
         false: { "zh": "否", "ja": "いいえ", "en": "False" },
         submit: { "zh": "提交", "ja": "送信", "en": "Submit" },
         cancel: { "zh": "取消", "ja": "キャンセル", "en": "Cancel" },
         confirm: { "zh": "确认", "ja": "確認", "en": "Confirm" },
+        noData: { "zh": "无数据", "ja": "データなし", "en": "No Data" },
 
         // 全局设置
         language: { "zh": "语言", "ja": "言語", "en": "Language" },
@@ -27,7 +29,7 @@ const languages: Languages = {
 
         // 工具栏
         newDatabase: { "zh": "新建数据库", "ja": "データベースを新規作成", "en": "New Database" },
-        openDatabase: { "zh": "点击或者拖动文件到该区域来打开数据库", "ja": "クリックまたはファイルをドラッグしてデータベースを開く", "en": "Click or Drag File to Open Database" },
+        openDatabase: { "zh": "打开数据库", "ja": "データベースを開く", "en": "Open Database" },
         editDatabase: { "zh": "编辑数据库", "ja": "データベースを編集", "en": "Edit Database" },
         saveDatabase: { "zh": "保存数据库", "ja": "データベースを保存", "en": "Save Database" },
         saveDatabaseAs: {"zh": "数据库另存为", "ja": "データベースを新規保存", "en": "Save Database As" },
@@ -37,6 +39,7 @@ const languages: Languages = {
         edit: { "zh": "编辑", "ja": "編集", "en": "Edit" },
         export: { "zh": "导出", "ja": "エクスポート", "en": "Export" },
         delete: { "zh": "删除", "ja": "削除", "en": "Delete" },
+        clickOrDragToOpen: { "zh": "点击或者拖动文件到该区域来打开", "ja": "クリックまたはファイルをここにドラッグして開く", "en": "Click or Drag File Here to Open" },
 
         // 新建
         databaseName: { "zh": "数据库名", "ja": "データベース名", "en": "Database Name" },
@@ -107,9 +110,7 @@ const languages: Languages = {
         search: { "zh": "搜索", "ja": "検索", "en": "Search" },
 
         // 表格
-        noData: { "zh": "无数据", "ja": "データなし", "en": "No Data" },
         loading: { "zh": "加载中", "ja": "読み込み中", "en": "Loading" },
-        error: { "zh": "错误", "ja": "エラー", "en": "Error" },
         getError: { "zh": "获取数据失败", "ja": "データの取得に失敗しました", "en": "Failed to get data" }
     },
     getText(key: keyof typeof this.text) {

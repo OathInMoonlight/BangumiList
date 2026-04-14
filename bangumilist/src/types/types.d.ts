@@ -16,6 +16,7 @@ export interface Global {
     primaryColor: string,
 
     databaseLoaded: boolean,
+    databaseSaved: boolean,
     databaseData: DatabaseData | null,
     isChildTable: boolean,
 

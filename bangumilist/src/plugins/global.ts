@@ -10,6 +10,7 @@ const global: Global = reactive({
     primaryColor: "#2196F3",
 
     databaseLoaded: false,
+    databaseSaved: true,
     databaseData: null,
     isChildTable: false,
 
