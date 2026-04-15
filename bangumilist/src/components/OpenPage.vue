@@ -21,8 +21,10 @@ import { mdiFileUpload } from "@mdi/js"
 import { onMounted, onUnmounted, useTemplateRef } from "vue"
 import global from "../plugins/global"
 
-const openErrorDialog = (errorMessage: unknown) => {
-    useDialog().error({
+const dialog = useDialog()
+
+function openErrorDialog(errorMessage: unknown) {
+    dialog.error({
         title: global.lang.getText("error"),
         content: String(errorMessage),
         positiveText: global.lang.getText("confirm"),

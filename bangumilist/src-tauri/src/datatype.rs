@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Column {
     pub id: u32,
     pub data_type: String,
@@ -14,13 +15,14 @@ pub struct Column {
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(untagged)]
+#[serde(rename_all = "camelCase", untagged)]
 pub enum UnknownDataType {
     Number(i32),
     Text(String),
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DBData {
     pub path: String,
     pub grid_view: bool,

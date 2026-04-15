@@ -10,6 +10,7 @@ const languages: Languages = {
     text: {
         // 抽象动作
         error: { "zh": "错误", "ja": "エラー", "en": "Error" },
+        warning: { "zh": "警告", "ja": "警告", "en": "Warning" },
         back: { "zh": "返回", "ja": "戻る", "en": "Back" },
         true: { "zh": "是", "ja": "はい", "en": "True" },
         false: { "zh": "否", "ja": "いいえ", "en": "False" },
@@ -95,6 +96,8 @@ const languages: Languages = {
         // 编辑
         editErrorText: { "zh":"请选择要编辑的数据库", "ja":"編集するデータベースを選択してください", "en":"Please select the database to edit" },
         editError: { "zh": "编辑失败", "ja": "編集に失敗しました", "en": "Failed to edit" },
+        // 关闭
+        closeNotSaved: { "zh": "数据库尚未保存", "ja": "データベースはまだ保存されていません", "en": "Database is not saved yet" },
 
         // 视图栏
         gridView: { "zh": "网格视图", "ja": "グリッドビュー", "en": "Grid View" },

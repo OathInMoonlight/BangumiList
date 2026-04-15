@@ -37,86 +37,9 @@
       <n-layout has-sider :style="`height:${contentsHeight}px`">
         <!-- 侧边栏 -->
         <n-layout-sider bordered :width="56">
-          <n-card embedded style="height: 100%" content-style="padding: 0">
-            <n-flex vertical justify="space-between" style="height:100%">
-              <n-flex vertical align="center">
-                <n-popover placement="right">
-                  <template #trigger>
-                    <n-button quaternary size="large">
-                      <template #icon>
-                        <svg-icon type="mdi" :path="mdiDatabasePlus"/>
-                      </template>
-                    </n-button>
-                  </template>
-                  {{ global.lang.getText("newDatabase") }}
-                </n-popover>
-                <n-popover placement="right">
-                  <template #trigger>
-                    <n-button quaternary size="large">
-                      <template #icon>
-                        <svg-icon type="mdi" :path="mdiDatabaseCog"/>
-                      </template>
-                    </n-button>
-                  </template>
-                  {{ global.lang.getText("editDatabase") }}
-                </n-popover>
-                <n-popover placement="right">
-                  <template #trigger>
-                    <n-button quaternary size="large">
-                      <template #icon>
-                        <svg-icon type="mdi" :path="mdiContentSave"/>
-                      </template>
-                    </n-button>
-                  </template>
-                  {{ global.lang.getText("saveDatabase") }}
-                </n-popover>
-                <n-popover placement="right">
-                  <template #trigger>
-                    <n-button quaternary size="large">
-                      <template #icon>
-                        <svg-icon type="mdi" :path="mdiContentSavePlus"/>
-                      </template>
-                    </n-button>
-                  </template>
-                  {{ global.lang.getText("saveDatabaseAs") }}
-                </n-popover>
-                <n-popover placement="right">
-                  <template #trigger>
-                    <n-button quaternary size="large">
-                      <template #icon>
-                        <svg-icon type="mdi" :path="mdiDatabaseRemove"/>
-                      </template>
-                    </n-button>
-                  </template>
-                  {{ global.lang.getText("closeDatabase") }}
-                </n-popover>
-              </n-flex>
-              <n-flex vertical justify="end" align="center" style="margin-bottom:8px">
-                <n-popover placement="right">
-                  <template #trigger>
-                    <n-popselect v-model:value="global.lang.currentLang" :options="global.lang.langList" placement="right" size="large" trigger="click">
-                      <n-button quaternary size="large">
-                        <template #icon>
-                          <svg-icon type="mdi" :path="mdiTranslate"/>
-                        </template>
-                      </n-button>
-                    </n-popselect>
-                  </template>
-                  {{ global.lang.getText("language") }}
-                </n-popover>
-                <n-popover placement="right">
-                  <template #trigger>
-                    <n-button quaternary size="large" @click="global.settingPage = !global.settingPage">
-                      <template #icon>
-                        <svg-icon type="mdi" :path="mdiCog"/>
-                      </template>
-                    </n-button>
-                  </template>
-                  {{ global.lang.getText("settings") }}
-                </n-popover>
-              </n-flex>
-            </n-flex>
-          </n-card>
+          <n-dialog-provider>
+            <SideBar/>
+          </n-dialog-provider>
         </n-layout-sider>
         <!-- 正文 -->
         <n-layout-content>
@@ -133,12 +56,11 @@
 
 <script setup lang="ts">
 import { Window } from "@tauri-apps/api/window"
-import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent,
-  NCard, NPopover, NPopselect, NDialogProvider } from "naive-ui"
+import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NCard, NDialogProvider } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium, mdiCog, mdiTranslate,
-  mdiDatabasePlus, mdiContentSave, mdiContentSavePlus, mdiDatabaseRemove, mdiDatabaseCog } from "@mdi/js"
+import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium } from "@mdi/js"
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
+import SideBar from "./components/SideBar.vue"
 import Settings from "./components/Settings.vue"
 import Toolbar from "./components/Toolbar.vue"
 import OpenPage from "./components/OpenPage.vue"
@@ -154,7 +76,7 @@ onUnmounted(() => { window.removeEventListener("resize", updateHeight) })
 
 // 监听 globalZoom 变化，动态调整页面缩放
 watch(() => global.globalZoom, newValue => {
-    document.getElementById("contentsRoot")!.style.zoom = newValue.toString()
+  document.getElementById("contentsRoot")!.style.zoom = newValue.toString()
 })
 
 // 计算内容区域高度
