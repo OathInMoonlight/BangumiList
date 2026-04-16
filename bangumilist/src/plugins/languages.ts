@@ -96,6 +96,8 @@ const languages: Languages = {
         // 编辑
         editErrorText: { "zh":"请选择要编辑的数据库", "ja":"編集するデータベースを選択してください", "en":"Please select the database to edit" },
         editError: { "zh": "编辑失败", "ja": "編集に失敗しました", "en": "Failed to edit" },
+        // 保存
+        saveSuccess: { "zh": "保存成功", "ja": "保存成功", "en": "Saved successfully" },
         // 关闭
         closeNotSaved: { "zh": "数据库尚未保存", "ja": "データベースはまだ保存されていません", "en": "Database is not saved yet" },
 

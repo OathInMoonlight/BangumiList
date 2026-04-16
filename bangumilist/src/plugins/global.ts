@@ -16,7 +16,17 @@ const global: Global = reactive({
 
     contentsType: "table",
     gridSize: "default",
-    filterText: ""
+    filterText: "",
+
+    errorDialog: (dialog, errorMessage) => {
+        dialog.error({
+            title: global.lang.getText("error"),
+            content: String(errorMessage),
+            positiveText: global.lang.getText("confirm"),
+            closable: false,
+        maskClosable: false
+    })
+}
 })
 
 export default global

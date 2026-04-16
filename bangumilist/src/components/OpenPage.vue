@@ -23,22 +23,12 @@ import global from "../plugins/global"
 
 const dialog = useDialog()
 
-function openErrorDialog(errorMessage: unknown) {
-    dialog.error({
-        title: global.lang.getText("error"),
-        content: String(errorMessage),
-        positiveText: global.lang.getText("confirm"),
-        closable: false,
-        maskClosable: false
-    })
-}
-
 async function loadDatabase(path: string) {
     try {
         global.databaseData = await invoke("read_db", { pathStr: path })
         console.log(global.databaseData)
     } catch(error) {
-        openErrorDialog(error)
+        global.errorDialog(dialog, error)
     }
     global.databaseLoaded = true
 }
@@ -54,7 +44,7 @@ async function fileOpenDialog() {
         }]
     })
     if(path === null) {
-        openErrorDialog("Error in Getting File Path")
+        global.errorDialog(dialog, "Error in Getting File Path")
     } else {
         loadDatabase(path)
     }
@@ -75,7 +65,7 @@ onMounted(async () => {
                 }
             }
         } catch (error) {
-            openErrorDialog(error)
+            global.errorDialog(dialog, error)
         }
     })
 })

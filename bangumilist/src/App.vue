@@ -3,7 +3,7 @@
     <n-layout>
       <!-- 标题栏 -->
       <n-layout-header>
-        <n-card embedded content-style="padding: 0px">
+        <n-card embedded :bordered="false" content-style="padding: 0px">
           <n-flex justify="space-between" data-tauri-drag-region>
             <n-flex align="center" size="small" style="padding-left:3px" data-tauri-drag-region>
               <n-avatar src="Icon-64.png" size="small" color="#00000000"/>
@@ -31,23 +31,30 @@
               </n-button>
             </n-flex>
           </n-flex>
+          <n-divider style="margin: 0"/>
         </n-card>
       </n-layout-header>
 
       <n-layout has-sider :style="`height:${contentsHeight}px`">
         <!-- 侧边栏 -->
         <n-layout-sider bordered :width="56">
-          <n-dialog-provider>
-            <SideBar/>
-          </n-dialog-provider>
+          <n-scrollbar style="height: 100%" content-style="height: 100%">
+            <n-dialog-provider>
+              <n-message-provider placement="bottom" keep-alive-on-hover>
+                <SideBar/>
+              </n-message-provider>
+            </n-dialog-provider>
+          </n-scrollbar>
         </n-layout-sider>
         <!-- 正文 -->
         <n-layout-content>
-          <Settings v-show="global.settingPage"/>
-          <Toolbar v-if="!global.settingPage && global.databaseLoaded"/>
-          <n-dialog-provider>
-            <OpenPage v-if="!global.settingPage && !global.databaseLoaded"/>
-          </n-dialog-provider>
+          <n-scrollbar style="height: 100%" content-style="height: 100%">
+            <Settings v-show="global.settingPage"/>
+            <Toolbar v-if="!global.settingPage && global.databaseLoaded"/>
+            <n-dialog-provider>
+              <OpenPage v-if="!global.settingPage && !global.databaseLoaded"/>
+            </n-dialog-provider>
+          </n-scrollbar>
         </n-layout-content>
       </n-layout>
     </n-layout>
@@ -56,7 +63,8 @@
 
 <script setup lang="ts">
 import { Window } from "@tauri-apps/api/window"
-import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent, NCard, NDialogProvider } from "naive-ui"
+import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent,
+  NCard, NDivider, NScrollbar, NDialogProvider, NMessageProvider } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium } from "@mdi/js"
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
@@ -80,5 +88,5 @@ watch(() => global.globalZoom, newValue => {
 })
 
 // 计算内容区域高度
-const contentsHeight = computed(() => windowHeight.value * (1 / global.globalZoom) - 30)
+const contentsHeight = computed(() => windowHeight.value * (1 / global.globalZoom) - 29)
 </script>

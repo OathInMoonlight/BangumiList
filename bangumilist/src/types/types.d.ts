@@ -20,8 +20,9 @@ export interface Global {
     databaseData: DatabaseData | null,
     isChildTable: boolean,
 
-
     contentsType: "grid" | "table" | "statistic",
     gridSize: "small" | "default" | "large",
     filterText: string
+
+    errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void
 }
