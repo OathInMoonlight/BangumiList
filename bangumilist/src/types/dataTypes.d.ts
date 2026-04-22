@@ -1,8 +1,8 @@
-type DataType = "bool" | "tag" | "number" | "text" | "paragraph"
+export type DataType = "bool" | "tag" | "number" | "text" | "paragraph"
 export type LanguageType = "zh" | "ja" | "en"
 type TitleType = { [ lang in LanguageType ]: string }
-type GroupType = null | "alphabet" | string[]
-type TagColorType = { [ key: string ]: string } | null
+type GroupType = "none" | "alphabet" | string[]
+type TagColorType = { [ key: string ]: string } | "none"
 
 export interface Column {
     id: number,
@@ -11,7 +11,7 @@ export interface Column {
     sortMap: number,
     groupType: GroupType,
     ifDisplay: boolean,
-    displayLang: LanguageType | null,
+    displayLang: LanguageType | "none",
     tagColor: TagColorType
 }
 
@@ -26,6 +26,8 @@ export interface DatabaseData {
     path: string,
     gridView: boolean,
     dualTable: boolean,
+    table1label: number | null,
+    table2label: number | null,
     table1Info: Column[],
     table2Info: Column[],
     tableData: DataRow[],

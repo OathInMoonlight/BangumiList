@@ -54,6 +54,7 @@
             <n-dialog-provider>
               <OpenPage v-if="!global.settingPage && !global.databaseLoaded"/>
             </n-dialog-provider>
+            <ColumnDef v-model="tmp" :move-up="() => console.log('up')" :move-down="() => console.log('down')" :delete-column="() => console.log('delete')" :sort-map-max="10"/>
           </n-scrollbar>
         </n-layout-content>
       </n-layout>
@@ -73,6 +74,7 @@ import Settings from "./components/Settings.vue"
 import Toolbar from "./components/Toolbar.vue"
 import OpenPage from "./components/OpenPage.vue"
 import global from "./plugins/global"
+import ColumnDef from "./components/ColumnDef.vue"
 
 const appWindow = new Window("main")
 
@@ -89,4 +91,7 @@ watch(() => global.globalZoom, newValue => {
 
 // 计算内容区域高度
 const contentsHeight = computed(() => windowHeight.value * (1 / global.globalZoom) - 29)
+
+import type { Column, DataType } from "./types/dataTypes"
+const tmp = ref<Omit<Column, "dataType" | "tagColor"> & { dataType: DataType | null, tagColor: string }>({id: 0, dataType: null, title: {'zh': '', 'ja': '', 'en': ''}, sortMap: 0, groupType: "none", ifDisplay: true, displayLang: "none", tagColor: "none" })
 </script>

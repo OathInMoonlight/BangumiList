@@ -26,7 +26,6 @@ const dialog = useDialog()
 async function loadDatabase(path: string) {
     try {
         global.databaseData = await invoke("read_db", { pathStr: path })
-        console.log(global.databaseData)
     } catch(error) {
         global.errorDialog(dialog, error)
     }
