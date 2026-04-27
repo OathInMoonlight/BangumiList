@@ -41,7 +41,7 @@ const languages: Languages = {
         delete: { "zh": "删除", "ja": "削除", "en": "Delete" },
         clickOrDragToOpen: { "zh": "点击或者拖动文件到该区域来打开", "ja": "クリックまたはファイルをここにドラッグして開く", "en": "Click or Drag File Here to Open" },
 
-        // 表单
+        // 列表单
         moveForward: { "zh": "前移", "ja": "前に移動", "en": "Move Forward" },
         deleteColumn: { "zh": "删除列", "ja": "列を削除", "en": "Delete Column" },
         moveBackward: { "zh": "后移", "ja": "後ろに移動", "en": "Move Backward" },
@@ -61,17 +61,30 @@ const languages: Languages = {
         alphabet: { "zh": "按首字母分组", "ja": "アルファベット順でグループ化", "en": "Group by Alphabet" },
         columnDisplayAsLang: { "zh": "列显示语言", "ja": "列表示言語", "en": "Column Display Language" },
         notDisplayAsLang: { "zh": "不随语言显示", "ja": "言語に従わない", "en": "No Display Language" },
-        columnFrameColor: { "zh": "列框架颜色", "ja": "列フレームカラー", "en": "Column Frame Color" },
-        noFrameColor: { "zh": "无框架颜色", "ja": "フレームカラーなし", "en": "No Frame Color" },
-        columnDisplay: { "zh": "列显示", "ja": "列を表示する", "en": "Column do Display" },
-        columnNotDisplay: { "zh": "不显示", "ja": "列を表示しない", "en": "Column not Display" },
+        columnValuePreset: { "zh": "列值预设", "ja": "列値プリセット", "en": "Column Value Preset" },
+        noValuePreset: { "zh": "无值预设", "ja": "値プリセットなし", "en": "No Value Preset" },
+        columnDisplayOn: { "zh": "列显示开启", "ja": "列の表示をオン", "en": "Column Display On" },
+        columnDisplayOff: { "zh": "列显示关闭", "ja": "列の表示をオフ", "en": "Column Display Off" },
+
+        // 数据库表单
+        databaseSettings: { "zh": "数据库设置", "ja": "データベース設定", "en": "Database Settings" },
+        gridViewOn: { "zh": "网格视图开启", "ja": "グリッドビューオン", "en": "Grid View On" },
+        gridViewOff: { "zh": "网格视图关闭", "ja": "グリッドビューオフ", "en": "Grid View Off" },
+        dualTableOn: { "zh": "双层表开启", "ja": "二重テーブルオン", "en": "Dual Table On" },
+        dualTableOff: { "zh": "双层表关闭", "ja": "二重テーブルオフ", "en": "Dual Table Off" },
+        primaryTableSetting: { "zh": "主表设置", "ja": "主テーブル設定", "en": "Primary Table Setting" },
+        id: { zh: "序号", ja: "番号", en: "ID" },
+        cover: { zh: "封面", ja: "カバー", en: "Cover" },
+        childTable: { zh: "子表", ja: "子テーブル", en: "Child Table" },
+        GridLabel: { "zh": "网格视图封面标签", "ja": "グリッドビューのカバーラベル", "en": "Grid View Cover Label" },
+        addNewColumn: { "zh": "添加新列", "ja": "新しい列を追加", "en": "Add New Column" },
+        childTableSetting: { "zh": "子表设置", "ja": "子テーブル設定", "en": "Child Table Setting" },
+        invalidValue: { "zh": "无效的值", "ja": "無効な値", "en": "Invalid Value" },
 
         // 新建
-        doubleTable: { "zh": "双层表", "ja": "二重テーブル", "en": "Double Table" },
         columnWidthType: { "zh": "列宽度类型", "ja": "列幅タイプ", "en": "Column Width Type" },
         tight: { "zh": "紧凑", "ja": "タイト", "en": "Tight" },
         flex: { "zh": "自适应", "ja": "フレックス", "en": "Flex" },
-        addNewColumn: { "zh": "添加新列", "ja": "新しい列を追加", "en": "Add New Column" },
         newError: { "zh": "新建失败", "ja": "新規作成に失敗しました", "en": "Failed to create new item" },
         // 提交
         notEmpty: { "zh": "可填项目不能为空", "ja": "空欄は空にできません", "en": "Blank cannot be empty" },
@@ -98,6 +111,7 @@ const languages: Languages = {
         saveSuccess: { "zh": "保存成功", "ja": "保存成功", "en": "Saved successfully" },
         // 关闭
         closeNotSaved: { "zh": "数据库尚未保存", "ja": "データベースはまだ保存されていません", "en": "Database is not saved yet" },
+        closeWithoutSaving: { "zh": "不保存直接关闭", "ja": "保存せずに閉じる", "en": "Close without saving" },
 
         // 视图栏
         gridView: { "zh": "网格视图", "ja": "グリッドビュー", "en": "Grid View" },

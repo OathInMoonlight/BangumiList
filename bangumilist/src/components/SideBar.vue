@@ -4,7 +4,7 @@
             <n-flex vertical align="center">
                 <n-popover placement="right">
                     <template #trigger>
-                        <n-button quaternary size="large">
+                        <n-button quaternary size="large" :disabled="global.databaseLoaded" @click="global.page = 'edit'">
                             <template #icon>
                                 <svg-icon type="mdi" :path="mdiDatabasePlus"/>
                             </template>
@@ -14,7 +14,7 @@
                 </n-popover>
                 <n-popover placement="right">
                     <template #trigger>
-                        <n-button quaternary size="large">
+                        <n-button quaternary size="large" :disabled="!global.databaseLoaded" @click="global.page = 'edit'">
                             <template #icon>
                                 <svg-icon type="mdi" :path="mdiDatabaseCog"/>
                             </template>
@@ -24,7 +24,7 @@
                 </n-popover>
                 <n-popover placement="right">
                     <template #trigger>
-                        <n-button quaternary size="large" :disabled="!global.databaseLoaded || global.databaseSaved" @click="handleDatabaseSave(false)">
+                        <n-button quaternary size="large" :disabled="!global.databaseLoaded || global.databaseSaved" @click="handleDatabaseSave(global.databaseData!.path === '')">
                             <template #icon>
                                 <svg-icon type="mdi" :path="mdiContentSave"/>
                             </template>
@@ -110,25 +110,50 @@ async function handleDatabaseSave(newPath: boolean) {
         }
     }
     try {
-        await invoke("write_db", { dbData: global.databaseData })
+        await invoke("write_db", { dbData: {
+            path: global.databaseData!.path,
+            gridView: global.databaseData!.gridView,
+            dualTable: global.databaseData!.dualTable,
+            table1Label: global.databaseData!.table1Label,
+            table2Label: global.databaseData!.table2Label,
+            table1Info: global.databaseData!.table1Info.map(column => ({
+                ...column, title: JSON.stringify(column.title), groupType: JSON.stringify(column.groupType), valuePreset: JSON.stringify(column.valuePreset)
+            })),
+            table2Info: global.databaseData!.table2Info.map(column => ({
+                ...column, title: JSON.stringify(column.title), groupType: JSON.stringify(column.groupType), valuePreset: JSON.stringify(column.valuePreset)
+            })),
+            tableData: global.databaseData!.tableData,
+            sort1: JSON.stringify(global.databaseData!.sort1),
+            sort2: JSON.stringify(global.databaseData!.sort2),
+            groupSort1: JSON.stringify(global.databaseData!.groupSort1),
+            groupSort2: JSON.stringify(global.databaseData!.groupSort2)
+        }})
         message.success(global.lang.getText("saveSuccess"))
+        global.databaseSaved = true
     } catch(error) {
         global.errorDialog(dialog, error)
     }
-    global.databaseSaved = true
 }
 
 function handleDataBaseClose() {
-    if(global.databaseSaved) {
-        global.databaseLoaded = false
-    } else {
+    if(!global.databaseSaved) {
         dialog.warning({
             title: global.lang.getText("warning"),
             content: global.lang.getText("closeNotSaved"),
             positiveText: global.lang.getText("confirm"),
+            negativeText: global.lang.getText("closeWithoutSaving"),
             closable: false,
-            maskClosable: false
+            maskClosable: false,
+            onNegativeClick: () => {
+                global.databaseData = null
+                global.databaseLoaded = false
+                global.page = "open"
+            }
         })
+    } else {
+        global.databaseData = null
+        global.databaseLoaded = false
+        global.page = "open"
     }
 }
 </script>

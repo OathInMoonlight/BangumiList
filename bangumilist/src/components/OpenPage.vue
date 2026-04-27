@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import type { DatabaseData, Column } from "../types/dataTypes"
 import { open } from "@tauri-apps/plugin-dialog"
 import { getCurrentWebview } from "@tauri-apps/api/webview"
 import { invoke } from "@tauri-apps/api/core"
@@ -21,15 +22,49 @@ import { mdiFileUpload } from "@mdi/js"
 import { onMounted, onUnmounted, useTemplateRef } from "vue"
 import global from "../plugins/global"
 
+type TransportColumn = Omit<Column, "title" | "groupType" | "valuePreset"> & {
+    title: string
+    groupType: string
+    valuePreset: string
+}
+
+type TransportDatabaseData = Omit<DatabaseData, "table1Info" | "table2Info" | "sort1" | "sort2" | "groupSort1" | "groupSort2"> & {
+    table1Info: TransportColumn[]
+    table2Info: TransportColumn[]
+    sort1: string
+    sort2: string
+    groupSort1: string
+    groupSort2: string
+}
+
 const dialog = useDialog()
 
 async function loadDatabase(path: string) {
     try {
-        global.databaseData = await invoke("read_db", { pathStr: path })
+        const transportData = await invoke<TransportDatabaseData>("read_db", { pathStr: path })
+        global.databaseData = {
+            path: transportData.path,
+            gridView: transportData.gridView,
+            dualTable: transportData.dualTable,
+            table1Label: transportData.table1Label,
+            table2Label: transportData.table2Label,
+            table1Info: transportData.table1Info.map(column => ({
+                ...column, title: JSON.parse(column.title), groupType: JSON.parse(column.groupType), valuePreset: JSON.parse(column.valuePreset)
+            })),
+            table2Info: transportData.table2Info.map(column => ({
+                ...column, title: JSON.parse(column.title), groupType: JSON.parse(column.groupType), valuePreset: JSON.parse(column.valuePreset)
+            })),
+            tableData: transportData.tableData,
+            sort1: JSON.parse(transportData.sort1),
+            sort2: JSON.parse(transportData.sort2),
+            groupSort1: JSON.parse(transportData.groupSort1),
+            groupSort2: JSON.parse(transportData.groupSort2)
+        }
+        global.databaseLoaded = true
+        global.page = "contents"
     } catch(error) {
         global.errorDialog(dialog, error)
     }
-    global.databaseLoaded = true
 }
 
 async function fileOpenDialog() {

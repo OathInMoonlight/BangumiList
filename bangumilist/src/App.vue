@@ -24,11 +24,9 @@
                   <svg-icon type="mdi" :path="mdiCropSquare"/>
                 </template>
               </n-button>
-              <n-button secondary size="small" color="red" @click="appWindow.close()">
-                <template #icon>
-                  <svg-icon type="mdi" :path="mdiClose"/>
-                </template>
-              </n-button>
+              <n-dialog-provider>
+                <window-close :close="appWindow.close"/>
+              </n-dialog-provider>
             </n-flex>
           </n-flex>
           <n-divider style="margin: 0"/>
@@ -41,7 +39,7 @@
           <n-scrollbar style="height: 100%" content-style="height: 100%">
             <n-dialog-provider>
               <n-message-provider placement="bottom" keep-alive-on-hover>
-                <SideBar/>
+                <side-bar/>
               </n-message-provider>
             </n-dialog-provider>
           </n-scrollbar>
@@ -49,12 +47,14 @@
         <!-- 正文 -->
         <n-layout-content>
           <n-scrollbar style="height: 100%" content-style="height: 100%">
-            <Settings v-show="global.settingPage"/>
-            <Toolbar v-if="!global.settingPage && global.databaseLoaded"/>
+            <settings v-show="global.settingPage"/>
+            <toolbar v-if="!global.settingPage && global.page === 'contents'"/>
             <n-dialog-provider>
-              <OpenPage v-if="!global.settingPage && !global.databaseLoaded"/>
+              <open-page v-if="!global.settingPage && global.page === 'open'"/>
             </n-dialog-provider>
-            <ColumnDef v-model="tmp" :move-up="() => console.log('up')" :move-down="() => console.log('down')" :delete-column="() => console.log('delete')" :sort-map-max="10"/>
+            <n-message-provider placement="bottom" keep-alive-on-hover>
+              <DatabaseDef v-if="!global.settingPage && global.page === 'edit'"/>
+            </n-message-provider>
           </n-scrollbar>
         </n-layout-content>
       </n-layout>
@@ -67,14 +67,15 @@ import { Window } from "@tauri-apps/api/window"
 import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent,
   NCard, NDivider, NScrollbar, NDialogProvider, NMessageProvider } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiClose, mdiCropSquare, mdiMinus, mdiCircleMedium } from "@mdi/js"
+import { mdiCropSquare, mdiMinus, mdiCircleMedium } from "@mdi/js"
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
+import WindowClose from "./components/WindowClose.vue"
 import SideBar from "./components/SideBar.vue"
 import Settings from "./components/Settings.vue"
 import Toolbar from "./components/Toolbar.vue"
 import OpenPage from "./components/OpenPage.vue"
+import DatabaseDef from "./components/DatabaseDef.vue"
 import global from "./plugins/global"
-import ColumnDef from "./components/ColumnDef.vue"
 
 const appWindow = new Window("main")
 
@@ -91,7 +92,4 @@ watch(() => global.globalZoom, newValue => {
 
 // 计算内容区域高度
 const contentsHeight = computed(() => windowHeight.value * (1 / global.globalZoom) - 29)
-
-import type { Column, DataType } from "./types/dataTypes"
-const tmp = ref<Omit<Column, "dataType" | "tagColor"> & { dataType: DataType | null, tagColor: string }>({id: 0, dataType: null, title: {'zh': '', 'ja': '', 'en': ''}, sortMap: 0, groupType: "none", ifDisplay: true, displayLang: "none", tagColor: "none" })
 </script>

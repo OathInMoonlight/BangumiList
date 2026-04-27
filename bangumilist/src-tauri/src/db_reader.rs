@@ -35,14 +35,14 @@ pub fn read_db(path_str: &str) -> Result<DBData, String> {
     let table1_info: Vec<Column> = stmt
         .query_map([], |row| {
             Ok(Column {
-                id: row.get(0)?,
+                id: row.get::<_, u32>(0)? - 1,
                 data_type: row.get(1)?,
                 title: row.get(2)?,
                 sort_map: row.get(3)?,
                 group_type: row.get(4)?,
                 if_display: row.get(5)?,
                 display_lang: row.get(6)?,
-                tag_color: row.get(7)?,
+                value_preset: row.get(7)?,
             })
         })
         .map_err(err_to_string)?
@@ -54,14 +54,14 @@ pub fn read_db(path_str: &str) -> Result<DBData, String> {
     let table2_info: Vec<Column> = stmt
         .query_map([], |row| {
             Ok(Column {
-                id: row.get(0)?,
+                id: row.get::<_, u32>(0)? - 1,
                 data_type: row.get(1)?,
                 title: row.get(2)?,
                 sort_map: row.get(3)?,
                 group_type: row.get(4)?,
                 if_display: row.get(5)?,
                 display_lang: row.get(6)?,
-                tag_color: row.get(7)?,
+                value_preset: row.get(7)?,
             })
         })
         .map_err(err_to_string)?

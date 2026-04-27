@@ -1,8 +1,8 @@
 export type DataType = "bool" | "tag" | "number" | "text" | "paragraph"
 export type LanguageType = "zh" | "ja" | "en"
 type TitleType = { [ lang in LanguageType ]: string }
-type GroupType = "none" | "alphabet" | string[]
-type TagColorType = { [ key: string ]: string } | "none"
+type GroupType = "none" | "alphabet" | unknown[]
+type ValuePresetType = { [ key: string ]: { title: TitleType, color: string } } | "none"
 
 export interface Column {
     id: number,
@@ -12,8 +12,10 @@ export interface Column {
     groupType: GroupType,
     ifDisplay: boolean,
     displayLang: LanguageType | "none",
-    tagColor: TagColorType
+    valuePreset: ValuePresetType
 }
+
+export type InputColumn = Omit<Column, "dataType" | "groupType" | "valuePreset"> & { dataType: DataType | null, groupType: string, valuePreset: string }
 
 interface DataRow {
     0: number,
@@ -26,8 +28,8 @@ export interface DatabaseData {
     path: string,
     gridView: boolean,
     dualTable: boolean,
-    table1label: number | null,
-    table2label: number | null,
+    table1Label: number | null,
+    table2Label: number | null,
     table1Info: Column[],
     table2Info: Column[],
     tableData: DataRow[],

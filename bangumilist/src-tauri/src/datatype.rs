@@ -11,12 +11,13 @@ pub struct Column {
     pub group_type: String,
     pub if_display: bool,
     pub display_lang: String,
-    pub tag_color: String,
+    pub value_preset: String,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum UnknownDataType {
+    Bool(bool),
     Number(i32),
     Text(String),
 }

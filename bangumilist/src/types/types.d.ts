@@ -14,12 +14,14 @@ export interface Global {
     globalZoom: number,
     darkMode: GlobalTheme | null,
     primaryColor: string,
+    page: "open" | "edit" | "contents",
 
     databaseLoaded: boolean,
     databaseSaved: boolean,
     databaseData: DatabaseData | null,
     isChildTable: boolean,
 
+    contentslevel: "primary" | "child" | "item",
     contentsType: "grid" | "table" | "statistic",
     gridSize: "small" | "default" | "large",
     filterText: string
