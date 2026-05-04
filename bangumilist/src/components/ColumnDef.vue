@@ -48,11 +48,21 @@
                     </n-input-group>
                     <n-input-group style="width: auto">
                         <n-input-group-label>{{ global.lang.getText("columnSortMap") }}</n-input-group-label>
-                        <n-input-number v-model:value="model!.sortMap" button-placement="both" :min="0" :max="props.indexMax" :disabled="model!.id < props.indexMin" style="width: 128px"/>
+                        <n-input-number v-model:value="model!.sortMap" :min="0" :max="props.indexMax" :disabled="model!.id < props.indexMin" style="width: 128px"/>
                     </n-input-group>
                     <n-input-group style="width: auto">
                         <n-input-group-label>{{ global.lang.getText("columnGroupType") }}</n-input-group-label>
                         <n-select v-model:value="model!.groupType" :options="groupTypeOptions" filterable tag :placeholder="global.lang.getText('columnGroupType')" :disabled="model!.id < props.indexMin" style="width: 256px"/>
+                        <n-popover placement="top">
+                            <template #trigger>
+                                <n-input-group-label>
+                                    <n-flex align="center" style="height: 100%">
+                                        <svg-icon type="mdi" :path="mdiHelpCircleOutline"/>
+                                    </n-flex>
+                                </n-input-group-label>
+                            </template>
+                            unknown[]
+                        </n-popover>
                     </n-input-group>
                     <n-input-group style="width: auto">
                         <n-input-group-label>{{ global.lang.getText("columnDisplayAsLang") }}</n-input-group-label>
@@ -61,6 +71,16 @@
                     <n-input-group style="width: auto">
                         <n-input-group-label>{{ global.lang.getText("columnValuePreset") }}</n-input-group-label>
                         <n-select v-model:value="model!.valuePreset" :options="valuePresetOptions" filterable tag :placeholder="global.lang.getText('columnValuePreset')" :disabled="model!.id < props.indexMin" style="width: 256px"/>
+                        <n-popover placement="top">
+                            <template #trigger>
+                                <n-input-group-label>
+                                    <n-flex align="center" style="height: 100%">
+                                        <svg-icon type="mdi" :path="mdiHelpCircleOutline"/>
+                                    </n-flex>
+                                </n-input-group-label>
+                            </template>
+                            {["key": string]: {"title": {"zh": string, "ja": string, "en": string}, "color": string}}
+                        </n-popover>
                     </n-input-group>
                     <n-flex align="center">
                         <colored-switch v-model="model!.ifDisplay" :checked-label="global.lang.getText('columnDisplayOn')" :unchecked-label="global.lang.getText('columnDisplayOff')" :disabled="model!.id < props.indexMin"/>
@@ -75,7 +95,7 @@
 import type { InputColumn } from "../types/dataTypes"
 import { NFlex, NPopover, NButton, NCard, NInputGroup, NInputGroupLabel, NSelect, NInput, NInputNumber } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiChevronUp, mdiMinus, mdiChevronDown } from "@mdi/js"
+import { mdiChevronUp, mdiMinus, mdiChevronDown, mdiHelpCircleOutline } from "@mdi/js"
 import { computed, ref } from "vue"
 import global from "../plugins/global"
 import ColoredSwitch from "./ColoredSwitch.vue"

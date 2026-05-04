@@ -14,17 +14,18 @@ export interface Global {
     globalZoom: number,
     darkMode: GlobalTheme | null,
     primaryColor: string,
-    page: "open" | "edit" | "contents",
+    page: "open" | "edit" | "contents" | "newRow" | "row",
 
     databaseLoaded: boolean,
     databaseSaved: boolean,
     databaseData: DatabaseData | null,
     isChildTable: boolean,
 
-    contentslevel: "primary" | "child" | "item",
     contentsType: "grid" | "table" | "statistic",
     gridSize: "small" | "default" | "large",
     filterText: string
+
+    selectedRow: { primary: number | null, child: number | null },
 
     errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void
 }

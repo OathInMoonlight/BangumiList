@@ -1,18 +1,13 @@
 <template>
     <div>
         <!-- 返回按钮 -->
-        <n-flex align="center" style="margin: 8px">
-            <n-popover placement="bottom">
-                <template #trigger>
-                    <n-button quaternary size="large" circle @click="global.settingPage = false">
-                        <template #icon>
-                            <svg-icon type="mdi" :path="mdiChevronLeft"/>
-                        </template>
-                    </n-button>
+        <n-flex align="center" style="padding: 8px">
+            <n-button quaternary size="large" circle @click="global.settingPage = false">
+                <template #icon>
+                    <svg-icon type="mdi" :path="mdiChevronLeft"/>
                 </template>
-                {{ global.lang.getText("back") }}
-            </n-popover>
-            <h3 style="margin: 0">{{ global.lang.getText("settings") }}</h3>
+            </n-button>
+            <h3 style="margin: 0">{{ global.lang.getText("back") }}</h3>
         </n-flex>
 
         <n-flex vertical align="center">
@@ -54,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { darkTheme, useOsTheme, NPopover, NButton, NFlex, NCard, NSelect, NColorPicker } from "naive-ui"
+import { darkTheme, useOsTheme, NButton, NFlex, NCard, NSelect, NColorPicker } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiChevronLeft, mdiGithub, mdiScaleBalance } from "@mdi/js"
 import { computed, ref, watch } from "vue"

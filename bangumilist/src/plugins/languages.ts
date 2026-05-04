@@ -39,6 +39,7 @@ const languages: Languages = {
         edit: { "zh": "编辑", "ja": "編集", "en": "Edit" },
         export: { "zh": "导出", "ja": "エクスポート", "en": "Export" },
         delete: { "zh": "删除", "ja": "削除", "en": "Delete" },
+        viewPrimaryItem: { "zh": "查看主表项", "ja": "プライマリアイテムのを確認する", "en": "View the Primary Item" },
         clickOrDragToOpen: { "zh": "点击或者拖动文件到该区域来打开", "ja": "クリックまたはファイルをここにドラッグして開く", "en": "Click or Drag File Here to Open" },
 
         // 列表单
@@ -81,15 +82,6 @@ const languages: Languages = {
         childTableSetting: { "zh": "子表设置", "ja": "子テーブル設定", "en": "Child Table Setting" },
         invalidValue: { "zh": "无效的值", "ja": "無効な値", "en": "Invalid Value" },
 
-        // 新建
-        columnWidthType: { "zh": "列宽度类型", "ja": "列幅タイプ", "en": "Column Width Type" },
-        tight: { "zh": "紧凑", "ja": "タイト", "en": "Tight" },
-        flex: { "zh": "自适应", "ja": "フレックス", "en": "Flex" },
-        newError: { "zh": "新建失败", "ja": "新規作成に失敗しました", "en": "Failed to create new item" },
-        // 提交
-        notEmpty: { "zh": "可填项目不能为空", "ja": "空欄は空にできません", "en": "Blank cannot be empty" },
-        noConflict: { "zh": "列键不能与已有的列冲突", "ja": "列キーは既存の列と競合できません", "en": "Cannot conflict with existing column keys" },
-        notValidName: { "zh": "列名不合法", "ja": "列名が無効です", "en": "Invalid column name" },
         // 导入
         importDatabase: { "zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file" },
         uploadFile: { "zh": "上传文件", "ja": "アップロードファイル", "en": "Upload File" },
@@ -99,14 +91,8 @@ const languages: Languages = {
         exportSelect: { "zh": "选择导出的数据库", "ja": "エクスポートするデータベースを選択してください", "en": "Please select the database to export" },
         exportError: { "zh": "导出失败", "ja": "エクスポートに失敗しました", "en": "Failed to export" },
         // 删除
-        deleteErrorText: { "zh":"请选择要删除的数据库", "ja":"削除するデータベースを選択してください", "en":"Please select the database to delete" },
         deleteConfirm1: { "zh": "确认要删除", "ja": "", "en": "Are you sure to delete" },
         deleteConfirm2: { "zh": "吗？", "ja": "を削除しますか？", "en": "?" },
-        deleteFile: { "zh": "同时删除文件本体", "ja": "ファイル本体も削除する", "en": "Also delete the file itself" },
-        deleteError: { "zh": "删除失败", "ja": "削除に失敗しました", "en": "Failed to delete" },
-        // 编辑
-        editErrorText: { "zh":"请选择要编辑的数据库", "ja":"編集するデータベースを選択してください", "en":"Please select the database to edit" },
-        editError: { "zh": "编辑失败", "ja": "編集に失敗しました", "en": "Failed to edit" },
         // 保存
         saveSuccess: { "zh": "保存成功", "ja": "保存成功", "en": "Saved successfully" },
         // 关闭
@@ -125,10 +111,6 @@ const languages: Languages = {
         groupSortBy: { "zh": "分组依据", "ja": "グループ分け", "en": "Group Sort By" },
         noGroup: { "zh": "不分组", "ja": "グループなし", "en": "No Group" },
         search: { "zh": "搜索", "ja": "検索", "en": "Search" },
-
-        // 表格
-        loading: { "zh": "加载中", "ja": "読み込み中", "en": "Loading" },
-        getError: { "zh": "获取数据失败", "ja": "データの取得に失敗しました", "en": "Failed to get data" }
     },
     getText(key: keyof typeof this.text) {
         return this.text[key][this.currentLang]

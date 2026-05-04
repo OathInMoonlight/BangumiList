@@ -17,7 +17,7 @@ export interface Column {
 
 export type InputColumn = Omit<Column, "dataType" | "groupType" | "valuePreset"> & { dataType: DataType | null, groupType: string, valuePreset: string }
 
-interface DataRow {
+export interface DataRow {
     0: number,
     [ key: number ]: unknown
 }

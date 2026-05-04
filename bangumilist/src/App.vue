@@ -48,13 +48,17 @@
         <n-layout-content>
           <n-scrollbar style="height: 100%" content-style="height: 100%">
             <settings v-show="global.settingPage"/>
-            <toolbar v-if="!global.settingPage && global.page === 'contents'"/>
-            <n-dialog-provider>
-              <open-page v-if="!global.settingPage && global.page === 'open'"/>
+            <n-dialog-provider v-if="!global.settingPage && global.page === 'open'">
+              <open-page/>
             </n-dialog-provider>
-            <n-message-provider placement="bottom" keep-alive-on-hover>
-              <DatabaseDef v-if="!global.settingPage && global.page === 'edit'"/>
+            <n-message-provider v-if="!global.settingPage && global.page === 'edit'" placement="bottom" keep-alive-on-hover>
+              <database-def/>
             </n-message-provider>
+            <toolbar v-if="!global.settingPage && global.page === 'contents'"/>
+            <data-table v-if="!global.settingPage && global.page === 'contents'"/>
+            <n-dialog-provider v-if="!global.settingPage && (global.page === 'newRow' || global.page === 'row')">
+              <row-def/>
+            </n-dialog-provider>
           </n-scrollbar>
         </n-layout-content>
       </n-layout>
@@ -72,9 +76,11 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import WindowClose from "./components/WindowClose.vue"
 import SideBar from "./components/SideBar.vue"
 import Settings from "./components/Settings.vue"
-import Toolbar from "./components/Toolbar.vue"
 import OpenPage from "./components/OpenPage.vue"
 import DatabaseDef from "./components/DatabaseDef.vue"
+import Toolbar from "./components/Toolbar.vue"
+import DataTable from "./components/DataTable.vue"
+import RowDef from "./components/RowDef.vue"
 import global from "./plugins/global"
 
 const appWindow = new Window("main")

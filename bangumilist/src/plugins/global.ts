@@ -15,10 +15,11 @@ const global: Global = reactive({
     databaseData: null,
     isChildTable: false,
 
-    contentslevel: "primary",
     contentsType: "table",
     gridSize: "default",
     filterText: "",
+
+    selectedRow: { primary: null, child: null },
 
     errorDialog: (dialog, errorMessage) => {
         dialog.error({

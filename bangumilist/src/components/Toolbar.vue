@@ -1,11 +1,11 @@
 <template>
-    <n-flex vertical>
+    <n-flex vertical style="padding-bottom: 12px">
         <n-card embedded content-style="padding: 4px">
             <n-flex justify="space-between" align="center">
                 <n-flex align="center" size="small">
                     <n-popover placement="bottom">
                         <template #trigger>
-                            <n-button quaternary circle size="large">
+                            <n-button quaternary circle size="large" @click="global.page = 'newRow'">
                                 <template #icon>
                                     <svg-icon type="mdi" :path="mdiPlus"/>
                                 </template>
@@ -27,31 +27,11 @@
                         <template #trigger>
                             <n-button quaternary circle size="large">
                                 <template #icon>
-                                    <svg-icon type="mdi" :path="mdiPencil"/>
-                                </template>
-                            </n-button>
-                        </template>
-                        {{ global.lang.getText("edit") }}
-                    </n-popover>
-                    <n-popover placement="bottom">
-                        <template #trigger>
-                            <n-button quaternary circle size="large">
-                                <template #icon>
                                     <svg-icon type="mdi" :path="mdiExport"/>
                                 </template>
                             </n-button>
                         </template>
                         {{ global.lang.getText("export") }}
-                    </n-popover>
-                    <n-popover placement="bottom">
-                        <template #trigger>
-                            <n-button quaternary circle size="large">
-                                <template #icon>
-                                    <svg-icon type="mdi" :path="mdiDelete"/>
-                                </template>
-                            </n-button>
-                        </template>
-                        {{ global.lang.getText("delete") }}
                     </n-popover>
                 </n-flex>
                 <n-flex align="center" size="small">
@@ -84,12 +64,30 @@
                 </n-flex>
             </n-flex>
         </n-card>
-        <n-flex justify="center" align="center">
+        <n-flex :justify="global.isChildTable ? 'space-between' : 'center'" align="center">
+            <n-flex v-if="global.isChildTable" align="center">
+                <n-button quaternary size="large" circle @click="back">
+                    <template #icon>
+                        <svg-icon type="mdi" :path="mdiChevronLeft"/>
+                    </template>
+                </n-button>
+                <h3 style="margin: 0">{{ global.lang.getText("back") }}</h3>
+            </n-flex>
             <n-input v-model:value="global.filterText" :placeholder="global.lang.getText('search')" clearable style="width: 512px">
-                <template #suffix>
+                <template #prefix>
                     <svg-icon type="mdi" :path="mdiMagnify"/>
                 </template>
             </n-input>
+            <n-popover v-if="global.isChildTable" placement="bottom">
+                <template #trigger>
+                    <n-button quaternary circle size="large" @click="editItem">
+                        <template #icon>
+                            <svg-icon type="mdi" :path="mdiEye"/>
+                        </template>
+                    </n-button>
+                </template>
+                {{ global.lang.getText("viewPrimaryItem") }}
+            </n-popover>
         </n-flex>
     </n-flex>
 </template>
@@ -97,7 +95,18 @@
 <script setup lang="ts">
 import { NFlex, NCard, NPopover, NButton, NPopselect, NSelect, NEmpty, NInput } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiPlus, mdiImport, mdiPencil, mdiExport, mdiDelete, mdiViewGrid, mdiViewList, mdiChartLine, mdiApps, mdiSquare, mdiMagnify } from "@mdi/js"
+import { mdiPlus, mdiImport, mdiExport, mdiViewGrid, mdiViewList, mdiChartLine, mdiApps, mdiSquare, mdiChevronLeft, mdiMagnify, mdiEye } from "@mdi/js"
 import global from "../plugins/global"
 import ButtonGroup from "./ButtonGroup.vue"
+
+function back() {
+    global.isChildTable = false
+    global.selectedRow.primary = null
+    global.selectedRow.child = null
+}
+function editItem() {
+    global.isChildTable = false
+    global.selectedRow.child = null
+    global.page = "row"
+}
 </script>

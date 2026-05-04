@@ -9,7 +9,7 @@
         <h3 style="margin: 0">{{ global.lang.getText("primaryTableSetting") }}</h3>
         <n-input-group v-if="newDatabaseDef.gridView" style="width: auto">
             <n-input-group-label>{{ global.lang.getText("GridLabel") }}</n-input-group-label>
-            <n-input-number v-model:value="newDatabaseDef.table1Label" button-placement="both" :placeholder="global.lang.getText('GridLabel')" :min="0" :max="newDatabaseDef.table1Info.length - 1" style="width: 256px"/>
+            <n-input-number v-model:value="newDatabaseDef.table1Label" :placeholder="global.lang.getText('GridLabel')" :min="0" :max="newDatabaseDef.table1Info.length - 1" style="width: 256px"/>
         </n-input-group>
         <n-flex vertical>
             <column-def v-for="column in newDatabaseDef.table1Info" :key="column.id" v-model="newDatabaseDef.table1Info[column.id]" :move-up="() => moveColumnUp(false, column.id)"
@@ -31,7 +31,7 @@
             <h3 style="margin: 0">{{ global.lang.getText("childTableSetting") }}</h3>
             <n-input-group v-if="newDatabaseDef.gridView" style="width: auto">
                 <n-input-group-label>{{ global.lang.getText("GridLabel") }}</n-input-group-label>
-                <n-input-number v-model:value="newDatabaseDef.table2Label" button-placement="both" :placeholder="global.lang.getText('GridLabel')" :min="0" :max="newDatabaseDef.table2Info.length - 1" style="width: 256px"/>
+                <n-input-number v-model:value="newDatabaseDef.table2Label" :placeholder="global.lang.getText('GridLabel')" :min="0" :max="newDatabaseDef.table2Info.length - 1" style="width: 256px"/>
             </n-input-group>
             <n-flex vertical>
                 <column-def v-for="column in newDatabaseDef.table2Info" :key="column.id" v-model="newDatabaseDef.table2Info[column.id]" :move-up="() => moveColumnUp(true, column.id)"
@@ -51,8 +51,8 @@
         </n-flex>
         <n-divider/>
         <n-flex justify="space-evenly" align="center">
-            <n-button size="large" @click="cancel" style="width: 45%">{{ global.lang.getText("cancel") }}</n-button>
-            <n-button size="large" :color="global.primaryColor" @click="confirm" style="width: 45%">{{ global.lang.getText("confirm") }}</n-button>
+            <n-button size="large" @click="cancel" style="width: 512px">{{ global.lang.getText("cancel") }}</n-button>
+            <n-button size="large" :color="global.primaryColor" @click="confirm" style="width: 512px">{{ global.lang.getText("confirm") }}</n-button>
         </n-flex>
     </n-flex>
 </template>
@@ -86,28 +86,24 @@ const createChildTableColumn = (): InputColumn => ({
 const createDefaultColumn = (): InputColumn => ({
     id: 0, dataType: null, title: { zh: "", ja: "", en: "" }, sortMap: 0, groupType: "none", ifDisplay: true, displayLang: "none", valuePreset: "none"
 })
+const stringifyColumns = (columns: Column[]) => structuredClone(toRaw(columns)).map(column => ({
+    ...column, dataType: column.dataType,
+    groupType: (column.groupType === "none" || column.groupType === "alphabet") ? column.groupType : JSON.stringify(column.groupType),
+    valuePreset: column.valuePreset === "none" ? column.valuePreset : JSON.stringify(column.valuePreset)
+}))
 const userIndexMin = [0, 0]
 if(global.databaseLoaded) {
     newDatabaseDef.gridView = global.databaseData!.gridView
     newDatabaseDef.dualTable = global.databaseData!.dualTable
     newDatabaseDef.table1Label = global.databaseData!.table1Label
     newDatabaseDef.table2Label = global.databaseData!.table2Label
-    newDatabaseDef.table1Info = structuredClone(toRaw(global.databaseData!.table1Info)).map(column => ({
-        ...column, dataType: column.dataType,
-        groupType: (column.groupType === "none" || column.groupType === "alphabet") ? column.groupType : JSON.stringify(column.groupType),
-        valuePreset: column.valuePreset === "none" ? column.valuePreset : JSON.stringify(column.valuePreset)
-    }))
-    newDatabaseDef.table2Info = structuredClone(toRaw(global.databaseData!.table2Info)).map(column => ({
-        ...column, dataType: column.dataType,
-        groupType: (column.groupType === "none" || column.groupType === "alphabet") ? column.groupType : JSON.stringify(column.groupType),
-        valuePreset: column.valuePreset === "none" ? column.valuePreset : JSON.stringify(column.valuePreset)
-    }))
+    newDatabaseDef.table1Info = stringifyColumns(global.databaseData!.table1Info)
+    newDatabaseDef.table2Info = stringifyColumns(global.databaseData!.table2Info)
     userIndexMin[0] = newDatabaseDef.table1Info.length
     userIndexMin[1] = newDatabaseDef.table2Info.length
 } else {
     newDatabaseDef.table1Info.push(createIdColumn())
 }
-console.log(newDatabaseDef)
 
 const minIndex = computed(() => newDatabaseDef.gridView ? 2 : 1)
 watch(() => newDatabaseDef.gridView, (newGridView) => {
@@ -206,7 +202,6 @@ function cancel() {
     global.page = global.databaseLoaded ? "contents" : "open"
 }
 function confirm() {
-    console.log(newDatabaseDef)
     const warning = (isChildTable: boolean, columnIndex: number, columnName: string) => message.warning(`${global.lang.getText("invalidValue")}: ${
         isChildTable ? global.lang.getText("childTableSetting") : global.lang.getText("primaryTableSetting")} -> ${
         global.lang.getText("column")} ${columnIndex} -> ${global.lang.getText(columnName)}`)
@@ -232,8 +227,12 @@ function confirm() {
                 return false
             }
             if(column.groupType !== "none" && column.groupType !== "alphabet") {
-                const groupType = JSON.parse(column.groupType)
-                if(!Array.isArray(groupType)) {
+                try {
+                    const groupType = JSON.parse(column.groupType)
+                    if(!Array.isArray(groupType)) {
+                        throw new Error
+                    }
+                } catch(error) {
                     warning(isChildTable, index, "columnGroupType")
                     return false
                 }
@@ -243,18 +242,21 @@ function confirm() {
                 return false
             }
             if(column.valuePreset !== "none") {
-                const valuePreset = JSON.parse(column.valuePreset)
-                if(typeof valuePreset !== "object") {
-                    warning(isChildTable, index, "columnTagColor")
-                    return false
-                }
-                for(const key in valuePreset) {
-                    if(typeof valuePreset[key] !== "object" || !valuePreset[key].hasOwnProperty("title") || !valuePreset[key].title.hasOwnProperty("zh") || typeof valuePreset[key].title.zh !== "string"
-                        || !valuePreset[key].title.hasOwnProperty("ja") || typeof valuePreset[key].title.ja !== "string" || !valuePreset[key].title.hasOwnProperty("en")
-                        || typeof valuePreset[key].title.en !== "string" || !valuePreset[key].hasOwnProperty("color") || typeof valuePreset[key].color !== "string") {
-                        warning(isChildTable, index, "columnTagColor")
-                        return false
+                try {
+                    const valuePreset = JSON.parse(column.valuePreset)
+                    if(typeof valuePreset !== "object") {
+                        throw new Error
                     }
+                    for(const key in valuePreset) {
+                        if(typeof valuePreset[key] !== "object" || !valuePreset[key].hasOwnProperty("title") || !valuePreset[key].title.hasOwnProperty("zh") || typeof valuePreset[key].title.zh !== "string"
+                            || !valuePreset[key].title.hasOwnProperty("ja") || typeof valuePreset[key].title.ja !== "string" || !valuePreset[key].title.hasOwnProperty("en")
+                            || typeof valuePreset[key].title.en !== "string" || !valuePreset[key].hasOwnProperty("color") || typeof valuePreset[key].color !== "string") {
+                            throw new Error
+                        }
+                    }
+                } catch(error) {
+                    warning(isChildTable, index, "columnValuePreset")
+                    return false
                 }
             }
         }
@@ -263,6 +265,11 @@ function confirm() {
     if(!inputChecker(false) || !inputChecker(true)) {
         return
     }
+    const parseColumns = (columns: InputColumn[]) => columns.map(column => ({
+        ...column, dataType: column.dataType, title: toRaw(column.title),
+        groupType: (column.groupType === "none" || column.groupType === "alphabet") ? column.groupType : JSON.parse(column.groupType),
+        valuePreset: column.valuePreset === "none" ? column.valuePreset : JSON.parse(column.valuePreset)
+    })) as Column[]
     if(!global.databaseLoaded) {
         global.databaseData = {
             path: "",
@@ -270,8 +277,8 @@ function confirm() {
             dualTable: newDatabaseDef.dualTable,
             table1Label: newDatabaseDef.table1Label,
             table2Label: newDatabaseDef.table2Label,
-            table1Info: newDatabaseDef.table1Info as Column[],
-            table2Info: newDatabaseDef.table2Info as Column[],
+            table1Info: parseColumns(newDatabaseDef.table1Info),
+            table2Info: parseColumns(newDatabaseDef.table2Info),
             tableData: [],
             sort1: { column: null, order: "-" },
             sort2: { column: null, order: "-" },
@@ -281,8 +288,8 @@ function confirm() {
     } else {
         global.databaseData!.table1Label = newDatabaseDef.table1Label
         global.databaseData!.table2Label = newDatabaseDef.table2Label
-        global.databaseData!.table1Info = newDatabaseDef.table1Info as Column[]
-        global.databaseData!.table2Info = newDatabaseDef.table2Info as Column[]
+        global.databaseData!.table1Info = parseColumns(newDatabaseDef.table1Info)
+        global.databaseData!.table2Info = parseColumns(newDatabaseDef.table2Info)
     }
     global.databaseLoaded = true
     global.page = "contents"
