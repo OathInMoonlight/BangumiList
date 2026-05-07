@@ -32,16 +32,14 @@ const languages: Languages = {
         openDatabase: { "zh": "打开数据库", "ja": "データベースを開く", "en": "Open Database" },
         editDatabase: { "zh": "编辑数据库", "ja": "データベースを編集", "en": "Edit Database" },
         saveDatabase: { "zh": "保存数据库", "ja": "データベースを保存", "en": "Save Database" },
-        saveDatabaseAs: {"zh": "数据库另存为", "ja": "データベースを新規保存", "en": "Save Database As" },
+        saveDatabaseAs: {"zh": "数据库另存为", "ja": "データベースを新規保存", "en": "Save Database as" },
         closeDatabase: { "zh": "关闭数据库", "ja": "データベースを閉じる", "en": "Close Database" },
         plus: { "zh": "新建", "ja": "新規作成", "en": "New" },
         import: { "zh": "导入", "ja": "インポート", "en": "Import" },
         edit: { "zh": "编辑", "ja": "編集", "en": "Edit" },
         export: { "zh": "导出", "ja": "エクスポート", "en": "Export" },
         delete: { "zh": "删除", "ja": "削除", "en": "Delete" },
-        viewPrimaryItem: { "zh": "查看主表项", "ja": "プライマリアイテムのを確認する", "en": "View the Primary Item" },
-        clickOrDragToOpen: { "zh": "点击或者拖动文件到该区域来打开", "ja": "クリックまたはファイルをここにドラッグして開く", "en": "Click or Drag File Here to Open" },
-
+        
         // 列表单
         moveForward: { "zh": "前移", "ja": "前に移動", "en": "Move Forward" },
         deleteColumn: { "zh": "删除列", "ja": "列を削除", "en": "Delete Column" },
@@ -82,18 +80,30 @@ const languages: Languages = {
         childTableSetting: { "zh": "子表设置", "ja": "子テーブル設定", "en": "Child Table Setting" },
         invalidValue: { "zh": "无效的值", "ja": "無効な値", "en": "Invalid Value" },
 
+        // 打开
+        clickOrDragToOpen: { "zh": "点击或者拖动文件到该区域来打开", "ja": "クリックまたはファイルをここにドラッグして開く", "en": "Click or Drag File Here to Open" },
+        opening: { "zh": "正在打开", "ja": "開いている", "en": "Opening" },
         // 导入
+        browse: { "zh": "浏览", "ja": "ブラウズ", "en": "Browse" },
         importDatabase: { "zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file" },
         uploadFile: { "zh": "上传文件", "ja": "アップロードファイル", "en": "Upload File" },
         importError: { "zh": "导入失败", "ja": "インポートに失敗しました", "en": "Failed to import" },
         // 导出
-        exportDatabase: { "zh": "导出一个数据库文件", "ja": "データベースファイルをエクスポートする", "en": "Export a database file" },
-        exportSelect: { "zh": "选择导出的数据库", "ja": "エクスポートするデータベースを選択してください", "en": "Please select the database to export" },
-        exportError: { "zh": "导出失败", "ja": "エクスポートに失敗しました", "en": "Failed to export" },
+        exportPath: { "zh": "导出路径", "ja": "エクスポートパス", "en": "Export Path" },
+        exportAs: { "zh": "导出为", "ja": "新規エクスポート", "en": "Export as" },
+        exportLanguage: { "zh": "导出语言", "ja": "エクスポート言語", "en": "Export Language" },
+        exportMetadata: { "zh": "导出数据库元数据", "ja": "エクスポートメタデータ", "en": "Export Database Metadata" },
+        exportColumnInfo: { "zh": "导出列定义", "ja": "エクスポート列情報", "en": "Export Column Info" },
+        unfoldChildTable: { "zh": "展开子表", "ja": "子テーブルを展開する", "en": "Unfold Child Table" },
+        dualTable: { "zh": "双层表", "ja": "二重テーブル", "en": "Dual Table" },
+        columnDisplay: { "zh": "列显示", "ja": "列の表示", "en": "Column Display" },
+        exporting: { "zh": "正在导出", "ja":"エクスポートしている", "en":"Expoting" },
+        exportSuccess: { "zh": "导出成功", "ja": "エクスポート成功", "en": "Exported successfully"},
         // 删除
         deleteConfirm1: { "zh": "确认要删除", "ja": "", "en": "Are you sure to delete" },
         deleteConfirm2: { "zh": "吗？", "ja": "を削除しますか？", "en": "?" },
         // 保存
+        saving: { "zh": "正在保存", "ja": "保存している", "en": "Saving" },
         saveSuccess: { "zh": "保存成功", "ja": "保存成功", "en": "Saved successfully" },
         // 关闭
         closeNotSaved: { "zh": "数据库尚未保存", "ja": "データベースはまだ保存されていません", "en": "Database is not saved yet" },
@@ -111,6 +121,7 @@ const languages: Languages = {
         groupSortBy: { "zh": "分组依据", "ja": "グループ分け", "en": "Group Sort By" },
         noGroup: { "zh": "不分组", "ja": "グループなし", "en": "No Group" },
         search: { "zh": "搜索", "ja": "検索", "en": "Search" },
+        viewPrimaryItem: { "zh": "查看主表项", "ja": "プライマリアイテムのを確認する", "en": "View the Primary Item" }
     },
     getText(key: keyof typeof this.text) {
         return this.text[key][this.currentLang]

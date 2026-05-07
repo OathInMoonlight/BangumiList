@@ -23,12 +23,14 @@ pub fn write_db(db_data: DBData) -> Result<String, String> {
             rusqlite::params![&column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.display_lang, &column.value_preset])
             .map_err(err_to_string)?;
     }
-    db.execute("CREATE TABLE IF NOT EXISTS INFO_TABLE_2 (id INTEGER PRIMARY KEY AUTOINCREMENT, data_type TEXT NOT NULL, title TEXT NOT NULL,
-        sort_map INTEGER NOT NULL, group_type TEXT NOT NULL, if_display BOOLEAN NOT NULL, display_lang TEXT NOT NULL, value_preset TEXT NOT NULL)", []).map_err(err_to_string)?;
-    for column in &db_data.table2_info {
-        db.execute("INSERT INTO INFO_TABLE_2 (data_type, title, sort_map, group_type, if_display, display_lang, value_preset) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            rusqlite::params![&column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.display_lang, &column.value_preset])
-            .map_err(err_to_string)?;
+    if db_data.dual_table {
+        db.execute("CREATE TABLE IF NOT EXISTS INFO_TABLE_2 (id INTEGER PRIMARY KEY AUTOINCREMENT, data_type TEXT NOT NULL, title TEXT NOT NULL,
+            sort_map INTEGER NOT NULL, group_type TEXT NOT NULL, if_display BOOLEAN NOT NULL, display_lang TEXT NOT NULL, value_preset TEXT NOT NULL)", []).map_err(err_to_string)?;
+        for column in &db_data.table2_info {
+            db.execute("INSERT INTO INFO_TABLE_2 (data_type, title, sort_map, group_type, if_display, display_lang, value_preset) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                rusqlite::params![&column.data_type, &column.title, &column.sort_map, &column.group_type, &column.if_display, &column.display_lang, &column.value_preset])
+                .map_err(err_to_string)?;
+        }
     }
     db.execute(
         &format!(
@@ -63,7 +65,7 @@ pub fn write_db(db_data: DBData) -> Result<String, String> {
         let mut placeholders: Vec<String> = Vec::new();
         let mut values: Vec<&dyn rusqlite::ToSql> = Vec::new();
         for (column_id, value) in row {
-            columns.push(column_id.to_string());
+            columns.push(format!("\"{}\"", column_id.to_string()));
             placeholders.push("?".to_string());
             match value {
                 Some(UnknownDataType::Bool(boolean)) => values.push(boolean),

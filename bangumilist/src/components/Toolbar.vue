@@ -1,5 +1,5 @@
 <template>
-    <n-flex vertical style="padding-bottom: 12px">
+    <n-flex vertical size="large" style="padding-bottom: 12px">
         <n-card embedded content-style="padding: 4px">
             <n-flex justify="space-between" align="center">
                 <n-flex align="center" size="small">
@@ -25,7 +25,7 @@
                     </n-popover>
                     <n-popover placement="bottom">
                         <template #trigger>
-                            <n-button quaternary circle size="large">
+                            <n-button quaternary circle size="large" @click="global.page = 'export'">
                                 <template #icon>
                                     <svg-icon type="mdi" :path="mdiExport"/>
                                 </template>

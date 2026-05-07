@@ -55,7 +55,7 @@
                         <n-input v-if="column.dataType === 'text' || column.dataType === 'paragraph'" v-model:value="newRowDef[column.id] as string | null" placeholder="" style="width: 256px"/>
                         <n-input-number v-if="column.dataType === 'number'" v-model:value="newRowDef[column.id] as number | null" placeholder="" style="width: 256px"/>
                         <n-select v-if="column.dataType === 'tag'" v-model:value="newRowDef[column.id] as string | null" :options="tagOptions(column)" filterable tag placeholder="" style="width: 256px"/>
-                        <colored-switch v-if="column.dataType === 'bool'" v-model="newRowDef[column.id] as boolean" checked-label="    " unchecked-label="    "/>
+                        <colored-switch v-if="column.dataType === 'bool'" v-model="newRowDef[column.id] as boolean" checked-label="" unchecked-label=""/>
                     </div>
                     <div v-else style="max-width: 100%">
                         <p v-if="column.dataType === 'number' || column.dataType === 'text' || column.dataType === 'paragraph'" style="word-wrap:break-word">{{ currentRow[column.id] }}</p>

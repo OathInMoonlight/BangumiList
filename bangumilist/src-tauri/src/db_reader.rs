@@ -48,25 +48,28 @@ pub fn read_db(path_str: &str) -> Result<DBData, String> {
         .map_err(err_to_string)?
         .collect::<Result<Vec<Column>>>()
         .map_err(err_to_string)?;
-    stmt = db
-        .prepare("SELECT * FROM INFO_TABLE_2")
-        .map_err(err_to_string)?;
-    let table2_info: Vec<Column> = stmt
-        .query_map([], |row| {
-            Ok(Column {
-                id: row.get::<_, u32>(0)? - 1,
-                data_type: row.get(1)?,
-                title: row.get(2)?,
-                sort_map: row.get(3)?,
-                group_type: row.get(4)?,
-                if_display: row.get(5)?,
-                display_lang: row.get(6)?,
-                value_preset: row.get(7)?,
+    let mut table2_info: Vec<Column> = Vec::new();
+    if database_info.1 {
+        stmt = db
+            .prepare("SELECT * FROM INFO_TABLE_2")
+            .map_err(err_to_string)?;
+        table2_info = stmt
+            .query_map([], |row| {
+                Ok(Column {
+                    id: row.get::<_, u32>(0)? - 1,
+                    data_type: row.get(1)?,
+                    title: row.get(2)?,
+                    sort_map: row.get(3)?,
+                    group_type: row.get(4)?,
+                    if_display: row.get(5)?,
+                    display_lang: row.get(6)?,
+                    value_preset: row.get(7)?,
+                })
             })
-        })
-        .map_err(err_to_string)?
-        .collect::<Result<Vec<Column>>>()
-        .map_err(err_to_string)?;
+            .map_err(err_to_string)?
+            .collect::<Result<Vec<Column>>>()
+            .map_err(err_to_string)?;
+    }
     stmt = db
         .prepare("SELECT * FROM DATA_TABLE")
         .map_err(err_to_string)?;

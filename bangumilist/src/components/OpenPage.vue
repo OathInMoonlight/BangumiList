@@ -9,6 +9,12 @@
             </n-button>
         </div>
     </n-flex>
+    <n-modal v-model:show="openModal">
+        <n-flex vertical justify="center" align="center">
+            {{ global.lang.getText("opening") }}
+            <n-spin size="large"/>
+        </n-flex>
+    </n-modal>
 </template>
 
 <script setup lang="ts">
@@ -16,10 +22,10 @@ import type { DatabaseData, Column } from "../types/dataTypes"
 import { open } from "@tauri-apps/plugin-dialog"
 import { getCurrentWebview } from "@tauri-apps/api/webview"
 import { invoke } from "@tauri-apps/api/core"
-import { NFlex, NButton, useDialog } from "naive-ui"
+import { NFlex, NButton, useDialog, NModal, NSpin } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiFileUpload } from "@mdi/js"
-import { onMounted, onUnmounted, useTemplateRef } from "vue"
+import { onMounted, onUnmounted, ref, useTemplateRef } from "vue"
 import global from "../plugins/global"
 
 type TransportColumn = Omit<Column, "title" | "groupType" | "valuePreset"> & {
@@ -38,8 +44,10 @@ type TransportDatabaseData = Omit<DatabaseData, "table1Info" | "table2Info" | "s
 }
 
 const dialog = useDialog()
+const openModal = ref(false)
 
 async function loadDatabase(path: string) {
+    openModal.value = true
     try {
         const transportData = await invoke<TransportDatabaseData>("read_db", { pathStr: path })
         global.databaseData = {
@@ -60,9 +68,11 @@ async function loadDatabase(path: string) {
             groupSort1: JSON.parse(transportData.groupSort1),
             groupSort2: JSON.parse(transportData.groupSort2)
         }
+        openModal.value = false
         global.databaseLoaded = true
         global.page = "contents"
     } catch(error) {
+        openModal.value = false
         global.errorDialog(dialog, error)
     }
 }

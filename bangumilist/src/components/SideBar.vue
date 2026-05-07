@@ -79,18 +79,27 @@
             </n-flex>
         </n-flex>
     </n-card>
+    <n-modal v-model:show="saveModal">
+        <n-flex vertical justify="center" align="center">
+            {{ global.lang.getText("saving") }}
+            <n-spin size="large"/>
+        </n-flex>
+    </n-modal>
 </template>
 
 <script setup lang="ts">
 import { save } from "@tauri-apps/plugin-dialog"
 import { invoke } from "@tauri-apps/api/core"
-import { NButton, NFlex, NCard, NPopover, NPopselect, useDialog, useMessage } from "naive-ui"
+import { NButton, NFlex, NCard, NPopover, NPopselect, useDialog, useMessage, NModal, NSpin } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiCog, mdiTranslate, mdiDatabasePlus, mdiContentSave, mdiContentSavePlus, mdiDatabaseRemove, mdiDatabaseCog } from "@mdi/js"
+import { ref } from "vue"
 import global from "../plugins/global"
 
 const dialog = useDialog()
 const message = useMessage()
+
+const saveModal = ref(false)
 
 async function handleDatabaseSave(newPath: boolean) {
     if(newPath) {
@@ -109,6 +118,7 @@ async function handleDatabaseSave(newPath: boolean) {
             global.databaseData!.path = newPath
         }
     }
+    saveModal.value = true
     try {
         await invoke("write_db", { dbData: {
             path: global.databaseData!.path,
@@ -128,9 +138,11 @@ async function handleDatabaseSave(newPath: boolean) {
             groupSort1: JSON.stringify(global.databaseData!.groupSort1),
             groupSort2: JSON.stringify(global.databaseData!.groupSort2)
         }})
+        saveModal.value = false
         message.success(global.lang.getText("saveSuccess"))
         global.databaseSaved = true
     } catch(error) {
+        saveModal.value = false
         global.errorDialog(dialog, error)
     }
 }

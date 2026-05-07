@@ -1,5 +1,5 @@
 <template>
-    <n-data-table :columns="tableColumn" :data="tableData" :single-line="false" :row-props="rowProps" style="height: calc(100% - 104px)">
+    <n-data-table :columns="tableColumn" :data="tableData" :single-line="false" :row-props="rowProps" style="height: calc(100% - 108px)">
         <template #empty>
             <n-empty :description="global.lang.getText('noData')"/>
         </template>

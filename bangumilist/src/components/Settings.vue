@@ -11,6 +11,9 @@
         </n-flex>
 
         <n-flex vertical align="center">
+            <n-flex justify="center">
+                <h1>{{ global.lang.getText("settings") }}</h1>
+            </n-flex>
             <n-card embedded style="max-width: 512px">
                 <n-flex vertical :size="16">
                     <!-- 全局缩放 -->

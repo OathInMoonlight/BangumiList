@@ -14,7 +14,7 @@ export interface Global {
     globalZoom: number,
     darkMode: GlobalTheme | null,
     primaryColor: string,
-    page: "open" | "edit" | "contents" | "newRow" | "row",
+    page: "open" | "edit" | "contents" | "newRow" | "row" | "export",
 
     databaseLoaded: boolean,
     databaseSaved: boolean,

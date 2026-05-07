@@ -47,18 +47,19 @@
         <!-- 正文 -->
         <n-layout-content>
           <n-scrollbar style="height: 100%" content-style="height: 100%">
-            <settings v-show="global.settingPage"/>
-            <n-dialog-provider v-if="!global.settingPage && global.page === 'open'">
-              <open-page/>
-            </n-dialog-provider>
-            <n-message-provider v-if="!global.settingPage && global.page === 'edit'" placement="bottom" keep-alive-on-hover>
-              <database-def/>
-            </n-message-provider>
-            <toolbar v-if="!global.settingPage && global.page === 'contents'"/>
-            <data-table v-if="!global.settingPage && global.page === 'contents'"/>
-            <n-dialog-provider v-if="!global.settingPage && (global.page === 'newRow' || global.page === 'row')">
-              <row-def/>
-            </n-dialog-provider>
+            <n-modal-provider>
+              <n-dialog-provider>
+                <n-message-provider placement="bottom" keep-alive-on-hover>
+                  <settings v-show="global.settingPage"/>
+                  <open-page v-if="!global.settingPage && global.page === 'open'"/>
+                  <database-def v-if="!global.settingPage && global.page === 'edit'" />
+                  <toolbar v-if="!global.settingPage && global.page === 'contents'"/>
+                  <data-table v-if="!global.settingPage && global.page === 'contents'"/>
+                  <row-def v-if="!global.settingPage && (global.page === 'newRow' || global.page === 'row')"/>
+                  <export v-if="!global.settingPage && global.page === 'export'"/>
+                </n-message-provider>
+              </n-dialog-provider>
+            </n-modal-provider>
           </n-scrollbar>
         </n-layout-content>
       </n-layout>
@@ -69,7 +70,7 @@
 <script setup lang="ts">
 import { Window } from "@tauri-apps/api/window"
 import { NConfigProvider, NButton, NFlex, NAvatar, NLayout, NLayoutHeader, NLayoutSider, NLayoutContent,
-  NCard, NDivider, NScrollbar, NDialogProvider, NMessageProvider } from "naive-ui"
+  NCard, NDivider, NScrollbar, NDialogProvider, NMessageProvider, NModalProvider } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiCropSquare, mdiMinus, mdiCircleMedium } from "@mdi/js"
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
@@ -81,6 +82,7 @@ import DatabaseDef from "./components/DatabaseDef.vue"
 import Toolbar from "./components/Toolbar.vue"
 import DataTable from "./components/DataTable.vue"
 import RowDef from "./components/RowDef.vue"
+import Export from "./components/Export.vue"
 import global from "./plugins/global"
 
 const appWindow = new Window("main")
