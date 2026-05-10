@@ -56,6 +56,7 @@
                   <toolbar v-if="!global.settingPage && global.page === 'contents'"/>
                   <data-table v-if="!global.settingPage && global.page === 'contents'"/>
                   <row-def v-if="!global.settingPage && (global.page === 'newRow' || global.page === 'row')"/>
+                  <import v-if="!global.settingPage && global.page === 'import'"/>
                   <export v-if="!global.settingPage && global.page === 'export'"/>
                 </n-message-provider>
               </n-dialog-provider>
@@ -82,6 +83,7 @@ import DatabaseDef from "./components/DatabaseDef.vue"
 import Toolbar from "./components/Toolbar.vue"
 import DataTable from "./components/DataTable.vue"
 import RowDef from "./components/RowDef.vue"
+import Import from "./components/Import.vue"
 import Export from "./components/Export.vue"
 import global from "./plugins/global"
 

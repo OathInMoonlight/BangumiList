@@ -79,7 +79,7 @@
             </n-flex>
         </n-flex>
     </n-card>
-    <n-modal v-model:show="saveModal">
+    <n-modal v-model:show="saveModal" :trap-focus="false" :close-on-esc="false" :mask-closable="false">
         <n-flex vertical justify="center" align="center">
             {{ global.lang.getText("saving") }}
             <n-spin size="large"/>
@@ -160,12 +160,14 @@ function handleDataBaseClose() {
                 global.databaseData = null
                 global.databaseLoaded = false
                 global.page = "open"
+                global.databaseSaved = true
             }
         })
     } else {
         global.databaseData = null
         global.databaseLoaded = false
         global.page = "open"
+        global.databaseSaved = true
     }
 }
 </script>

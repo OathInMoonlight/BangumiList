@@ -15,7 +15,7 @@
                     </n-popover>
                     <n-popover placement="bottom">
                         <template #trigger>
-                            <n-button quaternary circle size="large">
+                            <n-button quaternary circle size="large" @click="global.page = 'import'">
                                 <template #icon>
                                     <svg-icon type="mdi" :path="mdiImport"/>
                                 </template>

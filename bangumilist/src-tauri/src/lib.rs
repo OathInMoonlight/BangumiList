@@ -2,6 +2,7 @@
 mod datatype;
 mod db_reader;
 mod db_writer;
+mod import;
 mod export;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -12,6 +13,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             db_reader::read_db,
             db_writer::write_db,
+            import::import_csv,
             export::export_csv
         ])
         .run(tauri::generate_context!())

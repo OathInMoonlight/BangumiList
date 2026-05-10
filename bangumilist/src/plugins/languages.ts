@@ -85,15 +85,17 @@ const languages: Languages = {
         opening: { "zh": "正在打开", "ja": "開いている", "en": "Opening" },
         // 导入
         browse: { "zh": "浏览", "ja": "ブラウズ", "en": "Browse" },
-        importDatabase: { "zh": "导入一个数据库文件", "ja": "データベースファイルをインポートする", "en": "Import a database file" },
-        uploadFile: { "zh": "上传文件", "ja": "アップロードファイル", "en": "Upload File" },
-        importError: { "zh": "导入失败", "ja": "インポートに失敗しました", "en": "Failed to import" },
+        checkBeforeImport: { "zh": "请在导入前确保导入内容的各列顺序以及数据格式同当前数据库一致！",
+            "ja": "インポートする前にインポートする内容の各列の順番及びデータタイプが当該データベースと一致していることを確認してください！",
+            "en": "Please make sure that the order and the datatype of each column in your import are equal to this database!" },
+        importPath: { "zh": "导入路径", "ja": "インポートパス", "en": "Import Path" },
+        importTable: { "zh": "导入表", "ja": "インポートテーブル", "en": "Import Table" },
+        importSuccess: { "zh": "导入成功", "ja": "インポート成功", "en": "Imported successfully"},
+
         // 导出
         exportPath: { "zh": "导出路径", "ja": "エクスポートパス", "en": "Export Path" },
         exportAs: { "zh": "导出为", "ja": "新規エクスポート", "en": "Export as" },
         exportLanguage: { "zh": "导出语言", "ja": "エクスポート言語", "en": "Export Language" },
-        exportMetadata: { "zh": "导出数据库元数据", "ja": "エクスポートメタデータ", "en": "Export Database Metadata" },
-        exportColumnInfo: { "zh": "导出列定义", "ja": "エクスポート列情報", "en": "Export Column Info" },
         unfoldChildTable: { "zh": "展开子表", "ja": "子テーブルを展開する", "en": "Unfold Child Table" },
         dualTable: { "zh": "双层表", "ja": "二重テーブル", "en": "Dual Table" },
         columnDisplay: { "zh": "列显示", "ja": "列の表示", "en": "Column Display" },

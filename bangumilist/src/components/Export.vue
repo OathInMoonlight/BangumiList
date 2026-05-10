@@ -29,7 +29,7 @@
             <n-button size="large" :color="global.primaryColor" @click="exportCSV" style="width: 512px">{{ global.lang.getText("confirm") }}</n-button>
         </n-flex>
     </n-flex>
-    <n-modal v-model:show="loadModal">
+    <n-modal v-model:show="loadModal" :trap-focus="false" :close-on-esc="false" :mask-closable="false">
         <n-flex vertical justify="center" align="center">
             {{ global.lang.getText("exporting") }}
             <n-spin size="large"/>
@@ -128,6 +128,7 @@ async function exportCSV() {
     }
     try {
         await invoke("export_csv", { pathStr: exportPath.value, contents: outputLines.join("\n") })
+        global.page = "contents"
         loadModal.value = false
         message.success(global.lang.getText("exportSuccess"))
     } catch(error) {

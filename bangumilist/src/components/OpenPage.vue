@@ -9,7 +9,7 @@
             </n-button>
         </div>
     </n-flex>
-    <n-modal v-model:show="openModal">
+    <n-modal v-model:show="openModal" :trap-focus="false" :close-on-esc="false" :mask-closable="false">
         <n-flex vertical justify="center" align="center">
             {{ global.lang.getText("opening") }}
             <n-spin size="large"/>
