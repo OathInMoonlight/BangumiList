@@ -244,13 +244,14 @@ function confirm() {
             if(column.valuePreset !== "none") {
                 try {
                     const valuePreset = JSON.parse(column.valuePreset)
-                    if(typeof valuePreset !== "object") {
+                    if(typeof valuePreset !== "object" || valuePreset === null) {
                         throw new Error
                     }
                     for(const key in valuePreset) {
-                        if(typeof valuePreset[key] !== "object" || !valuePreset[key].hasOwnProperty("title") || !valuePreset[key].title.hasOwnProperty("zh") || typeof valuePreset[key].title.zh !== "string"
+                        if(typeof valuePreset[key] !== "object" || (valuePreset[key].hasOwnProperty("title") && (!valuePreset[key].title.hasOwnProperty("zh") || typeof valuePreset[key].title.zh !== "string"
                             || !valuePreset[key].title.hasOwnProperty("ja") || typeof valuePreset[key].title.ja !== "string" || !valuePreset[key].title.hasOwnProperty("en")
-                            || typeof valuePreset[key].title.en !== "string" || !valuePreset[key].hasOwnProperty("color") || typeof valuePreset[key].color !== "string") {
+                            || typeof valuePreset[key].title.en !== "string")) || (valuePreset[key].hasOwnProperty("color") && typeof valuePreset[key].color !== "string")
+                            || (valuePreset[key].hasOwnProperty("icon") && typeof valuePreset[key].icon !== "string")) {
                             throw new Error
                         }
                     }

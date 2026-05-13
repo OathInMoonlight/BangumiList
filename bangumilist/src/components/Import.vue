@@ -5,7 +5,7 @@
         </n-flex>
         <n-card embedded style="max-width: 512px; margin-bottom: 48px">
             <n-flex vertical :size="16">
-                {{ global.lang.getText("checkBeforeImport") }}
+                <p style="white-space: pre-line">{{ global.lang.getText("checkBeforeImport") }}</p>
                 <n-flex justify="space-between" align="center">
                     {{ global.lang.getText("importPath") }}
                     <n-flex align="center" :wrap="false" style="width: 256px">
@@ -24,7 +24,7 @@
     </n-flex>
     <n-modal v-model:show="loadModal" :trap-focus="false" :close-on-esc="false" :mask-closable="false">
         <n-flex vertical justify="center" align="center">
-            {{ global.lang.getText("exporting") }}
+            {{ global.lang.getText("importing") }}
             <n-spin size="large"/>
         </n-flex>
     </n-modal>
@@ -104,6 +104,9 @@ async function importCSV() {
                     if(insideQuotes) {
                         tmpStr += "\r"
                     } else {
+                        if(input.length > i + 1 && input[i + 1] === "\n") {
+                            continue
+                        }
                         tmpLine.push(tmpStr)
                         tmpStr = ""
                         rows.push(tmpLine)
@@ -122,6 +125,7 @@ async function importCSV() {
             rows.push(tmpLine)
         }
         const isUnfoldChildTable = global.databaseData!.dualTable && rows[0].length > global.databaseData!.table1Info.length
+        const childTableColumn = isUnfoldChildTable ? (global.databaseData!.gridView ? 2 : 1) : null
         let tmpPrimaryLine: DataRow = { 0: 0 }
         let tmpChild = []
         let tmpChildLine: DataRow = { 0: 0 }
@@ -131,24 +135,28 @@ async function importCSV() {
             }
             tmpPrimaryLine = { 0: 0 }
             for(const column of global.databaseData!.table1Info) {
-                if(column.id === (global.databaseData!.gridView ? 2 : 1) && isUnfoldChildTable) {
+                if(column.id === childTableColumn && isUnfoldChildTable) {
                     continue
                 } else {
+                    const columnId = (isUnfoldChildTable && column.id >= (childTableColumn as number)) ? column.id - 1 : column.id
                     switch(column.dataType) {
                         case "bool":
-                            tmpPrimaryLine[column.id] = JSON.parse(rows[i][column.id].toLowerCase())
+                            tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId].toLowerCase())
                             break
                         case "number":
-                            tmpPrimaryLine[column.id] = JSON.parse(rows[i][column.id])
+                            tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId])
                             break
                         default:
-                            tmpPrimaryLine[column.id] = rows[i][column.id]
+                            tmpPrimaryLine[column.id] = rows[i][columnId]
                     }
                 }
             }
             if(isUnfoldChildTable) {
                 tmpChild = []
                 for(let j = 0; j < (rows[0].length - global.databaseData!.table1Info.length) / global.databaseData!.table2Info.length; j++) {
+                    if(rows[i][global.databaseData!.table1Info.length - 1 + global.databaseData!.table2Info.length * j] === "") {
+                        break
+                    }
                     tmpChildLine = { 0: 0 }
                     for(const column of global.databaseData!.table2Info) {
                         const columnId = global.databaseData!.table1Info.length - 1 + global.databaseData!.table2Info.length * j + column.id
@@ -168,7 +176,7 @@ async function importCSV() {
                         break
                     }
                 }
-                tmpPrimaryLine[global.databaseData!.gridView ? 2 : 1] = JSON.stringify(tmpChild)
+                tmpPrimaryLine[childTableColumn as number] = JSON.stringify(tmpChild)
             }
             global.databaseData!.tableData.push(tmpPrimaryLine)
         }

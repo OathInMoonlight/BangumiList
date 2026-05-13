@@ -8,6 +8,24 @@ export interface Languages {
     getText(key: keyof typeof this.text): string
 }
 
+export type FirstLetterType =
+    "a" | "b" | "c" | "d" |
+    "e" | "f" | "g" | "h" |
+    "i" | "j" | "k" | "l" |
+    "m" | "n" | "o" | "p" |
+    "q" | "r" | "s" | "t" |
+    "u" | "v" | "w" | "x" |
+    "y" | "z" | "#"
+
+export interface LanguageTool {
+    detectLanguage: (letter: string) => LanguageType | "#",
+    getTextLength: (text: string) => number,
+    getPinyinInitial: (letter: string) => FirstLetterType,
+    getKanaInitial: (letter: string) => FirstLetterType,
+    getAlphabetInitial: (letter: string) => FirstLetterType,
+    getFirstLetter: (text: string) => FirstLetterType
+}
+
 export interface Global {
     lang: Languages,
     settingPage: boolean,
@@ -27,5 +45,6 @@ export interface Global {
 
     selectedRow: { primary: number | null, child: number | null },
 
-    errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void
+    errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void,
+    langTool: LanguageTool
 }

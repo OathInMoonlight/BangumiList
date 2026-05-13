@@ -49,25 +49,27 @@
                         {{ currentRow[0] }}
                     </div>
                     <div v-else-if="global.databaseData!.dualTable && !global.isChildTable && column.id === (global.databaseData!.gridView ? 2 : 1)" style="max-width: 100%; word-wrap:break-word">
-                        {{ currentRow[column.id] }}
+                        <n-collapse>
+                            <n-collapse-item>
+                                {{ currentRow[column.id] }}
+                            </n-collapse-item>
+                        </n-collapse>
                     </div>
                     <div v-else-if="editMode">
-                        <n-input v-if="column.dataType === 'text' || column.dataType === 'paragraph'" v-model:value="newRowDef[column.id] as string | null" placeholder="" style="width: 256px"/>
+                        <n-input v-if="column.dataType === 'paragraph'" v-model:value="newRowDef[column.id] as string | null" placeholder="" type="textarea" style="width: 256px"/>
+                        <n-input v-if="column.dataType === 'text'" v-model:value="newRowDef[column.id] as string | null" placeholder="" style="width: 256px"/>
                         <n-input-number v-if="column.dataType === 'number'" v-model:value="newRowDef[column.id] as number | null" placeholder="" style="width: 256px"/>
-                        <n-select v-if="column.dataType === 'tag'" v-model:value="newRowDef[column.id] as string | null" :options="tagOptions(column)" filterable tag placeholder="" style="width: 256px"/>
+                        <n-select v-if="column.dataType === 'tag'" v-model:value="newRowDef[column.id] as string | null" :options="tagOptions(column)" filterable tag clearable placeholder="" style="width: 256px">
+                            <template #empty>
+                                <n-empty :description="global.lang.getText('noData')"/>
+                            </template>
+                        </n-select>
                         <colored-switch v-if="column.dataType === 'bool'" v-model="newRowDef[column.id] as boolean" checked-label="" unchecked-label=""/>
                     </div>
                     <div v-else style="max-width: 100%">
-                        <p v-if="column.dataType === 'number' || column.dataType === 'text' || column.dataType === 'paragraph'" style="word-wrap:break-word">{{ currentRow[column.id] }}</p>
-                        <n-tag v-if="column.dataType === 'tag'" :color="column.valuePreset === 'none' ? undefined : column.valuePreset[currentRow[column.id] as string]">
-                            {{ currentRow[column.id] }}
-                        </n-tag>
-                        <n-tag v-if="column.dataType === 'bool'" :type="currentRow[column.id] ? 'success' : 'error'">
-                            {{ currentRow[column.id] }}
-                            <template #icon>
-                                <svg-icon type="mdi" :path="currentRow[column.id] ? mdiCheckCircle : mdiCloseCircle"/>
-                            </template>
-                        </n-tag>
+                        <p v-if="column.dataType === 'number' || column.dataType === 'text' || column.dataType === 'paragraph'" style="word-wrap: break-word">{{ currentRow[column.id] }}</p>
+                        <tag v-if="column.dataType === 'tag'" :value="currentRow[column.id]" :value-preset="column.valuePreset"/>
+                        <bool v-if="column.dataType === 'bool'" :value="String(currentRow[column.id])" :value-preset="column.valuePreset"/>
                     </div>
                 </n-flex>
             </n-flex>
@@ -99,11 +101,13 @@
 <script setup lang="ts">
 import type { ComputedRef } from "vue"
 import type { Column, DataRow } from "../types/dataTypes"
-import { NFlex, NCard, NImage, NInput, NInputNumber, NSelect, NTag, NPopover, NButton, NDivider, useDialog } from "naive-ui"
+import { NFlex, NCard, NImage, NCollapse, NCollapseItem, NInput, NInputNumber, NSelect, NEmpty, NPopover, NButton, NDivider, useDialog } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiChevronLeft, mdiImageBrokenVariant, mdiCheckCircle, mdiCloseCircle, mdiPencil, mdiDelete } from "@mdi/js"
+import { mdiChevronLeft, mdiImageBrokenVariant, mdiPencil, mdiDelete } from "@mdi/js"
 import { computed, ref, toRaw } from "vue"
 import ColoredSwitch from "./ColoredSwitch.vue"
+import Tag from "./Tag.vue"
+import Bool from "./Bool.vue"
 import global from "../plugins/global"
 
 const dialog = useDialog()
@@ -146,7 +150,11 @@ function tagOptions(column: Column) {
     const option = []
     if(column.valuePreset !== 'none') {
         for(const key in column.valuePreset) {
-            option.push({ label: column.valuePreset[key].title[global.lang.currentLang], value: key })
+            if(column.valuePreset[key].hasOwnProperty("title")) {
+                option.push({ label: column.valuePreset[key].title![global.lang.currentLang], value: key })
+            } else {
+                option.push({ label: key, value: key })
+            }
         }
     }
     return option
@@ -237,7 +245,6 @@ const img = computed(() => {
     } else {
         return image
     }
-    // return "https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/00/a0000276/img/basic/a0000276_main.jpg"
 }) as ComputedRef<string | undefined>
 const imgSize = computed(() => {
     let size = [200, 300]

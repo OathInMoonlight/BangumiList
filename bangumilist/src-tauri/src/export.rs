@@ -7,6 +7,6 @@ pub fn export_csv(path_str: &str, contents: &str) -> Result<(), String> {
     let mut data = Vec::new();
     data.extend_from_slice(b"\xEF\xBB\xBF"); // 添加 UTF-8 BOM，防止Excel误判成ANSI
     data.extend_from_slice(contents.as_bytes());
-    fs::write(path, data).unwrap();
+    fs::write(path, data).map_err(|err| err.to_string())?;
     Ok(())
 }

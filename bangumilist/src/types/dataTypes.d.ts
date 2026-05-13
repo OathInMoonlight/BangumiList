@@ -2,7 +2,7 @@ export type DataType = "bool" | "tag" | "number" | "text" | "paragraph"
 export type LanguageType = "zh" | "ja" | "en"
 type TitleType = { [ lang in LanguageType ]: string }
 type GroupType = "none" | "alphabet" | unknown[]
-type ValuePresetType = { [ key: string ]: { title: TitleType, color: string } } | "none"
+export type ValuePresetType = { [ key: string ]: { title?: TitleType, color?: string, icon?: string } } | "none"
 
 export interface Column {
     id: number,

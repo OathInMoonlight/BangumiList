@@ -52,7 +52,7 @@
                     </n-input-group>
                     <n-input-group style="width: auto">
                         <n-input-group-label>{{ global.lang.getText("columnGroupType") }}</n-input-group-label>
-                        <n-select v-model:value="model!.groupType" :options="groupTypeOptions" filterable tag :placeholder="global.lang.getText('columnGroupType')" :disabled="model!.id < props.indexMin" style="width: 256px"/>
+                        <n-select v-model:value="model!.groupType" :options="groupTypeOptions" filterable tag clearable :placeholder="global.lang.getText('columnGroupType')" :disabled="model!.id < props.indexMin" style="width: 256px"/>
                         <n-popover placement="top">
                             <template #trigger>
                                 <n-input-group-label>
@@ -70,7 +70,7 @@
                     </n-input-group>
                     <n-input-group style="width: auto">
                         <n-input-group-label>{{ global.lang.getText("columnValuePreset") }}</n-input-group-label>
-                        <n-select v-model:value="model!.valuePreset" :options="valuePresetOptions" filterable tag :placeholder="global.lang.getText('columnValuePreset')" :disabled="model!.id < props.indexMin" style="width: 256px"/>
+                        <n-select v-model:value="model!.valuePreset" :options="valuePresetOptions" filterable tag clearable :placeholder="global.lang.getText('columnValuePreset')" :disabled="model!.id < props.indexMin" style="width: 256px"/>
                         <n-popover placement="top">
                             <template #trigger>
                                 <n-input-group-label>
@@ -79,11 +79,11 @@
                                     </n-flex>
                                 </n-input-group-label>
                             </template>
-                            {["key": string]: {"title": {"zh": string, "ja": string, "en": string}, "color": string}}
+                            {["key": string]: {"title?": {"zh": string, "ja": string, "en": string}, "color?": string, "icon?": "string"}}
                         </n-popover>
                     </n-input-group>
                     <n-flex align="center">
-                        <colored-switch v-model="model!.ifDisplay" :checked-label="global.lang.getText('columnDisplayOn')" :unchecked-label="global.lang.getText('columnDisplayOff')" :disabled="model!.id < props.indexMin"/>
+                        <colored-switch v-model="model!.ifDisplay" :checked-label="global.lang.getText('columnDisplayOn')" :unchecked-label="global.lang.getText('columnDisplayOff')"/>
                     </n-flex>
                 </n-flex>
             </n-flex>

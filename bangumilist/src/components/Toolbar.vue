@@ -64,7 +64,7 @@
                 </n-flex>
             </n-flex>
         </n-card>
-        <n-flex :justify="global.isChildTable ? 'space-between' : 'center'" align="center">
+        <n-flex :justify="global.isChildTable ? 'space-between' : 'center'" align="center" style="min-height: 40px">
             <n-flex v-if="global.isChildTable" align="center">
                 <n-button quaternary size="large" circle @click="back">
                     <template #icon>

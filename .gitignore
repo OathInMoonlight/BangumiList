@@ -5,6 +5,7 @@ dist-ssr
 *.db
 *.sqlite
 *.csv
+*.xlsx
 
 # local env files
 .env.local

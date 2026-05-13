@@ -7,6 +7,6 @@ pub fn import_csv(path_str: &str) -> Result<String, String> {
     if !path.exists() {
         return Err("File does not exist".to_string());
     }
-    let contents = fs::read_to_string(path).unwrap();
+    let contents = fs::read_to_string(path).map_err(|err| err.to_string())?;
     Ok(contents)
 }

@@ -85,11 +85,12 @@ const languages: Languages = {
         opening: { "zh": "正在打开", "ja": "開いている", "en": "Opening" },
         // 导入
         browse: { "zh": "浏览", "ja": "ブラウズ", "en": "Browse" },
-        checkBeforeImport: { "zh": "请在导入前确保导入内容的各列顺序以及数据格式同当前数据库一致！",
-            "ja": "インポートする前にインポートする内容の各列の順番及びデータタイプが当該データベースと一致していることを確認してください！",
-            "en": "Please make sure that the order and the datatype of each column in your import are equal to this database!" },
+        checkBeforeImport: { "zh": "请在导入前确认：\n1. 导入文件格式为UTF-8(.csv)\n2. 导入内容已删除空行和空列，非空行有序号\n3. 各列顺序以及数据格式同当前数据库一致",
+            "ja": "インポートする前に確認してください：\n1. インポートするファイルのフォーマットはUTF-8(.csv)\n2. インポートする内容に空の行や列を含まず、空でない行は番号を持つ\n3. 各列の順番及びデータタイプが当該データベースと一致している",
+            "en": "Please make sure:\n1. The format of import file is UTF-8(.csv)\n2. Empty rows and columns have been deleted from import contents, rows which not empty have id\n3. The order and the datatype of each column are equal to this database" },
         importPath: { "zh": "导入路径", "ja": "インポートパス", "en": "Import Path" },
         importTable: { "zh": "导入表", "ja": "インポートテーブル", "en": "Import Table" },
+        importing: { "zh": "正在导入", "ja":"インポートしている", "en":"Importing" },
         importSuccess: { "zh": "导入成功", "ja": "インポート成功", "en": "Imported successfully"},
 
         // 导出
@@ -123,7 +124,8 @@ const languages: Languages = {
         groupSortBy: { "zh": "分组依据", "ja": "グループ分け", "en": "Group Sort By" },
         noGroup: { "zh": "不分组", "ja": "グループなし", "en": "No Group" },
         search: { "zh": "搜索", "ja": "検索", "en": "Search" },
-        viewPrimaryItem: { "zh": "查看主表项", "ja": "プライマリアイテムのを確認する", "en": "View the Primary Item" }
+        viewPrimaryItem: { "zh": "查看主表项", "ja": "プライマリアイテムのを確認する", "en": "View the Primary Item" },
+        pageSize: { "zh": "/ 页", "ja": "/ ページ", "en": "/ Page" }
     },
     getText(key: keyof typeof this.text) {
         return this.text[key][this.currentLang]
