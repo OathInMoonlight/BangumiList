@@ -37,6 +37,7 @@ import { invoke } from "@tauri-apps/api/core"
 import { NFlex, NCard, NInput, NButton, useDialog, useMessage, NModal, NSpin } from "naive-ui"
 import { ref } from "vue"
 import global from "../plugins/global"
+import searchAndSort from "../plugins/searchAndSort"
 
 const dialog = useDialog()
 const message = useMessage()
@@ -182,6 +183,7 @@ async function importCSV() {
         }
         global.page = "contents"
         loadModal.value = false
+        searchAndSort.filterFunc()
         message.success(global.lang.getText("importSuccess"))
     } catch(error) {
         loadModal.value = false

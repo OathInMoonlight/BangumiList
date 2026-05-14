@@ -161,6 +161,7 @@ function handleDataBaseClose() {
                 global.databaseLoaded = false
                 global.page = "open"
                 global.databaseSaved = true
+                global.isChildTable = false
             }
         })
     } else {
@@ -168,6 +169,7 @@ function handleDataBaseClose() {
         global.databaseLoaded = false
         global.page = "open"
         global.databaseSaved = true
+        global.isChildTable = false
     }
 }
 </script>

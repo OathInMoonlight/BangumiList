@@ -10,11 +10,14 @@
 
 <script setup lang="ts">
 import type { DataRow } from "../types/dataTypes"
-import { NCard, NDataTable, NEmpty } from "naive-ui"
-import { computed, h, reactive, toRaw } from "vue"
+import { NCard, NDataTable, NEmpty, NFlex } from "naive-ui"
+import { computed, h, reactive } from "vue"
 import Tag from "./Tag.vue"
 import Bool from "./Bool.vue"
+import SortButton from "./SortButton.vue"
 import global from "../plugins/global"
+import languageTool from "../plugins/languageTool"
+import searchAndSort from "../plugins/searchAndSort"
 
 const currentTableInfoPointer = computed(() => global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info)
 
@@ -47,20 +50,20 @@ const columnWidths = computed(() => {
                     valueList.push(rows[i][column.id])
                 }
                 if(column.dataType === "number") {
-                    maxWidth = Math.max(...valueList.map(value => String(value).length)) * 8 + 26
+                    maxWidth = Math.max(...valueList.map(value => String(value).length)) * 8 + 54
                 } else {
-                    maxWidth = Math.max(...valueList.map(value => global.langTool.getTextLength(value))) * 8 + 26
+                    maxWidth = Math.max(...valueList.map(value => languageTool.getTextLength(value))) * 8 + 54
                 }
             }
             switch(column.dataType) {
                 case "bool":
-                    widths[column.id] = Math.min(Math.max(global.langTool.getTextLength(column.title[global.lang.currentLang]) * 8 + 26, 56), 512)
+                    widths[column.id] = Math.min(Math.max(languageTool.getTextLength(column.title[global.lang.currentLang]) * 8 + 54, 56), 512)
                     break
                 case "tag":
                     widths[column.id] = Math.min(maxWidth + 14, 512)
                     break
                 case "number":
-                    widths[column.id] = Math.min(Math.max(global.langTool.getTextLength(column.title[global.lang.currentLang]) * 8 + 26, maxWidth), 512)
+                    widths[column.id] = Math.min(Math.max(languageTool.getTextLength(column.title[global.lang.currentLang]) * 8 + 54, maxWidth), 512)
                     break
                 default:
                     widths[column.id] = Math.min(maxWidth, 512)
@@ -76,7 +79,10 @@ const tableColumn = computed(() => {
         if(column.ifDisplay && (column.displayLang === "none" || column.displayLang === global.lang.currentLang)) {
             columns.push({
                 key: column.id,
-                title: column.title[global.lang.currentLang],
+                title: () => h(NFlex, { justify: "center", align: "center" }, () => [
+                    h("p", { style: { "margin": 0 } }, [column.title[global.lang.currentLang]]),
+                    h(SortButton, { columnId: column.id })
+                ]),
                 align: column.dataType === "paragraph" ? "left" : "center" as "left" | "center",
                 titleAlign: "center" as "center",
                 width: columnWidths.value[column.id],
@@ -97,8 +103,7 @@ const tableColumn = computed(() => {
     }
     return columns
 })
-const tableData = computed(() => global.databaseData!.dualTable && global.isChildTable ?
-    JSON.parse(toRaw(global.databaseData!.tableData[global.selectedRow.primary as number][global.databaseData!.gridView ? 2 : 1]) as string) as DataRow[] : global.databaseData!.tableData)
+const tableData = computed(() => global.isChildTable ? searchAndSort.childSorted : searchAndSort.primarySorted)
 
 function rowProps(row: DataRow) {
     return {

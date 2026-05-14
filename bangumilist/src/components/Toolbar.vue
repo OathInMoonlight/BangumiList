@@ -73,11 +73,14 @@
                 </n-button>
                 <h3 style="margin: 0">{{ global.lang.getText("back") }}</h3>
             </n-flex>
-            <n-input v-model:value="global.filterText" :placeholder="global.lang.getText('search')" clearable style="width: 512px">
-                <template #prefix>
-                    <svg-icon type="mdi" :path="mdiMagnify"/>
-                </template>
-            </n-input>
+            <n-flex align="center">
+                <n-input v-model:value="filterText" :placeholder="global.lang.getText('search')" clearable style="width: 512px">
+                    <template #prefix>
+                        <svg-icon type="mdi" :path="mdiMagnify"/>
+                    </template>
+                </n-input>
+                {{ `${global.lang.getText("total")} ${itemCount} ${global.lang.getText("items")}` }}
+            </n-flex>
             <n-popover v-if="global.isChildTable" placement="bottom">
                 <template #trigger>
                     <n-button quaternary circle size="large" @click="editItem">
@@ -96,8 +99,10 @@
 import { NFlex, NCard, NPopover, NButton, NPopselect, NSelect, NEmpty, NInput } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiPlus, mdiImport, mdiExport, mdiViewGrid, mdiViewList, mdiChartLine, mdiApps, mdiSquare, mdiChevronLeft, mdiMagnify, mdiEye } from "@mdi/js"
+import { computed, ref, watch } from "vue"
 import global from "../plugins/global"
 import ButtonGroup from "./ButtonGroup.vue"
+import searchAndSort from "../plugins/searchAndSort"
 
 function back() {
     global.isChildTable = false
@@ -109,4 +114,23 @@ function editItem() {
     global.selectedRow.child = null
     global.page = "row"
 }
+
+const filterText = ref("")
+let timer: ReturnType<typeof setTimeout> | null = null
+watch(filterText, (newFilterText) => {
+    if(timer !== null) {
+        clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+        global.filterText = newFilterText
+    }, 150)
+})
+const itemCount = computed(() => {
+    if(global.filterText === null || global.filterText === undefined || global.filterText === "") {
+        return global.databaseData!.dualTable && global.isChildTable ?
+            JSON.parse(global.databaseData!.tableData[global.selectedRow.primary as number][global.databaseData!.gridView ? 2 : 1] as string).length
+            : global.databaseData!.tableData.length
+    }
+    return global.isChildTable ? searchAndSort.childFiltered.length : searchAndSort.primaryFiltered.length
+})
 </script>

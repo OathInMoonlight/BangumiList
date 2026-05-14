@@ -125,7 +125,9 @@ const languages: Languages = {
         noGroup: { "zh": "不分组", "ja": "グループなし", "en": "No Group" },
         search: { "zh": "搜索", "ja": "検索", "en": "Search" },
         viewPrimaryItem: { "zh": "查看主表项", "ja": "プライマリアイテムのを確認する", "en": "View the Primary Item" },
-        pageSize: { "zh": "/ 页", "ja": "/ ページ", "en": "/ Page" }
+        pageSize: { "zh": "/ 页", "ja": "/ ページ", "en": "/ Page" },
+        total: { "zh": "共", "ja": "合計", "en": "Total" },
+        items: { "zh": "项", "ja": "項目", "en": "Items" }
     },
     getText(key: keyof typeof this.text) {
         return this.text[key][this.currentLang]

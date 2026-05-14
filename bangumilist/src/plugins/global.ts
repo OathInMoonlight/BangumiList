@@ -1,7 +1,6 @@
 import type { Global } from "../types/types"
 import { reactive } from "vue"
 import languages from "./languages"
-import languageTool from "./languageTool"
 
 const global: Global = reactive({
     lang: languages,
@@ -30,8 +29,7 @@ const global: Global = reactive({
             closable: false,
             maskClosable: false
         })
-    },
-    langTool: languageTool
+    }
 })
 
 export default global

@@ -1,4 +1,4 @@
-import type { LanguageType, DatabaseData } from "./dataTypes"
+import type { LanguageType, DataRow, DatabaseData } from "./dataTypes"
 import type { GlobalTheme } from "naive-ui"
 
 export interface Languages {
@@ -45,6 +45,18 @@ export interface Global {
 
     selectedRow: { primary: number | null, child: number | null },
 
-    errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void,
-    langTool: LanguageTool
+    errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void
+}
+
+type groupInfoDataRow = DataRow & { groupTitle: null | bool | number | string, groupSpan: null | number}
+export interface SearchAndSort {
+    primaryFiltered: DataRow[],
+    childFiltered: DataRow[],
+    primarySorted: DataRow[],
+    childSorted: DataRow[],
+    primaryGrouped: groupInfoDataRow[],
+    childGrouped: groupInfoDataRow[],
+    filterFunc: () => void,
+    sortFunc: () => void,
+    groupFunc: () => void
 }
