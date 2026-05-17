@@ -141,6 +141,7 @@ watch(groupSortValue, (newGroupSort) => {
         currentGroupSort.column = Number(newGroupSortParts[0])
         currentGroupSort.order = newGroupSortParts[1] as "asc" | "desc" | "-"
     }
+    global.databaseSaved = false
     searchAndSort.groupFunc()
 })
 watch(() => global.isChildTable, () => {

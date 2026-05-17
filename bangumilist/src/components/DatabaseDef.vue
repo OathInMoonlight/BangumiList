@@ -7,10 +7,16 @@
         </n-flex>
         <n-divider/>
         <h3 style="margin: 0">{{ global.lang.getText("primaryTableSetting") }}</h3>
-        <n-input-group v-if="newDatabaseDef.gridView" style="width: auto">
-            <n-input-group-label>{{ global.lang.getText("GridLabel") }}</n-input-group-label>
-            <n-input-number v-model:value="newDatabaseDef.table1Label" :placeholder="global.lang.getText('GridLabel')" :min="0" :max="newDatabaseDef.table1Info.length - 1" style="width: 256px"/>
-        </n-input-group>
+        <n-flex v-if="newDatabaseDef.gridView" align="center">
+            <n-input-group style="width: auto">
+                <n-input-group-label>{{ global.lang.getText("gridLabel") }}</n-input-group-label>
+                <n-input-number v-model:value="newDatabaseDef.table1Label" :placeholder="global.lang.getText('gridLabel')" :min="0" :max="newDatabaseDef.table1Info.length - 1" style="width: 256px"/>
+            </n-input-group>
+            <n-input-group style="width: auto">
+                <n-input-group-label>{{ global.lang.getText("gridTitle") }}</n-input-group-label>
+                <n-input v-model:value="newDatabaseDef.table1Title" :placeholder="global.lang.getText('gridTitle')" style="width: 256px"/>
+            </n-input-group>
+        </n-flex>
         <n-flex vertical>
             <column-def v-for="column in newDatabaseDef.table1Info" :key="column.id" v-model="newDatabaseDef.table1Info[column.id]" :move-up="() => moveColumnUp(false, column.id)"
                 :move-down="() => moveColumnDown(false, column.id)" :delete-column="() => deleteColumn(false, column.id)"
@@ -29,10 +35,16 @@
         <n-flex v-if="newDatabaseDef.dualTable" vertical>
             <n-divider/>
             <h3 style="margin: 0">{{ global.lang.getText("childTableSetting") }}</h3>
-            <n-input-group v-if="newDatabaseDef.gridView" style="width: auto">
-                <n-input-group-label>{{ global.lang.getText("GridLabel") }}</n-input-group-label>
-                <n-input-number v-model:value="newDatabaseDef.table2Label" :placeholder="global.lang.getText('GridLabel')" :min="0" :max="newDatabaseDef.table2Info.length - 1" style="width: 256px"/>
-            </n-input-group>
+            <n-flex align="center" v-if="newDatabaseDef.gridView">
+                <n-input-group style="width: auto">
+                    <n-input-group-label>{{ global.lang.getText("gridLabel") }}</n-input-group-label>
+                    <n-input-number v-model:value="newDatabaseDef.table2Label" :placeholder="global.lang.getText('gridLabel')" :min="0" :max="newDatabaseDef.table2Info.length - 1" style="width: 256px"/>
+                </n-input-group>
+                <n-input-group style="width: auto">
+                    <n-input-group-label>{{ global.lang.getText("gridTitle") }}</n-input-group-label>
+                    <n-input v-model:value="newDatabaseDef.table1Title" :placeholder="global.lang.getText('gridTitle')" style="width: 256px"/>
+                </n-input-group>
+            </n-flex>
             <n-flex vertical>
                 <column-def v-for="column in newDatabaseDef.table2Info" :key="column.id" v-model="newDatabaseDef.table2Info[column.id]" :move-up="() => moveColumnUp(true, column.id)"
                     :move-down="() => moveColumnDown(true, column.id)" :delete-column="() => deleteColumn(true, column.id)"
@@ -59,7 +71,7 @@
 
 <script setup lang="ts">
 import type { DatabaseData, InputColumn, Column } from "../types/dataTypes"
-import { NFlex, NDivider, NInputGroup, NInputGroupLabel, NInputNumber, NPopover, NButton, useMessage } from "naive-ui"
+import { NFlex, NDivider, NInputGroup, NInputGroupLabel, NInputNumber, NInput, NPopover, NButton, useMessage } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiPlus } from "@mdi/js"
 import { computed, reactive, toRaw, watch } from "vue"
@@ -69,10 +81,10 @@ import ColumnDef from "./ColumnDef.vue"
 
 const message = useMessage()
 
-const newDatabaseDef: Omit<DatabaseData, "path" | "table1Info" | "table2Info" | "tableData" | "sort1" | "sort2" | "groupSort1" | "groupSort2"> & {
-        table1Info: InputColumn[], table2Info: InputColumn[]
+const newDatabaseDef: Omit<DatabaseData, "path" | "table1Title" | "table2Title" | "table1Info" | "table2Info" | "tableData" | "sort1" | "sort2" | "groupSort1" | "groupSort2"> & {
+        table1Title: string, table2Title: string, table1Info: InputColumn[], table2Info: InputColumn[]
     } = reactive({
-    gridView: false, dualTable: false, table1Label: null, table2Label: null, table1Info: [], table2Info: []
+    gridView: false, dualTable: false, table1Label: null, table2Label: null, table1Title: "[]", table2Title: "[]", table1Info: [], table2Info: []
 })
 const createIdColumn = (): InputColumn => ({
     id: 0, dataType: "number", title: toRaw(global.lang.text.id), sortMap: 0, groupType: "none", ifDisplay: true, displayLang: "none", valuePreset: "none"
@@ -97,6 +109,8 @@ if(global.databaseLoaded) {
     newDatabaseDef.dualTable = global.databaseData!.dualTable
     newDatabaseDef.table1Label = global.databaseData!.table1Label
     newDatabaseDef.table2Label = global.databaseData!.table2Label
+    newDatabaseDef.table1Title = JSON.stringify(global.databaseData!.table1Title)
+    newDatabaseDef.table2Title = JSON.stringify(global.databaseData!.table2Title)
     newDatabaseDef.table1Info = stringifyColumns(global.databaseData!.table1Info)
     newDatabaseDef.table2Info = stringifyColumns(global.databaseData!.table2Info)
     userIndexMin[0] = newDatabaseDef.table1Info.length
@@ -209,7 +223,7 @@ function confirm() {
         const tableLabel = isChildTable ? newDatabaseDef.table2Label : newDatabaseDef.table1Label
         const tableInfo = isChildTable ? newDatabaseDef.table2Info : newDatabaseDef.table1Info
         if(tableLabel !== null && (tableLabel < 0 || tableLabel >= tableInfo.length)) {
-            message.warning(`${global.lang.getText("invalidValue")}: ${isChildTable ? global.lang.getText("childTableSetting") : global.lang.getText("primaryTableSetting")} -> ${global.lang.getText("GridLabel")}`)
+            message.warning(`${global.lang.getText("invalidValue")}: ${isChildTable ? global.lang.getText("childTableSetting") : global.lang.getText("primaryTableSetting")} -> ${global.lang.getText("gridLabel")}`)
             return false
         }
         for(let index = 0; index < tableInfo.length; index++) {
@@ -263,6 +277,23 @@ function confirm() {
         }
         return true
     }
+    try {
+        const table1Title = JSON.parse(newDatabaseDef.table1Title)
+        const table2Title = JSON.parse(newDatabaseDef.table2Title)
+        if(!Array.isArray(table1Title) || table1Title.some(column => typeof column !== "number" || column < 0 || column >= newDatabaseDef.table1Info.length)) {
+            throw new Error("primary")
+        }
+        if(!Array.isArray(table2Title) || table2Title.some(column => typeof column !== "number" || column < 0 || column >= newDatabaseDef.table2Info.length)) {
+            throw new Error("child")
+        }
+    } catch(error: unknown) {
+        if(error instanceof Error) {
+            message.warning(`${global.lang.getText("invalidValue")}: ${error.message === "child" ? global.lang.getText("childTableSetting") : global.lang.getText("primaryTableSetting")} -> ${global.lang.getText("gridTitle")}`)
+        } else {
+            message.warning(`${global.lang.getText("invalidValue")}: Unknown ${global.lang.getText("gridTitle")}`)
+        }
+        return
+    }
     if(!inputChecker(false) || !inputChecker(true)) {
         return
     }
@@ -278,6 +309,8 @@ function confirm() {
             dualTable: newDatabaseDef.dualTable,
             table1Label: newDatabaseDef.table1Label,
             table2Label: newDatabaseDef.table2Label,
+            table1Title: JSON.parse(newDatabaseDef.table1Title),
+            table2Title: JSON.parse(newDatabaseDef.table2Title),
             table1Info: parseColumns(newDatabaseDef.table1Info),
             table2Info: parseColumns(newDatabaseDef.table2Info),
             tableData: [],
@@ -289,6 +322,8 @@ function confirm() {
     } else {
         global.databaseData!.table1Label = newDatabaseDef.table1Label
         global.databaseData!.table2Label = newDatabaseDef.table2Label
+        global.databaseData!.table1Title = JSON.parse(newDatabaseDef.table1Title)
+        global.databaseData!.table2Title = JSON.parse(newDatabaseDef.table2Title)
         global.databaseData!.table1Info = parseColumns(newDatabaseDef.table1Info)
         global.databaseData!.table2Info = parseColumns(newDatabaseDef.table2Info)
     }

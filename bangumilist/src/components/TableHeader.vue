@@ -46,6 +46,7 @@ function toggleOrder() {
     } else {
         global.databaseData!.sort1 = { column: props.columnId, order: order.value as "asc" | "desc" | "-" }
     }
+    global.databaseSaved = false
     searchAndSort.sortFunc()
 }
 </script>

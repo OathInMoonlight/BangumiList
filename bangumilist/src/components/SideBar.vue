@@ -126,6 +126,8 @@ async function handleDatabaseSave(newPath: boolean) {
             dualTable: global.databaseData!.dualTable,
             table1Label: global.databaseData!.table1Label,
             table2Label: global.databaseData!.table2Label,
+            table1Title: JSON.stringify(global.databaseData!.table1Title),
+            table2Title: JSON.stringify(global.databaseData!.table2Title),
             table1Info: global.databaseData!.table1Info.map(column => ({
                 ...column, title: JSON.stringify(column.title), groupType: JSON.stringify(column.groupType), valuePreset: JSON.stringify(column.valuePreset)
             })),

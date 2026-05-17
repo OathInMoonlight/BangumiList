@@ -14,7 +14,7 @@ pub fn read_db(path_str: &str) -> Result<DBData, String> {
     let mut stmt = db
         .prepare("SELECT * FROM DATABASE_INFO")
         .map_err(err_to_string)?;
-    let database_info: (bool, bool, Option<u32>, Option<u32>, String, String, String, String) = stmt
+    let database_info: (bool, bool, Option<u32>, Option<u32>, String, String, String, String, String, String) = stmt
         .query_row([], |row| {
             Ok((
                 row.get(0)?,
@@ -25,7 +25,8 @@ pub fn read_db(path_str: &str) -> Result<DBData, String> {
                 row.get(5)?,
                 row.get(6)?,
                 row.get(7)?,
-
+                row.get(8)?,
+                row.get(9)?,
             ))
         })
         .map_err(err_to_string)?;
@@ -102,12 +103,14 @@ pub fn read_db(path_str: &str) -> Result<DBData, String> {
         dual_table: database_info.1,
         table1_label: database_info.2,
         table2_label: database_info.3,
+        table1_title: database_info.4,
+        table2_title: database_info.5,
         table1_info,
         table2_info,
         table_data,
-        sort1: database_info.4,
-        sort2: database_info.5,
-        group_sort1: database_info.6,
-        group_sort2: database_info.7,
+        sort1: database_info.6,
+        sort2: database_info.7,
+        group_sort1: database_info.8,
+        group_sort2: database_info.9,
     })
 }

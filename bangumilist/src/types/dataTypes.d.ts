@@ -30,6 +30,8 @@ export interface DatabaseData {
     dualTable: boolean,
     table1Label: number | null,
     table2Label: number | null,
+    table1Title: number[],
+    table2Title: number[],
     table1Info: Column[],
     table2Info: Column[],
     tableData: DataRow[],

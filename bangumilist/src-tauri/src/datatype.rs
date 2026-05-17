@@ -30,6 +30,8 @@ pub struct DBData {
     pub dual_table: bool,
     pub table1_label: Option<u32>,
     pub table2_label: Option<u32>,
+    pub table1_title: String,
+    pub table2_title: String,
     pub table1_info: Vec<Column>,
     pub table2_info: Vec<Column>,
     pub table_data: Vec<HashMap<i32, Option<UnknownDataType>>>,

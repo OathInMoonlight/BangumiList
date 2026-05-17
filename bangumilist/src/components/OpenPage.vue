@@ -34,7 +34,9 @@ type TransportColumn = Omit<Column, "title" | "groupType" | "valuePreset"> & {
     valuePreset: string
 }
 
-type TransportDatabaseData = Omit<DatabaseData, "table1Info" | "table2Info" | "sort1" | "sort2" | "groupSort1" | "groupSort2"> & {
+type TransportDatabaseData = Omit<DatabaseData, "table1Title" | "table2Title" | "table1Info" | "table2Info" | "sort1" | "sort2" | "groupSort1" | "groupSort2"> & {
+    table1Title: string
+    table2Title: string
     table1Info: TransportColumn[]
     table2Info: TransportColumn[]
     sort1: string
@@ -56,6 +58,8 @@ async function loadDatabase(path: string) {
             dualTable: transportData.dualTable,
             table1Label: transportData.table1Label,
             table2Label: transportData.table2Label,
+            table1Title: JSON.parse(transportData.table1Title),
+            table2Title: JSON.parse(transportData.table2Title),
             table1Info: transportData.table1Info.map(column => ({
                 ...column, title: JSON.parse(column.title), groupType: JSON.parse(column.groupType), valuePreset: JSON.parse(column.valuePreset)
             })),
