@@ -183,6 +183,7 @@ async function importCSV() {
         }
         global.page = "contents"
         loadModal.value = false
+        global.databaseSaved = false
         searchAndSort.filterFunc()
         message.success(global.lang.getText("importSuccess"))
     } catch(error) {

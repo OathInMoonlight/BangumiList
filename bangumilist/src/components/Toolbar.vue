@@ -35,7 +35,7 @@
                     </n-popover>
                 </n-flex>
                 <n-flex align="center" size="small">
-                    <n-select :placeholder="global.lang.getText('groupSortBy')" style="width: 192px">
+                    <n-select v-if="global.contentsType !== 'statistic'" v-model:value="groupSortValue" :options="groupSortOptions" :render-label="groupSortOptionRender" :placeholder="global.lang.getText('groupSortBy')" style="width: 192px">
                         <template #empty>
                             <n-empty :description="global.lang.getText('noData')"/>
                         </template>
@@ -50,12 +50,6 @@
                         { icon: mdiViewGrid, tooltip: 'gridDefault', value: 'default' },
                         { icon: mdiApps, tooltip: 'gridSmall', value: 'small' }
                     ]"/>
-                    <n-popselect v-if="global.contentsType === 'table'" multiple scrollable width="trigger">
-                        <n-select :placeholder="global.lang.getText('tableDisplayItems')" :show="false" style="width: 192px"/>
-                        <template #empty>
-                            <n-empty :description="global.lang.getText('noData')"/>
-                        </template>
-                    </n-popselect>
                     <button-group v-model="global.contentsType" :items="[
                         { icon: mdiViewGrid, tooltip: 'gridView', value: 'grid' },
                         { icon: mdiViewList, tooltip: 'tableView', value: 'table' },
@@ -96,10 +90,11 @@
 </template>
 
 <script setup lang="ts">
-import { NFlex, NCard, NPopover, NButton, NPopselect, NSelect, NEmpty, NInput } from "naive-ui"
+import type { SelectOption } from 'naive-ui'
+import { NFlex, NCard, NPopover, NButton, NSelect, NEmpty, NInput } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
-import { mdiPlus, mdiImport, mdiExport, mdiViewGrid, mdiViewList, mdiChartLine, mdiApps, mdiSquare, mdiChevronLeft, mdiMagnify, mdiEye } from "@mdi/js"
-import { computed, ref, watch } from "vue"
+import { mdiPlus, mdiImport, mdiExport, mdiViewGrid, mdiViewList, mdiChartLine, mdiApps, mdiSquare, mdiChevronLeft, mdiMagnify, mdiEye, mdiChevronUp, mdiChevronDown } from "@mdi/js"
+import { computed, h, ref, watch } from "vue"
 import global from "../plugins/global"
 import ButtonGroup from "./ButtonGroup.vue"
 import searchAndSort from "../plugins/searchAndSort"
@@ -115,7 +110,49 @@ function editItem() {
     global.page = "row"
 }
 
-const filterText = ref("")
+const groupSortValue = ref("none")
+const groupSortOptions = computed(() => {
+    const options = [{ label: global.lang.getText("noGroup"), value: "none" }]
+    for(const column of global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info) {
+        if(column.ifDisplay && (column.displayLang === "none" || column.displayLang === global.lang.currentLang) && column.groupType !== "none") {
+            options.push({ label: column.title[global.lang.currentLang], value: `${column.id}-asc` })
+            options.push({ label: column.title[global.lang.currentLang], value: `${column.id}-desc` })
+        }
+    }
+    return options
+})
+function groupSortOptionRender(option: SelectOption) {
+    if(option.value === "none" || typeof option.value !== "string") {
+        return option.label as string
+    }
+    const optionParts = option.value.split("-")
+    return h(NFlex, { align: "center" }, () => [
+        h(NFlex, { align: "center" }, () => [optionParts[1] === "asc" ? h(SvgIcon, { type: "mdi", path: mdiChevronUp }) : h(SvgIcon, { type: "mdi", path: mdiChevronDown })]),
+        option.label as string
+    ])
+}
+watch(groupSortValue, (newGroupSort) => {
+    const currentGroupSort = global.isChildTable ? global.databaseData!.groupSort2 : global.databaseData!.groupSort1
+    if(newGroupSort === "none") {
+        currentGroupSort.column = null
+        currentGroupSort.order = "-"
+    } else {
+        const newGroupSortParts = newGroupSort.split("-")
+        currentGroupSort.column = Number(newGroupSortParts[0])
+        currentGroupSort.order = newGroupSortParts[1] as "asc" | "desc" | "-"
+    }
+    searchAndSort.groupFunc()
+})
+watch(() => global.isChildTable, () => {
+    const currentGroupSort = global.isChildTable ? global.databaseData!.groupSort2 : global.databaseData!.groupSort1
+    if(currentGroupSort.column === null || currentGroupSort.order === "-") {
+        groupSortValue.value = "none"
+    } else {
+        groupSortValue.value = `${currentGroupSort.column}-${currentGroupSort.order}`
+    }
+}, { immediate: true })
+
+const filterText = ref(global.filterText)
 let timer: ReturnType<typeof setTimeout> | null = null
 watch(filterText, (newFilterText) => {
     if(timer !== null) {

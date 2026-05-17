@@ -43,7 +43,7 @@
                 </n-image>
             </n-card>
             <n-flex vertical align="start" size="large">
-                <n-flex v-for="column in global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info" :key="column.id" align="center"style="max-width: 512px">
+                <n-flex v-for="column in global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info" :key="column.id" align="center" :wrap="false" style="max-width: 512px">
                     <p style="max-width: 100%">{{ column.title[global.lang.currentLang] }}: </p>
                     <div v-if="column.id === 0" style="max-width: 100%; word-wrap:break-word">
                         {{ currentRow[0] }}

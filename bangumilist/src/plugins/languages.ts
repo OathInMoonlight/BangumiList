@@ -92,7 +92,6 @@ const languages: Languages = {
         importTable: { "zh": "导入表", "ja": "インポートテーブル", "en": "Import Table" },
         importing: { "zh": "正在导入", "ja":"インポートしている", "en":"Importing" },
         importSuccess: { "zh": "导入成功", "ja": "インポート成功", "en": "Imported successfully"},
-
         // 导出
         exportPath: { "zh": "导出路径", "ja": "エクスポートパス", "en": "Export Path" },
         exportAs: { "zh": "导出为", "ja": "新規エクスポート", "en": "Export as" },
@@ -116,12 +115,12 @@ const languages: Languages = {
         gridView: { "zh": "网格视图", "ja": "グリッドビュー", "en": "Grid View" },
         tableView: { "zh": "表格视图", "ja": "テーブルビュー", "en": "Table View" },
         statisticView: { "zh": "统计视图", "ja": "統計ビュー", "en": "Statistic View" },
-        tableDisplayItems: { "zh": "表格显示项", "ja": "テーブル表示項目", "en": "Table Display Items" },
         gridLarge: { "zh": "网格:大", "ja": "グリッド:大", "en": "Grid:Large" },
         gridDefault: { "zh": "网格:默认", "ja": "グリッド:デフォルト", "en": "Grid:Default" },
         gridSmall: { "zh": "网格:小", "ja": "グリッド:小", "en": "Grid:Small" },
         sortBy: { "zh": "排序方式", "ja": "ソート順", "en": "Sort By" },
         groupSortBy: { "zh": "分组依据", "ja": "グループ分け", "en": "Group Sort By" },
+        group: { "zh": "分组", "ja": "グループ", "en": "Group" },
         noGroup: { "zh": "不分组", "ja": "グループなし", "en": "No Group" },
         search: { "zh": "搜索", "ja": "検索", "en": "Search" },
         viewPrimaryItem: { "zh": "查看主表项", "ja": "プライマリアイテムのを確認する", "en": "View the Primary Item" },

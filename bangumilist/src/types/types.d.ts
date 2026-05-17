@@ -48,14 +48,16 @@ export interface Global {
     errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void
 }
 
-type groupInfoDataRow = DataRow & { groupTitle: null | bool | number | string, groupSpan: null | number}
+export type GroupTag = { groupTitle: bool | number | string, groupSpan: number, groupIndex: number }
+export type GroupInfoDataRow = DataRow & GroupTag
+
 export interface SearchAndSort {
     primaryFiltered: DataRow[],
     childFiltered: DataRow[],
     primarySorted: DataRow[],
     childSorted: DataRow[],
-    primaryGrouped: groupInfoDataRow[],
-    childGrouped: groupInfoDataRow[],
+    primaryGrouped: GroupInfoDataRow[],
+    childGrouped: GroupInfoDataRow[],
     filterFunc: () => void,
     sortFunc: () => void,
     groupFunc: () => void

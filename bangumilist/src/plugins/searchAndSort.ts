@@ -1,4 +1,5 @@
-import type { SearchAndSort } from "../types/types"
+import type { DataRow } from "../types/dataTypes"
+import type { SearchAndSort, GroupTag, GroupInfoDataRow } from "../types/types"
 import { reactive, watch } from "vue"
 import global from "../plugins/global"
 import languageTool from "../plugins/languageTool"
@@ -52,7 +53,7 @@ const searchAndSort: SearchAndSort = reactive({
         } else{
             sortOrder = sortOrder === "asc"
         }
-        const sortedRows = (global.isChildTable ? this.childFiltered : this.primaryFiltered).sort((a, b) => {
+        const sortedRows = (global.isChildTable ? this.childFiltered : this.primaryFiltered).toSorted((a, b) => {
             const aValue = a[tableInfo[sortColumn].sortMap]
             const bValue = b[tableInfo[sortColumn].sortMap]
             switch(tableInfo[tableInfo[sortColumn].sortMap].dataType) {
@@ -93,66 +94,70 @@ const searchAndSort: SearchAndSort = reactive({
         } else {
             this.primarySorted = sortedRows
         }
+        this.groupFunc()
     },
-    groupFunc() {}
-    // groupFunc() {
-    //     const sortedItems = !global.isChildTable.value ?
-    //         this.sortedItems1 : this.sortedItems2
-    //     const groupSortCol = !global.isChildTable.value ?
-    //         global.currentData.value.groupSort1.column : global.currentData.value.groupSort2.column
-    //     const groupedItems = []
-    //     if(groupSortCol === null) { // 如果不分组则直接返回排序结果
-    //         for(const rowId of sortedItems) {
-    //             groupedItems.push({ rowId: rowId, groupTitle: null, groupSpan: null })
-    //         }
-    //     } else {
-    //         const groupSortOrder = !global.isChildTable.value ?
-    //             global.currentData.value.groupSort1.order : global.currentData.value.groupSort2.order
-    //         // 通用分类函数
-    //         const commonClassify = (classList: string[], getCellValue: (oriValue: string) => string = (oriValue) => oriValue) => {
-    //             const classBuckets: { [ key: string ]: number[] } = {}
-    //             for(const className of classList) { // 初始化分类桶
-    //                 classBuckets[className] = []
-    //             }
-    //             const tmpGroupTags: { [ key: number ]: GroupTag } = {}
-    //             for(const rowId of sortedItems) { // 遍历排序结果，分配到各个分类桶中
-    //                 const cellValue = getCellValue(global.currentTable.value[rowId][global.currentTableInfo.value[groupSortCol].sortMap] as string)
-    //                 classBuckets[cellValue].push(rowId)
-    //                 tmpGroupTags[rowId] = { rowId: rowId, groupTitle: cellValue, groupSpan: null }
-    //             }
-    //             if(groupSortOrder === "desc") { // 如果是降序则反转分类顺序
-    //                 classList.reverse()
-    //             }
-    //             for(const className of classList) { // 遍历分类桶，生成分组结果
-    //                 const bucket = classBuckets[className]
-    //                 if(bucket.length > 0) { // 如果桶内有内容则添加分组
-    //                     tmpGroupTags[bucket[0]].groupSpan = bucket.length // 设置分组跨度
-    //                     for(const rowId of bucket) {
-    //                         groupedItems.push(tmpGroupTags[rowId])
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         switch(global.currentTableInfo.value[groupSortCol].groupType) {
-    //         case null:
-    //             throw new Error("Column group type is null.")
-    //         case "alphabet": { // 按字母分组
-    //             const alphabetList = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
-    //             const getFirstLetter = (oriValue: string) => languageTool.getFirstLetter(oriValue).toLowerCase() // 获取首字母函数
-    //             commonClassify(alphabetList, getFirstLetter)
-    //             break
-    //         }
-    //         default: { // 自定义分类分组
-    //             commonClassify(global.currentTableInfo.value[groupSortCol].groupType as string[])
-    //         }
-    //         }
-    //     }
-    //     if(!global.isChildTable.value) {
-    //         this.groupedItems1 = groupedItems
-    //     } else {
-    //         this.groupedItems2 = groupedItems
-    //     }
-    // }
+    groupFunc() {
+        const sortedRows = global.isChildTable ? this.childSorted : this.primarySorted
+        const groupSort = global.isChildTable ? global.databaseData!.groupSort2 : global.databaseData!.groupSort1
+        let groupedRows: GroupInfoDataRow[] = []
+        if(groupSort.column === null || groupSort.order === "-") { // 如果不分组则直接返回排序结果
+            groupedRows = sortedRows
+        } else {
+            const currentColumnInfo = global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info
+            // 通用分类函数
+            const commonClassify = (oriClassList: unknown[], getValueClass: (oriValue: string) => string = (oriValue) => oriValue) => {
+                const typeOfClassList = typeof oriClassList[0]
+                let classList: string[] = []
+                if(typeOfClassList !== "string") {
+                    classList = oriClassList.map(value => JSON.stringify(value))
+                } else {
+                    classList = oriClassList as string[]
+                }
+                classList.unshift("#")
+                const classBuckets: { [ key: string ]: number[] } = {}
+                for(const classValue of classList) { // 初始化分类桶
+                    classBuckets[classValue] = []
+                }
+                const tmpGroupTags: { [ key: number ]: GroupTag } = {}
+                for(const rowId in sortedRows) { // 遍历排序结果，分配到各个分类桶中
+                    let cellValue = getValueClass(sortedRows[rowId][currentColumnInfo[groupSort.column as number].sortMap] as string)
+                    if(!classBuckets.hasOwnProperty(cellValue)) {
+                        cellValue = "#"
+                    }
+                    classBuckets[cellValue].push(parseInt(rowId)) // 注意行ID从1开始，数组索引从0开始，因此需要减1
+                    tmpGroupTags[parseInt(rowId)] = { groupTitle: typeOfClassList === "string" ? cellValue : String(cellValue), groupSpan: 0, groupIndex: classBuckets[cellValue].length - 1 }
+                }
+                if(groupSort.order === "desc") { // 如果是降序则反转分类顺序
+                    classList.reverse()
+                }
+                for(const classValue of classList) { // 遍历分类桶，生成分组结果
+                    const bucket = classBuckets[classValue]
+                    if(bucket.length > 0) { // 如果桶内有内容则添加分组
+                        for(const rowId of bucket) {
+                            tmpGroupTags[rowId].groupSpan = bucket.length // 设置分组跨度
+                            groupedRows.push({ ...(sortedRows[rowId] as DataRow), ...tmpGroupTags[rowId]})
+                        }
+                    }
+                }
+            }
+            switch(currentColumnInfo[groupSort.column].groupType) {
+                case null:
+                    throw new Error("Column group type is null.")
+                case "alphabet": // 按字母分组
+                    const alphabetList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+                    const getFirstLetter = (oriValue: string) => languageTool.getFirstLetter(oriValue).toUpperCase() // 获取首字母函数
+                    commonClassify(alphabetList, getFirstLetter)
+                    break
+                default: // 自定义分类分组
+                    commonClassify(currentColumnInfo[groupSort.column].groupType as unknown[])
+            }
+        }
+        if(global.isChildTable) {
+            this.childGrouped = groupedRows as never[]
+        } else {
+            this.primaryGrouped = groupedRows as never[]
+        }
+    }
 })
 
 export default searchAndSort
@@ -166,7 +171,3 @@ watch(() => global.databaseLoaded, (newStatus) => {
 watch(() => [global.isChildTable, global.filterText], () => {
     searchAndSort.filterFunc()
 })
-
-// watch([ searchAndSort.sortedItems1, searchAndSort.sortedItems2,
-//     global.currentData.value.groupSort1, global.currentData.value.groupSort2 ],
-// searchAndSort.groupFunc, { deep: true })

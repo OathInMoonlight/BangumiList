@@ -1,15 +1,18 @@
 <template>
-    <n-button circle text @click="toggleOrder">
+    <n-button block text icon-placement="right" @click="toggleOrder">
+        {{ props.columnTitle }}
         <template #icon>
             <svg-icon v-if="order === 'asc'" type="mdi" :path="mdiChevronUp"/>
             <svg-icon v-else-if="order === 'desc'" type="mdi" :path="mdiChevronDown"/>
-            <svg-icon v-else type="mdi" :path="mdiUnfoldMoreHorizontal"/>
+            <n-icon v-else :depth="5">
+                <svg-icon type="mdi" :path="mdiUnfoldMoreHorizontal"/>
+            </n-icon>
         </template>
     </n-button>
 </template>
 
 <script setup lang="ts">
-import { NButton } from "naive-ui"
+import { NButton, NIcon } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiChevronUp, mdiChevronDown, mdiUnfoldMoreHorizontal } from "@mdi/js"
 import { ref, watch } from "vue"
@@ -17,22 +20,15 @@ import global from "../plugins/global"
 import searchAndSort from "../plugins/searchAndSort"
 
 const props = defineProps<{
-    columnId: number
+    columnId: number,
+    columnTitle: string
 }>()
 
 const order = ref("-")
 
-watch(() => global.isChildTable, (newStatus) => {
-    const sort = newStatus ? global.databaseData!.sort2 : global.databaseData!.sort1
-    if(props.columnId === sort.column) {
-        order.value = sort.order
-    }
-})
 watch(() => global.isChildTable ? global.databaseData!.sort2 : global.databaseData!.sort1, (newSort) => {
-    if(props.columnId !== newSort.column) {
-        order.value = "-"
-    }
-})
+    order.value = props.columnId === newSort.column ? newSort.order : "-"
+}, { immediate: true })
 
 function toggleOrder() {
     switch(order.value) {
