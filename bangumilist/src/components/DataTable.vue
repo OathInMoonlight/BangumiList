@@ -155,7 +155,7 @@ const tableData = computed(() => global.isChildTable ? searchAndSort.childGroupe
 
 function rowProps(row: DataRow) {
     return {
-        style: 'cursor: pointer;',
+        style: "cursor: pointer;",
         onClick: () => {
             if(global.isChildTable) {
                 global.selectedRow.child = row[0] - 1

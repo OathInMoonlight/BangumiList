@@ -48,7 +48,7 @@
                     <div v-if="column.id === 0" style="max-width: 100%; word-wrap:break-word">
                         {{ currentRow[0] }}
                     </div>
-                    <div v-else-if="global.databaseData!.dualTable && !global.isChildTable && column.id === (global.databaseData!.gridView ? 2 : 1)" style="max-width: 100%; word-wrap:break-word">
+                    <div v-else-if="global.databaseData!.dualTable && !global.isChildTable && column.id === (global.databaseData!.gridView ? 2 : 1)" style="max-width: 400px; word-wrap:break-word">
                         <n-collapse>
                             <n-collapse-item>
                                 {{ currentRow[column.id] }}
@@ -67,7 +67,7 @@
                         <colored-switch v-if="column.dataType === 'bool'" v-model="newRowDef[column.id] as boolean" checked-label="" unchecked-label=""/>
                     </div>
                     <div v-else style="max-width: 100%">
-                        <p v-if="column.dataType === 'number' || column.dataType === 'text' || column.dataType === 'paragraph'" style="word-wrap: break-word">{{ currentRow[column.id] }}</p>
+                        <p v-if="column.dataType === 'number' || column.dataType === 'text' || column.dataType === 'paragraph'" style="word-wrap: break-word; white-space: pre-line">{{ currentRow[column.id] }}</p>
                         <tag v-if="column.dataType === 'tag'" :value="currentRow[column.id]" :value-preset="column.valuePreset"/>
                         <bool v-if="column.dataType === 'bool'" :value="String(currentRow[column.id])" :value-preset="column.valuePreset"/>
                     </div>
@@ -234,16 +234,16 @@ const img = computed(() => {
             } else {
                 image = currentRow.value[1]
             }
+            if(image === null || image === undefined || typeof image !== "string" || image === "") {
+                return "Error Image"
+            } else {
+                return image
+            }
         } else {
             return undefined
         }
     } catch(error) {
         return "Error Image"
-    }
-    if(image === null || image === undefined || typeof image !== "string" || image === "") {
-        return "Error Image"
-    } else {
-        return image
     }
 }) as ComputedRef<string | undefined>
 const imgSize = computed(() => {

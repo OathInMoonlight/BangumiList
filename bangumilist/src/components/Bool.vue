@@ -1,8 +1,6 @@
 <template>
-    <n-icon v-if="props.valuePreset !== 'none' && ((props.valuePreset.hasOwnProperty('true')
-        && props.valuePreset['true'].hasOwnProperty('icon')) || (props.valuePreset.hasOwnProperty('false')
-        && props.valuePreset['false'].hasOwnProperty('icon')))" :color="color">
-        <svg-icon type="mdi" :path="props.valuePreset[props.value === 'true' ? 'true' : 'false'].icon"/>
+    <n-icon v-if="icon !== null" :color="color">
+        <svg-icon v-if="icon !== undefined" type="mdi" :path="icon"/>
     </n-icon>
     <n-tag v-else :type="props.value === 'true' ? 'success' : 'error'">
         {{ title }}
@@ -25,20 +23,31 @@ const props = defineProps<{
     value: string | null | undefined
 }>()
 
-const title = computed(() => {
-    if(props.valuePreset !== 'none' && ((props.valuePreset.hasOwnProperty('true') && props.valuePreset['true'].hasOwnProperty('title'))
-        || (props.valuePreset.hasOwnProperty('false') && props.valuePreset['false'].hasOwnProperty('title')))) {
-            return props.valuePreset[props.value === 'true' ? 'true' : 'false'].title![global.lang.currentLang]
-    } else if(typeof props.value === "string") {
-        return props.value === "true" ? global.lang.getText("true") : global.lang.getText("false")
+const icon = computed(() => {
+    if(props.valuePreset !== "none" && ((props.valuePreset.hasOwnProperty("true") && props.valuePreset["true"].hasOwnProperty("icon"))
+        || (props.valuePreset.hasOwnProperty("false") && props.valuePreset["false"].hasOwnProperty("icon")))) {
+        const value = props.value === "true" ? "true" : "false"
+        if(props.valuePreset.hasOwnProperty(value)) {
+            return props.valuePreset[value].icon
+        } else {
+            return undefined
+        }
     }
-    return global.lang.getText("false")
+    return null
+})
+
+const title = computed(() => {
+    const value = props.value === "true" ? "true" : "false"
+    if(props.valuePreset !== "none" && props.valuePreset.hasOwnProperty(value) && props.valuePreset[value].hasOwnProperty("title")) {
+        return props.valuePreset[value].title![global.lang.currentLang]
+    }
+    return props.value === "true" ? global.lang.getText("true") : global.lang.getText("false")
 })
 
 const color = computed(() => {
-    if(props.valuePreset !== 'none' && ((props.valuePreset.hasOwnProperty('true') && props.valuePreset['true'].hasOwnProperty('color'))
-        || (props.valuePreset.hasOwnProperty('false') && props.valuePreset['false'].hasOwnProperty('color')))) {
-            return props.valuePreset[props.value === 'true' ? 'true' : 'false'].color
+    const value = props.value === "true" ? "true" : "false"
+    if(props.valuePreset !== "none" && props.valuePreset.hasOwnProperty(value) && props.valuePreset[value].hasOwnProperty("color")) {
+        return props.valuePreset[value].color
     }
     return undefined
 })

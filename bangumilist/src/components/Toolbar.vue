@@ -40,7 +40,7 @@
                             <n-empty :description="global.lang.getText('noData')"/>
                         </template>
                     </n-select>
-                    <n-select v-if="global.contentsType === 'grid'" :placeholder="global.lang.getText('sortBy')" style="width: 192px">
+                    <n-select v-if="global.contentsType === 'grid'" v-model:value="sortValue" :options="sortOptions" :render-label="sortOptionRender" :placeholder="global.lang.getText('sortBy')" style="width: 192px">
                         <template #empty>
                             <n-empty :description="global.lang.getText('noData')"/>
                         </template>
@@ -51,7 +51,7 @@
                         { icon: mdiApps, tooltip: 'gridSmall', value: 'small' }
                     ]"/>
                     <button-group v-model="global.contentsType" :items="[
-                        { icon: mdiViewGrid, tooltip: 'gridView', value: 'grid' },
+                        { icon: mdiViewGrid, tooltip: 'gridView', value: 'grid', disabled: global.databaseData!.gridView === false },
                         { icon: mdiViewList, tooltip: 'tableView', value: 'table' },
                         { icon: mdiChartLine, tooltip: 'statisticView', value: 'statistic' }
                     ]"/>
@@ -110,6 +110,36 @@ function editItem() {
     global.page = "row"
 }
 
+const sortValue = ref("0-asc")
+const sortOptions = computed(() => {
+    const options = []
+    for(const column of global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info) {
+        if(column.ifDisplay && (column.displayLang === "none" || column.displayLang === global.lang.currentLang)) {
+            options.push({ label: column.title[global.lang.currentLang], value: `${column.id}-asc` })
+            options.push({ label: column.title[global.lang.currentLang], value: `${column.id}-desc` })
+        }
+    }
+    return options
+})
+function sortOptionRender(option: SelectOption) {
+    if(typeof option.value !== "string") {
+        option.value = "0-asc"
+    }
+    const optionParts = option.value.split("-")
+    return h(NFlex, { align: "center" }, () => [
+        h(NFlex, { align: "center" }, () => [optionParts[1] === "asc" ? h(SvgIcon, { type: "mdi", path: mdiChevronUp }) : h(SvgIcon, { type: "mdi", path: mdiChevronDown })]),
+        option.label as string
+    ])
+}
+watch(sortValue, (newSort) => {
+    const currentsort = global.isChildTable ? global.databaseData!.sort2 : global.databaseData!.sort1
+    const newsortParts = newSort.split("-")
+    currentsort.column = Number(newsortParts[0])
+    currentsort.order = newsortParts[1] as "asc" | "desc" | "-"
+    global.databaseSaved = false
+    searchAndSort.sortFunc()
+})
+
 const groupSortValue = ref("none")
 const groupSortOptions = computed(() => {
     const options = [{ label: global.lang.getText("noGroup"), value: "none" }]
@@ -144,7 +174,14 @@ watch(groupSortValue, (newGroupSort) => {
     global.databaseSaved = false
     searchAndSort.groupFunc()
 })
+
 watch(() => global.isChildTable, () => {
+    const currentsort = global.isChildTable ? global.databaseData!.sort2 : global.databaseData!.sort1
+    if(currentsort.column === null || currentsort.order === "-") {
+        sortValue.value = "0-asc"
+    } else {
+        sortValue.value = `${currentsort.column}-${currentsort.order}`
+    }
     const currentGroupSort = global.isChildTable ? global.databaseData!.groupSort2 : global.databaseData!.groupSort1
     if(currentGroupSort.column === null || currentGroupSort.order === "-") {
         groupSortValue.value = "none"

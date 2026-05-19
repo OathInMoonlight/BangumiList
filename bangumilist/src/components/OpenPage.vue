@@ -74,6 +74,9 @@ async function loadDatabase(path: string) {
         }
         openModal.value = false
         global.databaseLoaded = true
+        if(global.databaseData.gridView) {
+            global.contentsType = "grid"
+        }
         global.page = "contents"
     } catch(error) {
         openModal.value = false

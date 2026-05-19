@@ -54,7 +54,8 @@
                   <open-page v-if="!global.settingPage && global.page === 'open'"/>
                   <database-def v-if="!global.settingPage && global.page === 'edit'" />
                   <toolbar v-if="!global.settingPage && global.page === 'contents'"/>
-                  <data-table v-if="!global.settingPage && global.page === 'contents'"/>
+                  <data-table v-if="!global.settingPage && global.page === 'contents' && global.contentsType === 'table'"/>
+                  <grid-view v-if="!global.settingPage && global.page === 'contents' && global.contentsType === 'grid'"/>
                   <row-def v-if="!global.settingPage && (global.page === 'newRow' || global.page === 'row')"/>
                   <import v-if="!global.settingPage && global.page === 'import'"/>
                   <export v-if="!global.settingPage && global.page === 'export'"/>
@@ -82,6 +83,7 @@ import OpenPage from "./components/OpenPage.vue"
 import DatabaseDef from "./components/DatabaseDef.vue"
 import Toolbar from "./components/Toolbar.vue"
 import DataTable from "./components/DataTable.vue"
+import GridView from "./components/GridView.vue"
 import RowDef from "./components/RowDef.vue"
 import Import from "./components/Import.vue"
 import Export from "./components/Export.vue"

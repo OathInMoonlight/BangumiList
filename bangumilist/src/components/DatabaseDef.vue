@@ -35,14 +35,14 @@
         <n-flex v-if="newDatabaseDef.dualTable" vertical>
             <n-divider/>
             <h3 style="margin: 0">{{ global.lang.getText("childTableSetting") }}</h3>
-            <n-flex align="center" v-if="newDatabaseDef.gridView">
+            <n-flex v-if="newDatabaseDef.gridView" align="center">
                 <n-input-group style="width: auto">
                     <n-input-group-label>{{ global.lang.getText("gridLabel") }}</n-input-group-label>
                     <n-input-number v-model:value="newDatabaseDef.table2Label" :placeholder="global.lang.getText('gridLabel')" :min="0" :max="newDatabaseDef.table2Info.length - 1" style="width: 256px"/>
                 </n-input-group>
                 <n-input-group style="width: auto">
                     <n-input-group-label>{{ global.lang.getText("gridTitle") }}</n-input-group-label>
-                    <n-input v-model:value="newDatabaseDef.table1Title" :placeholder="global.lang.getText('gridTitle')" style="width: 256px"/>
+                    <n-input v-model:value="newDatabaseDef.table2Title" :placeholder="global.lang.getText('gridTitle')" style="width: 256px"/>
                 </n-input-group>
             </n-flex>
             <n-flex vertical>

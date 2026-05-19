@@ -150,6 +150,14 @@ async function handleDatabaseSave(newPath: boolean) {
 }
 
 function handleDataBaseClose() {
+    const close = () => {
+        global.databaseData = null
+        global.databaseLoaded = false
+        global.page = "open"
+        global.databaseSaved = true
+        global.isChildTable = false
+        global.contentsType = "table"
+    }
     if(!global.databaseSaved) {
         dialog.warning({
             title: global.lang.getText("warning"),
@@ -158,20 +166,10 @@ function handleDataBaseClose() {
             negativeText: global.lang.getText("closeWithoutSaving"),
             closable: false,
             maskClosable: false,
-            onNegativeClick: () => {
-                global.databaseData = null
-                global.databaseLoaded = false
-                global.page = "open"
-                global.databaseSaved = true
-                global.isChildTable = false
-            }
+            onNegativeClick: close
         })
     } else {
-        global.databaseData = null
-        global.databaseLoaded = false
-        global.page = "open"
-        global.databaseSaved = true
-        global.isChildTable = false
+        close()
     }
 }
 </script>
