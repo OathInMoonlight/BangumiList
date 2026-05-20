@@ -105,14 +105,9 @@ const searchAndSort: SearchAndSort = reactive({
         } else {
             const currentColumnInfo = global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info
             // 通用分类函数
-            const commonClassify = (oriClassList: unknown[], getValueClass: (oriValue: string) => string = (oriValue) => oriValue) => {
-                const typeOfClassList = typeof oriClassList[0]
+            const commonClassify = (oriClassList: unknown[], getValueClass: (oriValue: string) => string = (oriValue) => String(oriValue)) => {
                 let classList: string[] = []
-                if(typeOfClassList !== "string") {
-                    classList = oriClassList.map(value => JSON.stringify(value))
-                } else {
-                    classList = oriClassList as string[]
-                }
+                classList = typeof oriClassList[0] === "string" ? oriClassList as string[] : oriClassList.map(value => String(value))
                 classList.unshift("#")
                 const classBuckets: { [ key: string ]: number[] } = {}
                 for(const classValue of classList) { // 初始化分类桶
@@ -125,7 +120,7 @@ const searchAndSort: SearchAndSort = reactive({
                         cellValue = "#"
                     }
                     classBuckets[cellValue].push(parseInt(rowId)) // 注意行ID从1开始，数组索引从0开始，因此需要减1
-                    tmpGroupTags[parseInt(rowId)] = { groupTitle: typeOfClassList === "string" ? cellValue : String(cellValue), groupSpan: 0, groupIndex: classBuckets[cellValue].length - 1 }
+                    tmpGroupTags[parseInt(rowId)] = { groupTitle: cellValue, groupSpan: 0, groupIndex: classBuckets[cellValue].length - 1 }
                 }
                 if(groupSort.order === "desc") { // 如果是降序则反转分类顺序
                     classList.reverse()

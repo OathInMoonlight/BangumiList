@@ -111,6 +111,12 @@ const languages: Languages = {
         // 关闭
         closeNotSaved: { "zh": "数据库尚未保存", "ja": "データベースはまだ保存されていません", "en": "Database is not saved yet" },
         closeWithoutSaving: { "zh": "不保存直接关闭", "ja": "保存せずに閉じる", "en": "Close without saving" },
+        // 统计
+        selectColumn: { "zh": "选择统计列", "ja": "統計列を選択", "en": "Select Statistic Column" },
+        sum: { "zh": "求和", "ja": "合計", "en": "Sum" },
+        avg: { "zh": "平均", "ja": "平均", "en": "Average" },
+        max: { "zh": "最大", "ja": "最大", "en": "Max" },
+        min: { "zh": "最小", "ja": "最小", "en": "Min" },
 
         // 视图栏
         gridView: { "zh": "网格视图", "ja": "グリッドビュー", "en": "Grid View" },

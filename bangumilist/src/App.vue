@@ -59,6 +59,7 @@
                   <row-def v-if="!global.settingPage && (global.page === 'newRow' || global.page === 'row')"/>
                   <import v-if="!global.settingPage && global.page === 'import'"/>
                   <export v-if="!global.settingPage && global.page === 'export'"/>
+                  <statistic v-if="!global.settingPage && global.page === 'contents' && global.contentsType === 'statistic'"/>
                 </n-message-provider>
               </n-dialog-provider>
             </n-modal-provider>
@@ -87,6 +88,7 @@ import GridView from "./components/GridView.vue"
 import RowDef from "./components/RowDef.vue"
 import Import from "./components/Import.vue"
 import Export from "./components/Export.vue"
+import Statistic from "./components/Statistic.vue"
 import global from "./plugins/global"
 
 const appWindow = new Window("main")

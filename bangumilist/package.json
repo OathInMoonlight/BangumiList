@@ -15,7 +15,9 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2.7.0",
     "@tauri-apps/plugin-opener": "^2",
-    "vue": "^3.5.13"
+    "chart.js": "^4.5.1",
+    "vue": "^3.5.13",
+    "vue-chartjs": "^5.3.3"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
