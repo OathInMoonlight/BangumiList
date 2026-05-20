@@ -1,12 +1,4 @@
 {
-  // 使用 ESLint 作为默认格式化器
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-
-  // 在保存时自动修复
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always"
-  },
-
   // Rust Analyzer 配置
   "rust-analyzer.linkedProjects": [
     "bangumilist/src-tauri/Cargo.toml"
