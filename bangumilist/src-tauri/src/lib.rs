@@ -4,6 +4,7 @@ mod db_reader;
 mod db_writer;
 mod import;
 mod export;
+mod setting;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -14,7 +15,9 @@ pub fn run() {
             db_reader::read_db,
             db_writer::write_db,
             import::import_csv,
-            export::export_csv
+            export::export_csv,
+            setting::read_setting,
+            setting::save_setting
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

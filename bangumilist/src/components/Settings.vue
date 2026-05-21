@@ -33,6 +33,7 @@
                             <n-color-picker v-model:value="global.primaryColor" placement="bottom" :modes="['hex']" :show-alpha="false" :swatches="colorSwatches"/>
                         </div>
                     </n-flex>
+                    <colored-switch v-model="saveSettingFile" :checkedLabel="global.lang.getText('saveSettingFile')" :uncheckedLabel="global.lang.getText('notSaveSettingFile')"/>
                 </n-flex>
             </n-card>
             <!-- 关于 -->
@@ -52,11 +53,15 @@
 </template>
 
 <script setup lang="ts">
-import { darkTheme, useOsTheme, NButton, NFlex, NCard, NSelect, NColorPicker } from "naive-ui"
+import { invoke } from "@tauri-apps/api/core"
+import { darkTheme, useOsTheme, NButton, NFlex, NCard, NSelect, NColorPicker, useDialog } from "naive-ui"
 import SvgIcon from "@jamescoyle/vue-icon"
 import { mdiChevronLeft, mdiGithub, mdiScaleBalance } from "@mdi/js"
 import { computed, ref, watch } from "vue"
+import ColoredSwitch from "./ColoredSwitch.vue"
 import global from "../plugins/global"
+
+const dialog = useDialog()
 
 const globalZoomOptions = computed(() => [
     { label: "50%", value: 0.5 },
@@ -90,4 +95,38 @@ watch(selectedTheme, (newTheme) => {
 const colorSwatches = [
     "#F44336", "#2196F3", "#00BCD4", "#8BC34A", "#FFC107", "#795548"
 ]
+
+const saveSettingFile = ref(false)
+async function read_setting() {
+    try {
+        const result = JSON.parse(await invoke("read_setting"))
+        if(result) {
+            global.globalZoom = result.globalZoom
+            selectedTheme.value = result.theme
+            global.primaryColor = result.primaryColor
+            saveSettingFile.value = true
+        }
+    } catch(error) {
+        global.errorDialog(dialog, "Error in reading setting file")
+    }
+}
+async function save_setting() {
+    try {
+        await invoke("save_setting", {
+            contents: JSON.stringify({
+                globalZoom: global.globalZoom,
+                theme: selectedTheme.value,
+                primaryColor: global.primaryColor
+            })
+        })
+    } catch(error) {
+        global.errorDialog(dialog, "Error in saving setting file")
+    }
+}
+read_setting()
+watch(() => [saveSettingFile.value, global.globalZoom, selectedTheme.value, global.primaryColor], () => {
+    if(saveSettingFile.value) {
+        save_setting()
+    }
+})
 </script>

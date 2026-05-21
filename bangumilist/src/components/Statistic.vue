@@ -13,10 +13,10 @@
                 </n-flex>
                 <n-flex v-if="selectedColumn !== null" justify="space-evenly" align="center" :size="16">
                     <div style="width: 50%">
-                        <Bar :options="barOptions" :data="chartData"/>
+                        <Bar :options="barOptions" :data="barData"/>
                     </div>
                     <div style="width: 30%">
-                        <Doughnut :options="doughnutOptions" :data="chartData"/>
+                        <Doughnut :options="doughnutOptions" :data="doughnutData"/>
                     </div>
                 </n-flex>
             </n-flex>
@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import type { TooltipItem } from "chart.js"
 import { NCard, NFlex, NSelect, NStatistic, NScrollbar } from "naive-ui"
 import { computed, ref } from "vue"
 import { Chart, BarController, BarElement, DoughnutController, ArcElement, CategoryScale, LinearScale, Tooltip, Legend, plugins } from "chart.js"
@@ -80,6 +81,7 @@ const metaData = computed(() => {
         return null
     }
     const valueBuckets: { [key: string]: number } = {}
+    let sum = 0
     for(const row of tableData.value) {
         let value = String(row[column.value as number])
         if(selectedColumn.value.dataType === "bool" && value === "undefined") {
@@ -90,8 +92,9 @@ const metaData = computed(() => {
         } else {
             valueBuckets[value] = 1
         }
+        sum++
     }
-    return { labels: Object.keys(valueBuckets), data: Object.values(valueBuckets) }
+    return { labels: Object.keys(valueBuckets), data: Object.values(valueBuckets), origin: valueBuckets, sum: sum }
 })
 
 const colorList = [ "#F44336", "#2196F3", "#00BCD4", "#8BC34A", "#FFC107", "#795548" ]
@@ -109,10 +112,19 @@ const doughnutOptions = {
     plugins: {
         legend: {
             position: "bottom" as "bottom"
+        },
+        tooltip: {
+            callbacks: {
+                label: function(item: TooltipItem<"doughnut">) {
+                    const value = item.raw as number
+                    const percentage = ((value / metaData.value!.sum) * 100).toFixed(2)
+                    return `${item.label}: ${value} (${percentage}%)`
+                }
+            }
         }
     }
 }
-const chartData = computed(() => {
+const barData = computed(() => {
     if(metaData.value === null) {
         return {
             labels: [],
@@ -123,6 +135,21 @@ const chartData = computed(() => {
         labels: metaData.value.labels,
         datasets: [{
             data: metaData.value.data,
+            backgroundColor: Array.from(metaData.value.data, (_, i) => colorList[i % colorList.length])
+        }]
+    }
+})
+const doughnutData = computed(() => {
+    if(metaData.value === null) {
+        return {
+            labels: [],
+            datasets: [{ data: [] }]
+        }
+    }
+    return {
+        labels: metaData.value.labels.toSorted((a, b) => metaData.value!.origin[b] - metaData.value!.origin[a]),
+        datasets: [{
+            data: metaData.value.data.toSorted((a, b) => b - a),
             backgroundColor: Array.from(metaData.value.data, (_, i) => colorList[i % colorList.length])
         }]
     }

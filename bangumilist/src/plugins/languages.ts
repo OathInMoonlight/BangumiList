@@ -26,6 +26,8 @@ const languages: Languages = {
         lightMode: { "zh": "浅色模式", "ja": "ライトモード", "en": "Light Mode" },
         darkMode: { "zh": "深色模式", "ja": "ダークモード", "en": "Dark Mode" },
         primaryColor: { "zh": "主色调", "ja": "プライマリカラー", "en": "Primary Color" },
+        saveSettingFile: { "zh": "在程序根目录保存设置文件", "ja": "プログラムのフォルダーに設定ファイルを保存する", "en": "Save Setting File in Program Folder"},
+        notSaveSettingFile: { "zh": "程序根目录不保存设置文件", "ja": "プログラムのフォルダに設定ファイルを保存しない", "en": "Not Save Anything in Program Folder" },
 
         // 工具栏
         newDatabase: { "zh": "新建数据库", "ja": "データベースを新規作成", "en": "New Database" },

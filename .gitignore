@@ -6,6 +6,7 @@ dist-ssr
 *.sqlite
 *.csv
 *.xlsx
+bangumilist_setting.json
 
 # local env files
 .env.local
