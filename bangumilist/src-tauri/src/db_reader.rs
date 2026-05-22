@@ -1,7 +1,14 @@
-use crate::datatype::{Column, DBData, UnknownDataType};
+use std::sync::Mutex;
+use crate::datatype::{Startup, Column, DBData, UnknownDataType};
 use rusqlite::{Connection, Result};
 use std::collections::HashMap;
 use std::path::Path;
+
+#[tauri::command]
+pub fn get_startup_file(state: tauri::State<Mutex<Startup>>) -> Result<Option<String>, String> {
+    let mut state = state.lock().map_err(|err| err.to_string())?;
+    Ok(state.startup_file.take())
+}
 
 #[tauri::command]
 pub fn read_db(path_str: &str) -> Result<DBData, String> {

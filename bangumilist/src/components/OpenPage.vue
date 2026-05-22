@@ -84,6 +84,18 @@ async function loadDatabase(path: string) {
     }
 }
 
+async function get_startup_file() {
+    try {
+        const respond = await invoke("get_startup_file") as null | string
+        if(respond !== null) {
+            loadDatabase(respond)
+        }
+    } catch(error) {
+        global.errorDialog(dialog, error)
+    }
+}
+get_startup_file()
+
 async function fileOpenDialog() {
     const path = await open({
         title: global.lang.getText("openDatabase"),
@@ -91,7 +103,7 @@ async function fileOpenDialog() {
         directory: false,
         filters: [{
             name: "",
-            extensions: ["db"]
+            extensions: ["bldb"]
         }]
     })
     if(path === null) {

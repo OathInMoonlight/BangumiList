@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "bangumilist",
+  "productName": "Bangumilist",
   "version": "0.1.0",
-  "identifier": "bangumilist-tauri",
+  "identifier": "OathInMoonlight-Bangumilist",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -34,6 +34,18 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "wix": {
+        "language": [
+          "zh-CN",
+          "ja-JP",
+          "en-US"
+        ]
+      }
+    },
+    "fileAssociations": [{
+      "ext": ["bldb"]
+    }]
   }
 }

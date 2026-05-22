@@ -108,7 +108,7 @@ async function handleDatabaseSave(newPath: boolean) {
             defaultPath: global.databaseData!.path,
             filters: [{
                 name: "",
-                extensions: ["db"]
+                extensions: ["bldb"]
             }]
         })
         if(newPath === null) {

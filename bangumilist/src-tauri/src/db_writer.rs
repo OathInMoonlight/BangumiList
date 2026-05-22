@@ -7,7 +7,7 @@ use std::path::Path;
 pub fn write_db(db_data: DBData) -> Result<String, String> {
     let err_to_string = |err: rusqlite::Error| err.to_string();
     let path = Path::new(&db_data.path);
-    let tmp_path = path.with_extension("tmpdb");
+    let tmp_path = path.with_extension("tmpbldb");
     if tmp_path.exists() {
         return Err("Temporary file already exists".to_string());
     }

@@ -2,5 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    bangumilist_lib::run()
+    let startup_file = std::env::args().nth(1);
+    bangumilist_lib::run(startup_file);
 }
