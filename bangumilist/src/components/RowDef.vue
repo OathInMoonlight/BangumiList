@@ -66,11 +66,11 @@
                         </n-select>
                         <colored-switch v-if="column.dataType === 'bool'" v-model="newRowDef[column.id] as boolean" checked-label="" unchecked-label=""/>
                     </div>
-                    <div v-else style="max-width: 100%">
+                    <n-flex v-else align="center" style="max-width: 100%">
                         <p v-if="column.dataType === 'number' || column.dataType === 'text' || column.dataType === 'paragraph'" style="word-wrap: break-word; white-space: pre-line">{{ currentRow[column.id] }}</p>
                         <tag v-if="column.dataType === 'tag'" :value="currentRow[column.id]" :value-preset="column.valuePreset"/>
                         <bool v-if="column.dataType === 'bool'" :value="String(currentRow[column.id])" :value-preset="column.valuePreset"/>
-                    </div>
+                    </n-flex>
                 </n-flex>
             </n-flex>
         </n-flex>

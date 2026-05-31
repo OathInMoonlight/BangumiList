@@ -3,14 +3,14 @@
         <n-card id="selectCover" embedded :bordered="false" @click="handleClick" style="width: fit-content" content-style="padding: 0; width: fit-content">
             <n-flex vertical align="center">
                 <n-card embedded content-style="padding: 0" :style="`width: ${imgSize[0] + 2}px; height: ${imgSize[1] + 2}px; overflow: hidden`">
-                    <n-image :src="img" object-fit="cover" :preview-disabled="true" :width="imgSize[0]" :height="imgSize[1]">
+                    <n-image lazy :src="img" object-fit="cover" :preview-disabled="true" :width="imgSize[0]" :height="imgSize[1]">
                         <template #error>
                             <n-flex justify="center" align="center" style="position: absolute; inset: 0; width: 100%; height: 100%">
                                 <svg-icon type="mdi" :path="mdiImageBrokenVariant" size="72"/>
                             </n-flex>
                         </template>
                     </n-image>
-                    <n-icon v-if="coverIcon !== undefined" id="coverIcon" :color="coverIconColor">
+                    <n-icon v-if="coverIcon !== undefined" id="coverIcon" :color="coverIconColor" :size="20">
                         <svg-icon type="mdi" :path="coverIcon"/>
                     </n-icon>
                 </n-card>

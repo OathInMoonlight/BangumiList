@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import type { DataRow } from "../types/dataTypes"
 import type { GroupInfoDataRow } from "../types/types"
-import { NCard, NDataTable, NEmpty } from "naive-ui"
+import { NCard, NDataTable, NEmpty, NFlex } from "naive-ui"
 import { computed, h, reactive } from "vue"
 import Tag from "./Tag.vue"
 import Bool from "./Bool.vue"
@@ -44,6 +44,14 @@ const columnWidths = computed(() => {
     if(groupSort.column !== null && groupSort.order !== "-") {
         const column = currentTableInfoPointer.value[groupSort.column]
         const classList = Array.isArray(column.groupType) ? column.groupType : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+        if(column.dataType === "tag" && column.valuePreset !== "none") {
+            for(let i = 0; i < classList.length; i++) {
+                const classKey = String(classList[i])
+                if(column.valuePreset.hasOwnProperty(classKey) && column.valuePreset[classKey].hasOwnProperty("title")) {
+                    classList[i] = column.valuePreset[classKey].title![global.lang.currentLang]
+                }
+            }
+        }
         switch(column.dataType) {
             case "bool":
                 widths[-1] = Math.min(Math.max(languageTool.getTextLength(global.lang.getText("group")) * 8 + 36, 56), 512)
@@ -73,6 +81,14 @@ const columnWidths = computed(() => {
                 }
                 if(column.dataType === "number") {
                     maxWidth = Math.max(...valueList.map(value => String(value).length)) * 8 + 54
+                } else if(column.dataType === "tag" && column.valuePreset !== "none") {
+                    maxWidth = Math.max(...valueList.map(value => {
+                        const stringValue = String(value)
+                        if(column.valuePreset !== "none" && column.valuePreset.hasOwnProperty(stringValue) && column.valuePreset[stringValue].hasOwnProperty("title")) {
+                            return languageTool.getTextLength(column.valuePreset[stringValue].title![global.lang.currentLang])
+                        }
+                        return languageTool.getTextLength(value)
+                    })) * 8 + 54
                 } else {
                     maxWidth = Math.max(...valueList.map(value => languageTool.getTextLength(value))) * 8 + 54
                 }
@@ -115,9 +131,9 @@ const tableColumn = computed(() => {
             render: (row: GroupInfoDataRow) => {
                 switch(column.dataType) {
                     case "bool":
-                        return h(Bool, { value: String(row.groupTitle), valuePreset: column.valuePreset })
+                        return h(NFlex, { justify: "center", align: "center" }, () => [h(Bool, { value: String(row.groupTitle), valuePreset: column.valuePreset })])
                     case "tag":
-                        return h(Tag, { value: row.groupTitle, valuePreset: column.valuePreset })
+                        return h(Tag, { value: String(row.groupTitle), valuePreset: column.valuePreset })
                     case "paragraph":
                         return h("p", { style: { "margin": 0, "word-wrap": "break-word", "white-space": "pre-line" } }, [row.groupTitle])
                     default:
@@ -137,7 +153,7 @@ const tableColumn = computed(() => {
                 render: (row: DataRow) => {
                     switch(column.dataType) {
                         case "bool":
-                            return h(Bool, { value: String(row[column.id]), valuePreset: column.valuePreset })
+                            return h(NFlex, { justify: "center", align: "center" }, () => [h(Bool, { value: String(row[column.id]), valuePreset: column.valuePreset })])
                         case "tag":
                             return h(Tag, { value: row[column.id] as string, valuePreset: column.valuePreset })
                         case "paragraph":

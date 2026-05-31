@@ -7,7 +7,7 @@
                     <single-cover v-for="row in tableData" :key="row[0]" :display-row="row"/>
                 </n-flex>
                 <n-collapse v-else v-model:expanded-names="expandedGroups">
-                        <n-collapse-item v-for="group in groupedData" :key="group.title" :name="group.title" :title="group.title">
+                        <n-collapse-item v-for="group in groupedData" :key="String(group.title)" :name="String(group.title)" :title="getGroupTitle(group.title)">
                             <n-flex align="start">
                                 <single-cover v-for="row in group.data" :key="row[0]" :display-row="row"/>
                             </n-flex>
@@ -68,4 +68,14 @@ const groupedData = computed(() => {
     }
     return undefined
 })
+
+function getGroupTitle(groupKey: boolean | number | string) {
+    const valuePreset = (global.isChildTable ? global.databaseData!.table2Info : global.databaseData!.table1Info)
+        [(global.isChildTable ? global.databaseData!.groupSort2 : global.databaseData!.groupSort1).column as number].valuePreset
+    const stringKey = String(groupKey)
+    if(valuePreset !== "none" && valuePreset.hasOwnProperty(stringKey) && valuePreset[stringKey].hasOwnProperty("title")) {
+        return valuePreset[stringKey].title![global.lang.currentLang]
+    }
+    return stringKey
+}
 </script>

@@ -48,7 +48,7 @@ export interface Global {
     errorDialog: (dialog: DialogApiInjection, errorMessage: unknown) => void
 }
 
-export type GroupTag = { groupTitle: bool | number | string, groupSpan: number, groupIndex: number }
+export type GroupTag = { groupTitle: boolean | number | string, groupSpan: number, groupIndex: number }
 export type GroupInfoDataRow = DataRow & GroupTag
 
 export interface SearchAndSort {

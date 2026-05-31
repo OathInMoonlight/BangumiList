@@ -1,5 +1,5 @@
 <template>
-    <n-icon v-if="icon !== null" :color="color">
+    <n-icon v-if="icon !== null" :color="color" :size="20">
         <svg-icon v-if="icon !== undefined" type="mdi" :path="icon"/>
     </n-icon>
     <n-tag v-else :type="props.value === 'true' ? 'success' : 'error'">

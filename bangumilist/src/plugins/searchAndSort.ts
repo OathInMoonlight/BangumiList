@@ -1,6 +1,6 @@
 import type { DataRow } from "../types/dataTypes"
 import type { SearchAndSort, GroupTag, GroupInfoDataRow } from "../types/types"
-import { reactive, watch } from "vue"
+import { reactive, toRaw, watch } from "vue"
 import global from "../plugins/global"
 import languageTool from "../plugins/languageTool"
 
@@ -144,7 +144,7 @@ const searchAndSort: SearchAndSort = reactive({
                     commonClassify(alphabetList, getFirstLetter)
                     break
                 default: // 自定义分类分组
-                    commonClassify(currentColumnInfo[groupSort.column].groupType as unknown[])
+                    commonClassify(structuredClone(toRaw(currentColumnInfo[groupSort.column].groupType as unknown[])))
             }
         }
         if(global.isChildTable) {
