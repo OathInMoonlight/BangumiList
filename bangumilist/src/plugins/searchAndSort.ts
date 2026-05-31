@@ -163,6 +163,6 @@ watch(() => global.databaseLoaded, (newStatus) => {
         searchAndSort.filterFunc()
     }
 })
-watch(() => [global.isChildTable, global.filterText], () => {
+watch(() => [global.isChildTable, global.filterText, global.page], () => {
     searchAndSort.filterFunc()
 })

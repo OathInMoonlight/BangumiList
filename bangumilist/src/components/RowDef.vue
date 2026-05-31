@@ -220,6 +220,7 @@ function handleDelete() {
                 }
                 global.selectedRow.primary = null
             }
+            global.databaseSaved = false
             global.page = "contents"
         }
     })
