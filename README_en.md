@@ -2,6 +2,8 @@
 
 BangumiList is a small application for visualizing tables, with several additional features built on top of a standard table system.
 
+[中文](https://github.com/OathInMoonlight/BangumiList/blob/main/README.md) [日本語](https://github.com/OathInMoonlight/BangumiList/blob/main/README_ja.md)
+
 - Add **images** to each row and display them in **Grid View**
 - Support **nested two-level tables**, where each row maps to an internal sub-table
 - Support searching, sorting, and **grouped sorting**
@@ -12,11 +14,13 @@ This application requires system-level WebView support (usually no additional se
 
 The application package already includes language packs.
 
-Click here to download.
+[Click here to download.](https://github.com/OathInMoonlight/BangumiList/releases)
 
 # Usage Guide
 
 ## Language and Settings
+
+![image](https://github.com/user-attachments/assets/b0b7b289-04c2-462e-9859-e914eab5fdf9)
 
 ### Language
 
@@ -50,6 +54,8 @@ Click the gear icon② in the bottom-left corner to open the settings page.
 
 ### Open a Database
 
+![image](https://github.com/user-attachments/assets/9e81711d-76b7-4e82-874c-99764d55ee4b)
+
 There are three ways to open an existing `*.bldb` database:
 
 - Click the dashed area in the center, then select a database file using the system file picker
@@ -57,6 +63,8 @@ There are three ways to open an existing `*.bldb` database:
 - Double-click a `*.bldb` file directly in the system file explorer
 
 ### Create or Edit a Database
+
+![image](https://github.com/user-attachments/assets/7339de30-4c46-49a2-bd45-8c00fb7ea230)
 
 When you click **Create Database**① or **Edit Database**②, the interface switches to the database editing page.
 
@@ -122,17 +130,21 @@ For `Tag` columns, `title` and `color` will be automatically applied.
 
 ### Save or Save As a Database
 
+![image](https://github.com/user-attachments/assets/853c787c-97b5-4b53-9505-15702d64ca8c)
+
 When the dot① in the title bar lights up, **Save Database**② and **Save Database As**③ become available.
 
 If the current database is newly created, **Save Database** will automatically behave as **Save Database As**.
 
 ### Close Database
 
-When switching to another database, you can click **Close Database**① to return to Open Mode.
+When switching to another database, you can click **Close Database**④ to return to Open Mode.
 
 ## Table Operations
 
 ### Toolbar
+
+![image](https://github.com/user-attachments/assets/ef7efee1-07b5-418f-b2dc-f3d92f6adcb9)
 
 #### Create Item
 
@@ -170,12 +182,16 @@ Please confirm the following before importing:
 
 Click③ to enter Export Mode.
 
+![image](https://github.com/user-attachments/assets/afc8939d-a44b-434c-8191-bf25843a63a7)
+
 1. **Export Language**④: Specifies the language used for table headers in the exported `*.csv` file. Display purpose only.
 2. **Expand Sub-table**⑤: Specifies whether sub-table columns should be expanded. If enabled, sub-table columns will be appended after main table columns. See [Import](#import).
 
 ### View Bar
 
 The button group in the top-right corner switches view modes.
+
+![image](https://github.com/user-attachments/assets/0bb4e62d-9566-4cba-9a79-6983422fb1ae)
 
 - **Grid View**①: Available only for databases with Grid View enabled. Displays each row as an image.  
   The image is determined by [Grid View Cover Label](#main-table-settings--sub-table-settings), and the title below the image is determined by [Grid View Title](#main-table-settings--sub-table-settings).
@@ -208,9 +224,11 @@ The button group in the top-right corner switches view modes.
       Third click → reset to default
 
     - **Grouped Sorting**:  
-      The dropdown③ to the left of view mode controls grouped sorting. Default: `No Grouping`.  
+      The dropdown⑤ to the left of view mode controls grouped sorting. Default: `No Grouping`.  
       When **Column Group Type** is configured in [Column Settings](#main-table-settings--sub-table-settings), grouped sorting options become available.  
       Grouped mode inserts an additional grouping column on the left side, merging rows belonging to the same group.
+
+![image](https://github.com/user-attachments/assets/24323b91-5c88-4937-a641-eb8b0c4f1e81)
 
 - **Statistics View**①: Displays statistical information for a selected column in chart form. Select a column using the dropdown②.
 
@@ -234,6 +252,8 @@ A debounce delay of 150ms is applied while typing.
 The area② on the right side of the search bar displays the number of matched rows.
 
 ### Item Content
+
+![image](https://github.com/user-attachments/assets/436e452a-b1d1-4ec7-83ef-71f5e97fda04)
 
 #### View Mode
 
