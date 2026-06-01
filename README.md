@@ -2,6 +2,8 @@
 
 这是一个将表格可视化的小程序，在常规表格的基础上添加了一些小功能
 
+[日本語](https://github.com/OathInMoonlight/BangumiList/blob/main/README_ja.md) [English](https://github.com/OathInMoonlight/BangumiList/blob/main/README_en.md)
+
 - 为每一行内容添加了**图片**，并可以在**网格试图**中展示
 - 支持**双层表格**的**嵌套**，每一行内容都映射到一个内部的表格
 - 支持搜索、排序以及**分类排序**
