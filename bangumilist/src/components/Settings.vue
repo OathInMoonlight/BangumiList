@@ -101,6 +101,7 @@ async function read_setting() {
     try {
         const result = JSON.parse(await invoke("read_setting"))
         if(result) {
+            global.lang.currentLang = result.language
             global.globalZoom = result.globalZoom
             selectedTheme.value = result.theme
             global.primaryColor = result.primaryColor
@@ -114,17 +115,19 @@ async function save_setting() {
     try {
         await invoke("save_setting", {
             contents: JSON.stringify({
+                language: global.lang.currentLang,
                 globalZoom: global.globalZoom,
                 theme: selectedTheme.value,
                 primaryColor: global.primaryColor
             })
         })
     } catch(error) {
+        console.log(error)
         global.errorDialog(dialog, "Error in saving setting file")
     }
 }
 read_setting()
-watch(() => [saveSettingFile.value, global.globalZoom, selectedTheme.value, global.primaryColor], () => {
+watch(() => [saveSettingFile.value, global.lang.currentLang, global.globalZoom, selectedTheme.value, global.primaryColor], () => {
     if(saveSettingFile.value) {
         save_setting()
     }

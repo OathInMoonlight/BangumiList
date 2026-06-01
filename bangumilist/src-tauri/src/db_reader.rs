@@ -91,7 +91,7 @@ pub fn read_db(path_str: &str) -> Result<DBData, String> {
                     rusqlite::types::ValueRef::Integer(value) => {
                         Some(UnknownDataType::Number(value as i32))
                     }
-                    rusqlite::types::ValueRef::Real(_) => None,
+                    rusqlite::types::ValueRef::Real(value) => Some(UnknownDataType::Real(value)),
                     rusqlite::types::ValueRef::Text(value) => Some(UnknownDataType::Text(
                         String::from_utf8_lossy(value).to_string(),
                     )),

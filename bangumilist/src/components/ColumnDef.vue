@@ -79,7 +79,7 @@
                                     </n-flex>
                                 </n-input-group-label>
                             </template>
-                            {["key": string]: {"title?": {"zh": string, "ja": string, "en": string}, "color?": string, "icon?": "string"}}
+                            {["key": string]: {"title?": {"zh": string, "ja": string, "en": string}, "color?": string, "icon?": string}}
                         </n-popover>
                     </n-input-group>
                     <n-flex align="center">

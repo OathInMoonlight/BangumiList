@@ -23,6 +23,7 @@ pub struct Column {
 pub enum UnknownDataType {
     Bool(bool),
     Number(i32),
+    Real(f64),
     Text(String),
 }
 

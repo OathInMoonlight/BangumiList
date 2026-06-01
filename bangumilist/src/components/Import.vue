@@ -142,10 +142,18 @@ async function importCSV() {
                     const columnId = (isUnfoldChildTable && column.id >= (childTableColumn as number)) ? column.id - 1 : column.id
                     switch(column.dataType) {
                         case "bool":
-                            tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId].toLowerCase())
+                            if(rows[i][columnId] === null || rows[i][columnId] === undefined || rows[i][columnId] === "") {
+                                tmpPrimaryLine[column.id] = null
+                            } else {
+                                tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId].toLowerCase())
+                            }
                             break
                         case "number":
-                            tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId])
+                            if(rows[i][columnId] === null || rows[i][columnId] === undefined || rows[i][columnId] === "") {
+                                tmpPrimaryLine[column.id] = null
+                            } else {
+                                tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId])
+                            }
                             break
                         default:
                             tmpPrimaryLine[column.id] = rows[i][columnId]
@@ -163,10 +171,18 @@ async function importCSV() {
                         const columnId = global.databaseData!.table1Info.length - 1 + global.databaseData!.table2Info.length * j + column.id
                         switch(column.dataType) {
                             case "bool":
-                                tmpChildLine[column.id] = JSON.parse(rows[i][columnId].toLowerCase())
+                                if(rows[i][columnId] === null || rows[i][columnId] === undefined || rows[i][columnId] === "") {
+                                    tmpPrimaryLine[column.id] = null
+                                } else {
+                                    tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId].toLowerCase())
+                                }
                                 break
                             case "number":
-                                tmpChildLine[column.id] = JSON.parse(rows[i][columnId])
+                                if(rows[i][columnId] === null || rows[i][columnId] === undefined || rows[i][columnId] === "") {
+                                    tmpPrimaryLine[column.id] = null
+                                } else {
+                                    tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId])
+                                }
                                 break
                             default:
                                 tmpChildLine[column.id] = rows[i][columnId]

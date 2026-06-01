@@ -164,5 +164,7 @@ watch(() => global.databaseLoaded, (newStatus) => {
     }
 })
 watch(() => [global.isChildTable, global.filterText, global.page], () => {
-    searchAndSort.filterFunc()
+    if(global.databaseLoaded) {
+        searchAndSort.filterFunc()
+    }
 })

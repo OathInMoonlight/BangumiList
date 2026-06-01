@@ -70,6 +70,7 @@ pub fn write_db(db_data: DBData) -> Result<String, String> {
             match value {
                 Some(UnknownDataType::Bool(boolean)) => values.push(boolean),
                 Some(UnknownDataType::Number(num)) => values.push(num),
+                Some(UnknownDataType::Real(num)) => values.push(num),
                 Some(UnknownDataType::Text(text)) => values.push(text),
                 None => values.push(&rusqlite::types::Null),
             }

@@ -132,6 +132,9 @@ const languageTool: LanguageTool = {
         return "#"
     },
     getFirstLetter(text) {
+        if(typeof text !== "string" || text.length === 0) {
+            return "#"
+        }
         const initialInText = text[0]
         switch (this.detectLanguage(initialInText)) {
             case "zh":
