@@ -72,6 +72,13 @@ async function loadDatabase(path: string) {
             groupSort1: JSON.parse(transportData.groupSort1),
             groupSort2: JSON.parse(transportData.groupSort2)
         }
+        for(const column of global.databaseData.table1Info) {
+            if(column.dataType === "bool") {
+                for(const row of global.databaseData.tableData) {
+                    row[column.id] = row[column.id] === 1
+                }
+            }
+        }
         openModal.value = false
         global.databaseLoaded = true
         if(global.databaseData.gridView) {
