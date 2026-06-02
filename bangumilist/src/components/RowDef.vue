@@ -1,5 +1,5 @@
 <template>
-    <div id="backImg" :style="`--img-url: url(${img})`">
+    <div id="backImg" :style="`--img-url: url(${img}); padding-bottom: 24px`">
         <n-flex justify="space-between" align="center" style="padding: 8px">
             <n-flex align="center">
                 <n-button quaternary size="large" circle @click="back" :disabled="editMode">
