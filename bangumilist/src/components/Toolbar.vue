@@ -134,9 +134,11 @@ function sortOptionRender(option: SelectOption) {
 watch(sortValue, (newSort) => {
     const currentsort = global.isChildTable ? global.databaseData!.sort2 : global.databaseData!.sort1
     const newsortParts = newSort.split("-")
-    currentsort.column = Number(newsortParts[0])
-    currentsort.order = newsortParts[1] as "asc" | "desc" | "-"
-    global.databaseSaved = false
+    if(currentsort.column !== Number(newsortParts[0]) || currentsort.order !== newsortParts[1]) {
+        currentsort.column = Number(newsortParts[0])
+        currentsort.order = newsortParts[1] as "asc" | "desc" | "-"
+        global.databaseSaved = false
+    }
     searchAndSort.sortFunc()
 })
 
@@ -164,14 +166,19 @@ function groupSortOptionRender(option: SelectOption) {
 watch(groupSortValue, (newGroupSort) => {
     const currentGroupSort = global.isChildTable ? global.databaseData!.groupSort2 : global.databaseData!.groupSort1
     if(newGroupSort === "none") {
-        currentGroupSort.column = null
-        currentGroupSort.order = "-"
+        if(currentGroupSort.column !== null || currentGroupSort.order !== "-") {
+            currentGroupSort.column = null
+            currentGroupSort.order = "-"
+            global.databaseSaved = false
+        }
     } else {
         const newGroupSortParts = newGroupSort.split("-")
-        currentGroupSort.column = Number(newGroupSortParts[0])
-        currentGroupSort.order = newGroupSortParts[1] as "asc" | "desc" | "-"
+        if(currentGroupSort.column !== Number(newGroupSortParts[0]) || currentGroupSort.order !== newGroupSortParts[1]) {
+            currentGroupSort.column = Number(newGroupSortParts[0])
+            currentGroupSort.order = newGroupSortParts[1] as "asc" | "desc" | "-"
+            global.databaseSaved = false
+        }
     }
-    global.databaseSaved = false
     searchAndSort.groupFunc()
 })
 

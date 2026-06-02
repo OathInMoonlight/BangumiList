@@ -155,6 +155,13 @@ async function importCSV() {
                                 tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId])
                             }
                             break
+                        case "tag":
+                            if(rows[i][columnId] === undefined || rows[i][columnId] === "") {
+                                tmpPrimaryLine[column.id] = null
+                            } else {
+                                tmpPrimaryLine[column.id] = rows[i][columnId]
+                            }
+                            break
                         default:
                             tmpPrimaryLine[column.id] = rows[i][columnId]
                     }
@@ -182,6 +189,13 @@ async function importCSV() {
                                     tmpPrimaryLine[column.id] = null
                                 } else {
                                     tmpPrimaryLine[column.id] = JSON.parse(rows[i][columnId])
+                                }
+                                break
+                            case "tag":
+                                if(rows[i][columnId] === undefined || rows[i][columnId] === "") {
+                                    tmpPrimaryLine[column.id] = null
+                                } else {
+                                    tmpPrimaryLine[column.id] = rows[i][columnId]
                                 }
                                 break
                             default:
