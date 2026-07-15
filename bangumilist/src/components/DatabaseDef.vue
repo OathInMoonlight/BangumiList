@@ -61,12 +61,14 @@
                 </n-popover>
             </n-flex>
         </n-flex>
+    </n-flex>
+    <div style="position: sticky; bottom: 0; z-index: 1; padding-bottom: 24px; backdrop-filter: blur(64px)">
         <n-divider/>
         <n-flex justify="space-evenly" align="center">
             <n-button size="large" @click="cancel" style="width: 512px">{{ global.lang.getText("cancel") }}</n-button>
             <n-button size="large" :color="global.primaryColor" @click="confirm" style="width: 512px">{{ global.lang.getText("confirm") }}</n-button>
         </n-flex>
-    </n-flex>
+    </div>
 </template>
 
 <script setup lang="ts">

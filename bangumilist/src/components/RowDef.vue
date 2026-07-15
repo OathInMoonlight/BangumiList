@@ -1,6 +1,6 @@
 <template>
-    <div id="backImg" :style="`--img-url: url(${img}); padding-bottom: 24px`">
-        <n-flex justify="space-between" align="center" style="padding: 8px">
+    <div id="backImg" :style="`--img-url: url(${img})`">
+        <n-flex justify="space-between" align="center" style="padding: 8px; position: sticky; top: 0; z-index: 1; backdrop-filter: blur(16px)">
             <n-flex align="center">
                 <n-button quaternary size="large" circle @click="back" :disabled="editMode">
                     <template #icon>
@@ -32,8 +32,8 @@
                 </n-popover>
             </n-flex>
         </n-flex>
-        <n-flex justify="space-evenly" size="large">
-            <n-card embedded content-style="padding: 0" :style="`width: ${imgSize[0] + 2}px; height: ${imgSize[1] + 2}px; overflow: hidden;`">
+        <n-flex justify="space-evenly" size="large" style="top: 56px; padding: 24px">
+            <n-card embedded content-style="padding: 0" :style="`width: ${imgSize[0] + 2}px; height: ${imgSize[1] + 2}px; overflow: hidden; position: sticky; top: 56px`">
                 <n-image v-if="global.databaseData!.gridView" :src="img" object-fit="cover" :show-toolbar="false" :width="imgSize[0]" :height="imgSize[1]">
                     <template #error>
                         <n-flex justify="center" align="center" style="position: absolute; inset: 0; width: 100%; height: 100%">
@@ -74,11 +74,13 @@
                 </n-flex>
             </n-flex>
         </n-flex>
-        <n-divider v-if="editMode"/>
-        <n-flex v-if="editMode" justify="space-evenly" align="center">
-            <n-button size="large" @click="cancel" style="width: 512px">{{ global.lang.getText("cancel") }}</n-button>
-            <n-button size="large" :color="global.primaryColor" @click="confirm" style="width: 512px">{{ global.lang.getText("confirm") }}</n-button>
-        </n-flex>
+        <div v-if="editMode" style="position: sticky; bottom: 0; z-index: 1; padding-bottom: 24px; backdrop-filter: blur(32px)">
+            <n-divider/>
+            <n-flex justify="space-evenly" align="center">
+                <n-button size="large" @click="cancel" style="width: 512px">{{ global.lang.getText("cancel") }}</n-button>
+                <n-button size="large" :color="global.primaryColor" @click="confirm" style="width: 512px">{{ global.lang.getText("confirm") }}</n-button>
+            </n-flex>
+        </div>
     </div>
 </template>
 
